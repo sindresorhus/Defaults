@@ -1,54 +1,30 @@
 // MIT License © Sindre Sorhus
 import Cocoa
 
-public final class Defaults {
-	public class Keys {}
+public class DefaultsKeys {
+	fileprivate init() {}
+}
 
-	public final class Key<T: Codable>: Keys {
-		fileprivate let name: String
-		fileprivate let defaultValue: T
+public final class DefaultsKey<T: Codable>: DefaultsKeys {
+	fileprivate let name: String
+	fileprivate let defaultValue: T
 
-		init(_ key: String, default defaultValue: T) {
-			self.name = key
-			self.defaultValue = defaultValue
-		}
+	public init(_ key: String, default defaultValue: T) {
+		self.name = key
+		self.defaultValue = defaultValue
 	}
+}
 
-	public final class OptionalKey<T: Codable>: Keys {
-		fileprivate let name: String
+public final class DefaultsOptionalKey<T: Codable>: DefaultsKeys {
+	fileprivate let name: String
 
-		init(_ key: String) {
-			self.name = key
-		}
-	}
-
-	public subscript<T: Codable>(key: Defaults.Key<T>) -> T {
-		get {
-			return UserDefaults.standard[key]
-		}
-		set {
-			UserDefaults.standard[key] = newValue
-		}
-	}
-
-	public subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
-		get {
-			return UserDefaults.standard[key]
-		}
-		set {
-			UserDefaults.standard[key] = newValue
-		}
-	}
-
-	public func clear() {
-		for key in UserDefaults.standard.dictionaryRepresentation().keys {
-			UserDefaults.standard.removeObject(forKey: key)
-		}
+	public init(_ key: String) {
+		self.name = key
 	}
 }
 
 // Has to be `defaults` lowercase until Swift supports static subscripts…
-public let defaults = Defaults()
+public let Defaults = UserDefaults.standard
 
 public extension UserDefaults {
 	private func _get<T: Codable>(_ key: String) -> T? {
@@ -88,7 +64,7 @@ public extension UserDefaults {
 		}
 	}
 
-	public subscript<T: Codable>(key: Defaults.Key<T>) -> T {
+	public subscript<T: Codable>(key: DefaultsKey<T>) -> T {
 		get {
 			return _get(key.name) ?? key.defaultValue
 		}
@@ -97,7 +73,7 @@ public extension UserDefaults {
 		}
 	}
 
-	public subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
+	public subscript<T: Codable>(key: DefaultsOptionalKey<T>) -> T? {
 		get {
 			return _get(key.name)
 		}
@@ -119,6 +95,12 @@ public extension UserDefaults {
 			return true
 		default:
 			return false
+		}
+	}
+
+	public func clear() {
+		for key in dictionaryRepresentation().keys {
+			removeObject(forKey: key)
 		}
 	}
 }
