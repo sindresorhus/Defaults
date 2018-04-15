@@ -1,27 +1,30 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
-public class DefaultsKeys {
-	fileprivate init() {}
-}
+public extension UserDefaults {
+	public class Keys {
+		fileprivate init() {}
+	}
 
-public final class DefaultsKey<T: Codable>: DefaultsKeys {
-	fileprivate let name: String
-	fileprivate let defaultValue: T
+	public final class Key<T: Codable>: Keys {
+		fileprivate let name: String
+		fileprivate let defaultValue: T
 
-	public init(_ key: String, default defaultValue: T) {
-		self.name = key
-		self.defaultValue = defaultValue
+		public init(_ key: String, default defaultValue: T) {
+			self.name = key
+			self.defaultValue = defaultValue
+		}
+	}
+
+	public final class OptionalKey<T: Codable>: Keys {
+		fileprivate let name: String
+
+		public init(_ key: String) {
+			self.name = key
+		}
 	}
 }
 
-public final class DefaultsOptionalKey<T: Codable>: DefaultsKeys {
-	fileprivate let name: String
-
-	public init(_ key: String) {
-		self.name = key
-	}
-}
 
 // Has to be `defaults` lowercase until Swift supports static subscripts…
 public let Defaults = UserDefaults.standard
@@ -64,7 +67,7 @@ public extension UserDefaults {
 		}
 	}
 
-	public subscript<T: Codable>(key: DefaultsKey<T>) -> T {
+	public subscript<T: Codable>(key: Key<T>) -> T {
 		get {
 			return _get(key.name) ?? key.defaultValue
 		}
@@ -73,7 +76,7 @@ public extension UserDefaults {
 		}
 	}
 
-	public subscript<T: Codable>(key: DefaultsOptionalKey<T>) -> T? {
+	public subscript<T: Codable>(key: OptionalKey<T>) -> T? {
 		get {
 			return _get(key.name)
 		}

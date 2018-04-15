@@ -9,10 +9,10 @@ enum FixtureEnum: String, Codable {
 	case oneHour = "1 Hour"
 }
 
-extension DefaultsKeys {
-	static let key = DefaultsKey<Bool>("key", default: false)
-	static let url = DefaultsKey<URL>("url", default: fixtureUrl)
-	static let `enum` = DefaultsKey<FixtureEnum>("enum", default: .oneHour)
+extension UserDefaults.Keys {
+	static let key = UserDefaults.Key<Bool>("key", default: false)
+	static let url = UserDefaults.Key<URL>("url", default: fixtureUrl)
+	static let `enum` = UserDefaults.Key<FixtureEnum>("enum", default: .oneHour)
 }
 
 final class DefaultsTests: XCTestCase {
@@ -22,14 +22,14 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testKey() {
-		let key = DefaultsKey<Bool>("key", default: false)
+		let key = UserDefaults.Key<Bool>("key", default: false)
 		XCTAssertFalse(UserDefaults.standard[key])
 		UserDefaults.standard[key] = true
 		XCTAssertTrue(UserDefaults.standard[key])
 	}
 
 	func testOptionalKey() {
-		let key = DefaultsOptionalKey<Bool>("key")
+		let key = UserDefaults.OptionalKey<Bool>("key")
 		XCTAssertNil(UserDefaults.standard[key])
 		UserDefaults.standard[key] = true
 		XCTAssertTrue(UserDefaults.standard[key]!)
