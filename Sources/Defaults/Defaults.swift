@@ -115,7 +115,8 @@ public extension UserDefaults {
 			 is Int.Type,
 			 is Double.Type,
 			 is Float.Type,
-			 is Date.Type:
+			 is Date.Type,
+			 is Data.Type:
 			return true
 		default:
 			return false
