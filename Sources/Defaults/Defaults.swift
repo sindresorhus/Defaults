@@ -1,5 +1,5 @@
 // MIT License © Sindre Sorhus
-import Cocoa
+import Foundation
 
 public class DefaultsKeys {
 	fileprivate init() {}
