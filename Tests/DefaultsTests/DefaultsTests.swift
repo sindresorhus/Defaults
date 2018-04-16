@@ -1,5 +1,5 @@
 import XCTest
-@testable import Defaults
+import Defaults
 
 let fixtureUrl = URL(string: "httos://sindresorhus.com")!
 
@@ -22,7 +22,7 @@ final class DefaultsTests: XCTestCase {
 		defaults.clear()
 	}
 
-    func testKey() {
+	func testKey() {
 		let key = Defaults.Key<Bool>("key", default: false)
 		XCTAssertFalse(UserDefaults.standard[key])
 		UserDefaults.standard[key] = true
