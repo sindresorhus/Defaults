@@ -24,7 +24,7 @@
 With [SPM](https://swift.org/package-manager/):
 
 ```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "0.1.0")
+.package(url: "https://github.com/sindresorhus/Defaults", from: "0.2.0")
 ```
 
 With [Carthage](https://github.com/Carthage/Carthage):
