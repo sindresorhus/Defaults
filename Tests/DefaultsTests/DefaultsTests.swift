@@ -1,7 +1,8 @@
+import Foundation
 import XCTest
 import Defaults
 
-let fixtureUrl = URL(string: "httos://sindresorhus.com")!
+let fixtureUrl = URL(string: "https://sindresorhus.com")!
 
 enum FixtureEnum: String, Codable {
 	case tenMinutes = "10 Minutes"

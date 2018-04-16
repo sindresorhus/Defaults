@@ -11,11 +11,12 @@
 - **Lightweight:** It's only ~100 lines of code.
 
 
-## Requirements
+## Compatibility
 
 - macOS 10.12+
-- Xcode 9.3+
-- Swift 4.1+
+- iOS 10+
+- tvOS 10+
+- watchOS 3+
 
 
 ## Install

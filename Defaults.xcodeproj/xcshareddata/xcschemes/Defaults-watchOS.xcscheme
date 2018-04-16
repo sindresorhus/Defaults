@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Defaults::Defaults"
+               BlueprintIdentifier = "52D6D9E11BEFFF6E002C0205"
                BuildableName = "Defaults.framework"
-               BlueprintName = "Defaults"
+               BlueprintName = "Defaults-watchOS"
                ReferencedContainer = "container:Defaults.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,18 +26,9 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      codeCoverageEnabled = "YES"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Defaults::DefaultsTests"
-               BuildableName = "DefaultsTests.xctest"
-               BlueprintName = "DefaultsTests"
-               ReferencedContainer = "container:Defaults.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <AdditionalOptions>
       </AdditionalOptions>
@@ -55,9 +46,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Defaults::Defaults"
+            BlueprintIdentifier = "52D6D9E11BEFFF6E002C0205"
             BuildableName = "Defaults.framework"
-            BlueprintName = "Defaults"
+            BlueprintName = "Defaults-watchOS"
             ReferencedContainer = "container:Defaults.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -70,6 +61,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "52D6D9E11BEFFF6E002C0205"
+            BuildableName = "Defaults.framework"
+            BlueprintName = "Defaults-watchOS"
+            ReferencedContainer = "container:Defaults.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
