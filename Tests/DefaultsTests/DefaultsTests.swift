@@ -35,6 +35,10 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertNil(UserDefaults.standard[key])
 		UserDefaults.standard[key] = true
 		XCTAssertTrue(UserDefaults.standard[key]!)
+		UserDefaults.standard[key] = nil
+		XCTAssertNil(UserDefaults.standard[key])
+		UserDefaults.standard[key] = false
+		XCTAssertFalse(UserDefaults.standard[key]!)
 	}
 
 	func testKeys() {
