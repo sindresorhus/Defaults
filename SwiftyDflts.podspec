@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-s.name = "SwiftDefaults"
+s.name = "SwiftyDflts"
 s.version = "0.2.2"
 s.summary = "Swifty and modern UserDefaults"
 s.description = <<-DESC
