@@ -36,7 +36,7 @@ github "sindresorhus/Defaults"
 With Cocoapod:
 
 ```
-pod 'Defaults'
+pod 'SwiftyDflts'
 ```
 
 Then, run the following command:
