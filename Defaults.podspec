@@ -11,13 +11,13 @@ Lightweight: It's only ~100 lines of code.
 
 DESC
 
-s.homepage     = "https://github.com/sindresorhus/Defaults"
+s.homepage     = "https://github.com/Sadmansamee/Defaults"
 s.license = { :type => "MIT", :file => "license" }
 s.author = { "sindresorhus" => "sindresorhus@gmail.com" }
 s.social_media_url = "https://sindresorhus.com"
 s.swift_version = "4.0"
 s.platform = :ios
-s.source = { :git => "https://github.com/sindresorhus/Defaults.git", :tag => s.version }
+s.source = { :git => "https://github.com/Sadmansamee/Defaults.git", :tag => s.version }
 s.source_files =["Sources/*.swift", "Sources/Defaults.swift"]
 s.requires_arc = true
 end
