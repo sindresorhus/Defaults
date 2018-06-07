@@ -21,16 +21,22 @@
 
 ## Install
 
-With [SPM](https://swift.org/package-manager/):
+#### SPM
 
 ```swift
 .package(url: "https://github.com/sindresorhus/Defaults", from: "0.2.0")
 ```
 
-With [Carthage](https://github.com/Carthage/Carthage):
+#### Carthage
 
 ```
 github "sindresorhus/Defaults"
+```
+
+#### CocoaPods
+
+```
+pod 'Defaults'
 ```
 
 <a href="https://www.patreon.com/sindresorhus">
