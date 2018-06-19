@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 	s.name = 'Defaults'
-	s.version = '0.2.1'
+	s.version = '0.2.2'
 	s.license = { :type => 'MIT', :file => 'license' }
 	s.homepage = 'https://github.com/sindresorhus/Defaults'
 	s.social_media_url = 'https://twitter.com/sindresorhus'
