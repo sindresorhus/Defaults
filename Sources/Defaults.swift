@@ -52,15 +52,17 @@ public final class Defaults {
 // Has to be `defaults` lowercase until Swift supports static subscripts…
 public let defaults = Defaults()
 
-public extension UserDefaults {
+extension UserDefaults {
 	private func _get<T: Codable>(_ key: String) -> T? {
 		if isNativelySupportedType(T.self) {
 			return object(forKey: key) as? T
 		}
 
-		guard let text = string(forKey: key),
-			let data = "[\(text)]".data(using: .utf8) else {
-				return nil
+		guard
+			let text = string(forKey: key),
+			let data = "[\(text)]".data(using: .utf8)
+		else {
+			return nil
 		}
 
 		do {

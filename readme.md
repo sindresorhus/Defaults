@@ -35,7 +35,7 @@ github "sindresorhus/Defaults"
 
 #### CocoaPods
 
-```
+```ruby
 pod 'Defaults'
 ```
 
@@ -172,6 +172,7 @@ It's inspired by it and other solutions. The main difference is that this module
 
 ## Related
 
+- [Preferences](https://github.com/sindresorhus/Preferences) - Add a preferences window to your macOS app in minutes
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) - Add "Launch at Login" functionality to your macOS app
 - [DockProgress](https://github.com/sindresorhus/DockProgress) - Show progress in your app's Dock icon
 - [Gifski](https://github.com/sindresorhus/gifski-app) - Convert videos to high-quality GIFs on your Mac
