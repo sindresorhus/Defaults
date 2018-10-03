@@ -17,6 +17,14 @@
 		8933C7901EB5B82D000D00A4 /* DefaultsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7891EB5B82A000D00A4 /* DefaultsTests.swift */; };
 		DD7502881C68FEDE006590AF /* Defaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6DA0F1BF000BD002C0205 /* Defaults.framework */; };
 		DD7502921C690C7A006590AF /* Defaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D9F01BEFFFBE002C0205 /* Defaults.framework */; };
+		E3EB3E33216505920033B089 /* util.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E32216505920033B089 /* util.swift */; };
+		E3EB3E35216507AE0033B089 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E34216507AE0033B089 /* Observation.swift */; };
+		E3EB3E36216507B50033B089 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E34216507AE0033B089 /* Observation.swift */; };
+		E3EB3E37216507B50033B089 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E34216507AE0033B089 /* Observation.swift */; };
+		E3EB3E38216507B60033B089 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E34216507AE0033B089 /* Observation.swift */; };
+		E3EB3E39216507C30033B089 /* util.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E32216505920033B089 /* util.swift */; };
+		E3EB3E3A216507C40033B089 /* util.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E32216505920033B089 /* util.swift */; };
+		E3EB3E3B216507C40033B089 /* util.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E32216505920033B089 /* util.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +63,8 @@
 		AD2FAA281CD0B6E100659CF4 /* DefaultsTests.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = DefaultsTests.plist; sourceTree = "<group>"; };
 		DD75027A1C68FCFC006590AF /* Defaults-macOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Defaults-macOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD75028D1C690C7A006590AF /* Defaults-tvOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Defaults-tvOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3EB3E32216505920033B089 /* util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = util.swift; sourceTree = "<group>"; usesTabs = 1; };
+		E3EB3E34216507AE0033B089 /* Observation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Observation.swift; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +161,8 @@
 			isa = PBXGroup;
 			children = (
 				8933C7841EB5B820000D00A4 /* Defaults.swift */,
+				E3EB3E34216507AE0033B089 /* Observation.swift */,
+				E3EB3E32216505920033B089 /* util.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -352,19 +364,19 @@
 				TargetAttributes = {
 					52D6D97B1BEFF229002C0205 = {
 						CreatedOnToolsVersion = 7.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 					};
 					52D6D9851BEFF229002C0205 = {
 						CreatedOnToolsVersion = 7.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 					};
 					52D6D9E11BEFFF6E002C0205 = {
 						CreatedOnToolsVersion = 7.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 					};
 					52D6D9EF1BEFFFBE002C0205 = {
 						CreatedOnToolsVersion = 7.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 					};
 					52D6DA0E1BF000BD002C0205 = {
 						CreatedOnToolsVersion = 7.1;
@@ -376,7 +388,7 @@
 					};
 					DD75028C1C690C7A006590AF = {
 						CreatedOnToolsVersion = 7.2.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 					};
 				};
 			};
@@ -384,15 +396,18 @@
 			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 52D6D9721BEFF229002C0205;
 			productRefGroup = 52D6D97D1BEFF229002C0205 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				52D6D97B1BEFF229002C0205 /* Defaults-iOS */,
 				52D6DA0E1BF000BD002C0205 /* Defaults-macOS */,
-				52D6D9E11BEFFF6E002C0205 /* Defaults-watchOS */,
+				52D6D97B1BEFF229002C0205 /* Defaults-iOS */,
 				52D6D9EF1BEFFFBE002C0205 /* Defaults-tvOS */,
+				52D6D9E11BEFFF6E002C0205 /* Defaults-watchOS */,
 				52D6D9851BEFF229002C0205 /* Defaults-iOS Tests */,
 				DD7502791C68FCFC006590AF /* Defaults-macOS Tests */,
 				DD75028C1C690C7A006590AF /* Defaults-tvOS Tests */,
@@ -458,6 +473,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8933C7851EB5B820000D00A4 /* Defaults.swift in Sources */,
+				E3EB3E35216507AE0033B089 /* Observation.swift in Sources */,
+				E3EB3E33216505920033B089 /* util.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,6 +490,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3EB3E3A216507C40033B089 /* util.swift in Sources */,
+				E3EB3E37216507B50033B089 /* Observation.swift in Sources */,
 				8933C7871EB5B820000D00A4 /* Defaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -481,6 +500,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3EB3E3B216507C40033B089 /* util.swift in Sources */,
+				E3EB3E38216507B60033B089 /* Observation.swift in Sources */,
 				8933C7881EB5B820000D00A4 /* Defaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -489,6 +510,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3EB3E39216507C30033B089 /* util.swift in Sources */,
+				E3EB3E36216507B50033B089 /* Observation.swift in Sources */,
 				8933C7861EB5B820000D00A4 /* Defaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -668,7 +691,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = singlefile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -695,7 +718,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -716,7 +739,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_COMPILATION_MODE = singlefile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -737,7 +760,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -761,7 +784,7 @@
 				PRODUCT_NAME = Defaults;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
@@ -789,7 +812,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
@@ -815,7 +838,7 @@
 				PRODUCT_NAME = Defaults;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -843,7 +866,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -908,7 +931,6 @@
 		DD7502831C68FCFC006590AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Configs/DefaultsTests.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -927,7 +949,6 @@
 		DD7502841C68FCFC006590AF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Configs/DefaultsTests.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -948,6 +969,8 @@
 		DD7502961C690C7A006590AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Configs/DefaultsTests.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -956,8 +979,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-tvOS-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
@@ -965,6 +989,8 @@
 		DD7502971C690C7A006590AF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Configs/DefaultsTests.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -973,10 +999,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-tvOS-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = appletvos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
