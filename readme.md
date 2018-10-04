@@ -182,7 +182,7 @@ Type: `class`
 
 Stores the keys.
 
-#### `Defaults.Key` *(alias `Defaults.Keys.OptionalKey`)*
+#### `Defaults.Key` *(alias `Defaults.Keys.Key`)*
 
 ```swift
 Defaults.Key<T>(_ key: String, default: T, suite: UserDefaults = .standard)
@@ -197,7 +197,7 @@ The default value is written to the actual `UserDefaults` and can be used elsewh
 #### `Defaults.OptionalKey` *(alias `Defaults.Keys.OptionalKey`)*
 
 ```swift
-Defaults.OptionalKey<T>(_ key: String, default: T)
+Defaults.OptionalKey<T>(_ key: String, suite: UserDefaults = .standard)
 ```
 
 Type: `class`
@@ -220,7 +220,7 @@ Clear the user defaults.
 observe<T: Codable>(
 	_ key: Defaults.Key<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
-	handler: @escaping (OptionalKeyChange<T>) -> Void
+	handler: @escaping (KeyChange<T>) -> Void
 ) -> DefaultsObservation
 ```
 

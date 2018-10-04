@@ -129,7 +129,7 @@ extension UserDefaults {
 		}
 	}
 
-	fileprivate static func isNativelySupportedType<T>(_ type: T.Type) -> Bool {
+	private static func isNativelySupportedType<T>(_ type: T.Type) -> Bool {
 		switch type {
 		case is Bool.Type,
 			 is String.Type,
