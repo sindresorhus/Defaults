@@ -22,8 +22,17 @@ extension Defaults.Keys {
 }
 
 final class DefaultsTests: XCTestCase {
+	var observation: DefaultsObservation?
+
 	override func setUp() {
 		super.setUp()
+		//observation?.invalidate()
+		defaults.clear()
+	}
+
+	override func tearDown() {
+		super.setUp()
+		//observation?.invalidate()
 		defaults.clear()
 	}
 
@@ -109,16 +118,20 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
 		let expect = expectation(description: "Observation closure being called")
 
-		let observation = defaults.observe(key, options: [.new]) { change in
+		let observation = defaults.observe(key, options: [.old, .new]) { change in
+			print("was called", change.oldValue, change.newValue)
 			expect.fulfill()
 			XCTAssertFalse(change.oldValue)
 			XCTAssertTrue(change.newValue)
 		}
 
+		print("observation", observation)
+
 		defaults[key] = true
 
-		waitForExpectations(timeout: 1)
-		observation.invalidate()
+		waitForExpectations(timeout: 100) { error in
+			print("after wait for expectation", error)
+		}
 	}
 
 	func testObserveOptionalKey() {
@@ -133,11 +146,14 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = true
 
-		waitForExpectations(timeout: 1)
-		observation.invalidate()
+		waitForExpectations(timeout: 100) { error in
+			print("after wait for expectation", error)
+		}
 	}
 
 	func testObserveKeyURL() {
+		let fixtureURL = URL(string: "https://sindresorhus.com")!
+		let fixtureURL2 = URL(string: "https://example.com")!
 		let key = Defaults.Key<URL>("observeKeyURL", default: fixtureURL)
 		let expect = expectation(description: "Observation closure being called")
 
@@ -149,8 +165,9 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = fixtureURL2
 
-		waitForExpectations(timeout: 1)
-		observation.invalidate()
+		waitForExpectations(timeout: 100) { error in
+			print("after wait for expectation", error)
+		}
 	}
 
 	func testObserveKeyEnum() {
@@ -165,7 +182,8 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = .tenMinutes
 
-		waitForExpectations(timeout: 1)
-		observation.invalidate()
+		waitForExpectations(timeout: 100) { error in
+			print("after wait for expectation", error)
+		}
 	}
 }
