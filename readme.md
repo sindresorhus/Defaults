@@ -176,6 +176,7 @@ It's inspired by it and other solutions. The main difference is that this module
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) - Add "Launch at Login" functionality to your macOS app
 - [DockProgress](https://github.com/sindresorhus/DockProgress) - Show progress in your app's Dock icon
 - [Gifski](https://github.com/sindresorhus/gifski-app) - Convert videos to high-quality GIFs on your Mac
+- [More…](https://github.com/search?q=user%3Asindresorhus+language%3Aswift)
 
 
 ## License
