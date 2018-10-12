@@ -27,13 +27,17 @@ final class DefaultsTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
 		//observation?.invalidate()
+		sleep(1)
 		defaults.clear()
+		sleep(1)
 	}
 
 	override func tearDown() {
 		super.setUp()
 		//observation?.invalidate()
+		sleep(1)
 		defaults.clear()
+		sleep(1)
 	}
 
 	func testKey() {
