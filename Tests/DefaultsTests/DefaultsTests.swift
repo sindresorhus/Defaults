@@ -122,11 +122,12 @@ final class DefaultsTests: XCTestCase {
 
 	func testObserveKey() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
-		let expect = expectation(description: "Observation closure being called")
+		weak var expect = expectation(description: "Observation closure being called")
 
 		let observation = defaults.observe(key, options: [.old, .new]) { change in
 			print("was called", change.oldValue, change.newValue)
-			expect.fulfill()
+			expect?.fulfill()
+			expect = nil
 			XCTAssertFalse(change.oldValue)
 			XCTAssertTrue(change.newValue)
 		}
@@ -142,12 +143,13 @@ final class DefaultsTests: XCTestCase {
 
 	func testObserveOptionalKey() {
 		let key = Defaults.OptionalKey<Bool>("observeOptionalKey")
-		let expect = expectation(description: "Observation closure being called")
+		weak var expect = expectation(description: "Observation closure being called")
 
 		let observation = defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertNil(change.oldValue)
 			XCTAssertTrue(change.newValue!)
-			expect.fulfill()
+			expect?.fulfill()
+			expect = nil
 		}
 
 		defaults[key] = true
@@ -161,12 +163,13 @@ final class DefaultsTests: XCTestCase {
 		let fixtureURL = URL(string: "https://sindresorhus.com")!
 		let fixtureURL2 = URL(string: "https://example.com")!
 		let key = Defaults.Key<URL>("observeKeyURL", default: fixtureURL)
-		let expect = expectation(description: "Observation closure being called")
+		weak var expect = expectation(description: "Observation closure being called")
 
 		let observation = defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertEqual(change.oldValue, fixtureURL)
 			XCTAssertEqual(change.newValue, fixtureURL2)
-			expect.fulfill()
+			expect?.fulfill()
+			expect = nil
 		}
 
 		defaults[key] = fixtureURL2
@@ -178,12 +181,13 @@ final class DefaultsTests: XCTestCase {
 
 	func testObserveKeyEnum() {
 		let key = Defaults.Key<FixtureEnum>("observeKeyEnum", default: .oneHour)
-		let expect = expectation(description: "Observation closure being called")
+		weak var expect = expectation(description: "Observation closure being called")
 
 		let observation = defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertEqual(change.oldValue, .oneHour)
 			XCTAssertEqual(change.newValue, .tenMinutes)
-			expect.fulfill()
+			expect?.fulfill()
+			expect = nil
 		}
 
 		defaults[key] = .tenMinutes
