@@ -117,22 +117,22 @@ final class DefaultsTests: XCTestCase {
 	func testObserveKey() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
 
-		// Using `weak` here to prevent fullfill to be called multiple times. The callback is called multiple times on Travis CI for some reason. Not reproducible locally.
+		// Using `weak` here to prevent `.fullfill()` to be called multiple times, since the callback is called multiple times on Travis CI for some reason. Not reproducible locally.
 		weak var expect = expectation(description: "Observation closure being called")
 
 		let observation = defaults.observe(key, options: [.old, .new]) { change in
 			print("was called", change.oldValue, change.newValue)
-			expect?.fulfill()
-			expect = nil
 			XCTAssertFalse(change.oldValue)
 			XCTAssertTrue(change.newValue)
+			expect?.fulfill()
+			expect = nil
 		}
-
-		print("observation", observation)
 
 		defaults[key] = true
 
-		waitForExpectations(timeout: 100)
+		waitForExpectations(timeout: 10) { _ in
+			observation.invalidate()
+		}
 	}
 
 	func testObserveOptionalKey() {
@@ -148,7 +148,9 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = true
 
-		waitForExpectations(timeout: 100)
+		waitForExpectations(timeout: 10) { _ in
+			observation.invalidate()
+		}
 	}
 
 	func testObserveKeyURL() {
@@ -166,7 +168,9 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = fixtureURL2
 
-		waitForExpectations(timeout: 100)
+		waitForExpectations(timeout: 10) { _ in
+			observation.invalidate()
+		}
 	}
 
 	func testObserveKeyEnum() {
@@ -182,6 +186,8 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = .tenMinutes
 
-		waitForExpectations(timeout: 100)
+		waitForExpectations(timeout: 10) { _ in
+			observation.invalidate()
+		}
 	}
 }
