@@ -25,15 +25,11 @@ final class DefaultsTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
 		defaults.clear()
-		UserDefaults.standard.synchronize()
-		sleep(1)
 	}
 
 	override func tearDown() {
 		super.setUp()
 		defaults.clear()
-		UserDefaults.standard.synchronize()
-		sleep(1)
 	}
 
 	func testKey() {
@@ -121,7 +117,6 @@ final class DefaultsTests: XCTestCase {
 		weak var expect = expectation(description: "Observation closure being called")
 
 		let observation = defaults.observe(key, options: [.old, .new]) { change in
-			print("was called", change.oldValue, change.newValue)
 			XCTAssertFalse(change.oldValue)
 			XCTAssertTrue(change.newValue)
 			expect?.fulfill()
