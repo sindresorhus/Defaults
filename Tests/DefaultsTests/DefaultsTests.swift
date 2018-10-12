@@ -29,6 +29,7 @@ final class DefaultsTests: XCTestCase {
 		//observation?.invalidate()
 		sleep(1)
 		defaults.clear()
+		UserDefaults.standard.synchronize()
 		sleep(1)
 	}
 
@@ -37,6 +38,7 @@ final class DefaultsTests: XCTestCase {
 		//observation?.invalidate()
 		sleep(1)
 		defaults.clear()
+		UserDefaults.standard.synchronize()
 		sleep(1)
 	}
 
