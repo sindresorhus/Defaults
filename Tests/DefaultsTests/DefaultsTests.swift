@@ -22,12 +22,8 @@ extension Defaults.Keys {
 }
 
 final class DefaultsTests: XCTestCase {
-	var observation: DefaultsObservation?
-
 	override func setUp() {
 		super.setUp()
-		//observation?.invalidate()
-		sleep(1)
 		defaults.clear()
 		UserDefaults.standard.synchronize()
 		sleep(1)
@@ -35,8 +31,6 @@ final class DefaultsTests: XCTestCase {
 
 	override func tearDown() {
 		super.setUp()
-		//observation?.invalidate()
-		sleep(1)
 		defaults.clear()
 		UserDefaults.standard.synchronize()
 		sleep(1)
@@ -122,6 +116,8 @@ final class DefaultsTests: XCTestCase {
 
 	func testObserveKey() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
+
+		// Using `weak` here to prevent fullfill to be called multiple times. The callback is called multiple times on Travis CI for some reason. Not reproducible locally.
 		weak var expect = expectation(description: "Observation closure being called")
 
 		let observation = defaults.observe(key, options: [.old, .new]) { change in
@@ -136,9 +132,7 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = true
 
-		waitForExpectations(timeout: 100) { error in
-			print("after wait for expectation", error)
-		}
+		waitForExpectations(timeout: 100)
 	}
 
 	func testObserveOptionalKey() {
@@ -154,9 +148,7 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = true
 
-		waitForExpectations(timeout: 100) { error in
-			print("after wait for expectation", error)
-		}
+		waitForExpectations(timeout: 100)
 	}
 
 	func testObserveKeyURL() {
@@ -174,9 +166,7 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = fixtureURL2
 
-		waitForExpectations(timeout: 100) { error in
-			print("after wait for expectation", error)
-		}
+		waitForExpectations(timeout: 100)
 	}
 
 	func testObserveKeyEnum() {
@@ -192,8 +182,6 @@ final class DefaultsTests: XCTestCase {
 
 		defaults[key] = .tenMinutes
 
-		waitForExpectations(timeout: 100) { error in
-			print("after wait for expectation", error)
-		}
+		waitForExpectations(timeout: 100)
 	}
 }
