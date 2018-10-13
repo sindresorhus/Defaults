@@ -171,6 +171,19 @@ let observer = defaults.observe(.isUnicornMode) { change in
 defaults[.isUnicornMode] = true
 ```
 
+### Default values are registered with UserDefaults
+
+When you create a `Defaults.Key`, it automatically registers the `default` value with normal UserDefaults. This means you can make use of the default value in, for example, bindings in Interface Builder.
+
+```swift
+extension Defaults.Keys {
+	static let isUnicornMode = Key<Bool>("isUnicornMode", default: true)
+}
+
+print(UserDefaults.standard.bool(forKey: isUnicornMode.name))
+//=> true
+```
+
 
 ## API
 

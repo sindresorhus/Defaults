@@ -50,6 +50,18 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertFalse(defaults[key]!)
 	}
 
+	func testKeyRegistersDefault() {
+		let keyName = "registersDefault"
+		XCTAssertEqual(UserDefaults.standard.bool(forKey: keyName), false)
+		_ = Defaults.Key<Bool>(keyName, default: true)
+		XCTAssertEqual(UserDefaults.standard.bool(forKey: keyName), true)
+
+		// Test that it works with multiple keys with defaults
+		let keyName2 = "registersDefault2"
+		_ = Defaults.Key<String>(keyName2, default: keyName2)
+		XCTAssertEqual(UserDefaults.standard.string(forKey: keyName2), keyName2)
+	}
+
 	func testKeyWithUserDefaultSubscript() {
 		let key = Defaults.Key<Bool>("keyWithUserDeaultSubscript", default: false)
 		XCTAssertFalse(UserDefaults.standard[key])

@@ -21,8 +21,12 @@ public final class Defaults {
 
 			super.init()
 
-			// Sets the default value in the actual user defaults so it can be used in other contexts, like binding.
-			suite[self] = defaultValue
+			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
+			if UserDefaults.isNativelySupportedType(T.self) {
+				suite.register(defaults: [key: defaultValue])
+			} else if let value = suite._encode(defaultValue) {
+				suite.register(defaults: [key: value])
+			}
 		}
 	}
 
@@ -88,22 +92,26 @@ extension UserDefaults {
 		return nil
 	}
 
+	fileprivate func _encode<T: Codable>(_ value: T) -> String? {
+		do {
+			// Some codable values like URL and enum are encoded as a top-level
+			// string which JSON can't handle, so we need to wrap it in an array
+			// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
+			let data = try JSONEncoder().encode([value])
+			return String(String(data: data, encoding: .utf8)!.dropFirst().dropLast())
+		} catch {
+			print(error)
+			return nil
+		}
+	}
+
 	private func _set<T: Codable>(_ key: String, to value: T) {
 		if UserDefaults.isNativelySupportedType(T.self) {
 			set(value, forKey: key)
 			return
 		}
 
-		do {
-			// Some codable values like URL and enum are encoded as a top-level
-			// string which JSON can't handle, so we need to wrap it in an array
-			// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
-			let data = try JSONEncoder().encode([value])
-			let string = String(data: data, encoding: .utf8)?.dropFirst().dropLast()
-			set(string, forKey: key)
-		} catch {
-			print(error)
-		}
+		set(_encode(value), forKey: key)
 	}
 
 	public subscript<T: Codable>(key: Defaults.Key<T>) -> T {
@@ -129,7 +137,7 @@ extension UserDefaults {
 		}
 	}
 
-	private static func isNativelySupportedType<T>(_ type: T.Type) -> Bool {
+	fileprivate static func isNativelySupportedType<T>(_ type: T.Type) -> Bool {
 		switch type {
 		case is Bool.Type,
 			 is String.Type,
