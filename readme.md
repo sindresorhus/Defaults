@@ -22,10 +22,10 @@
 
 ## Install
 
-#### SPM
+#### SwiftPM
 
 ```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "0.2.0")
+.package(url: "https://github.com/sindresorhus/Defaults", from: "1.0.0")
 ```
 
 #### Carthage
