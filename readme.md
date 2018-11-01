@@ -258,7 +258,7 @@ By default, it will also trigger an initial event on creation. This can be usefu
 
 ### How is this different from [`SwiftyUserDefaults`](https://github.com/radex/SwiftyUserDefaults)?
 
-It's inspired by that package and other solutions. The main difference is that this module doesn't hardcode the default values and comes with Codable support.
+It's inspired by that package and other solutions. The main difference is that this module doesn't hardcode the default values.
 
 
 ## Related
