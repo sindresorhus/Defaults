@@ -259,53 +259,14 @@ final class DefaultsTests: XCTestCase {
 
 	func testObserveWithLifetimeTie() {
 		let key = Defaults.Key<Bool>("lifetimeTie", default: false)
-		let expect = expectation(description: "Observation closure being called twice")
-		// Once from option .initial, once from inside autoreleasepool block
-		expect.expectedFulfillmentCount = 2
+		let expect = expectation(description: "Observation closure being called")
 
-		autoreleasepool {
-			// This *must* be autoreleasing… (for testing purposes)
-			let object = "hello \(className)" as NSString
-			
-			defaults.observe(key) { change in
-				expect.fulfill()
-			}.tieToLifetimeOf(object)
+		weak var observation: DefaultsObservation!
+		observation = defaults.observe(key, options: []) { change in
+			observation.invalidate()
+			expect.fulfill()
+		}.tieToLifetimeOf(self)
 
-			defaults[key] = true
-		}
-
-		sleep(1)
-
-		// expect should not overfulfill
-		defaults[key] = false
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveWithLifetimeTieManualBreak() {
-		let key = Defaults.Key<Bool>("lifetimeTieManualBreak", default: false)
-		let expect = expectation(description: "Observation closure being called thrice")
-		// Once from option .initial, twice from inside autoreleasepool block
-		expect.expectedFulfillmentCount = 3
-
-		// This *must* be autoreleasing… (for testing purposes)
-		let object = "hello \(className)" as NSString
-		
-		autoreleasepool {
-			let observation = defaults.observe(key) { change in
-				expect.fulfill()
-			}.tieToLifetimeOf(object)
-
-			defaults[key] = true
-
-			observation.removeLifetimeTie()
-
-			defaults[key] = false
-		}
-
-		sleep(1)
-
-		// expect should not overfulfill
 		defaults[key] = true
 
 		waitForExpectations(timeout: 10)

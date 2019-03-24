@@ -1,7 +1,7 @@
 import Foundation
 
 /// TODO: Nest this inside `Defaults` if Swift ever supported nested protocols.
-public protocol DefaultsObservation {
+public protocol DefaultsObservation: NSObjectProtocol {
 	func invalidate()
 
 	@discardableResult
