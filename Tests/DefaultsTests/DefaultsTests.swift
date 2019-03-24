@@ -264,7 +264,9 @@ final class DefaultsTests: XCTestCase {
 		expect.expectedFulfillmentCount = 2
 
 		autoreleasepool {
-			let object = NSObject()
+			// This *must* be autoreleasing… (for testing purposes)
+			let object = "hello \(className)" as NSString
+			
 			defaults.observe(key) { change in
 				expect.fulfill()
 			}.tieToLifetimeOf(object)
@@ -286,7 +288,9 @@ final class DefaultsTests: XCTestCase {
 		// Once from option .initial, twice from inside autoreleasepool block
 		expect.expectedFulfillmentCount = 3
 
-		let object = NSObject()
+		// This *must* be autoreleasing… (for testing purposes)
+		let object = "hello \(className)" as NSString
+		
 		autoreleasepool {
 			let observation = defaults.observe(key) { change in
 				expect.fulfill()
