@@ -3,6 +3,10 @@ import Foundation
 /// TODO: Nest this inside `Defaults` if Swift ever supported nested protocols.
 public protocol DefaultsObservation {
 	func invalidate()
+
+	@discardableResult
+	func tieToLifetimeOf(_ weaklyHeldObject: AnyObject) -> DefaultsObservation
+	func removeLifetimeTie()
 }
 
 extension Defaults {
@@ -95,6 +99,30 @@ extension Defaults {
 		public func invalidate() {
 			object?.removeObserver(self, forKeyPath: key, context: nil)
 			object = nil
+			lifetimeTie = nil
+		}
+
+		private struct LifetimeTie {
+			weak var object: AnyObject?
+		}
+
+		private var lifetimeTie: LifetimeTie?
+		private static var lifetimeTieAssociationKey = AssociatedObject<UserDefaultsKeyObservation>()
+
+		public func tieToLifetimeOf(_ weaklyHeldObject: AnyObject) -> DefaultsObservation {
+			UserDefaultsKeyObservation.lifetimeTieAssociationKey[weaklyHeldObject] = self
+			lifetimeTie = LifetimeTie(object: weaklyHeldObject)
+			return self
+		}
+
+		public func removeLifetimeTie() {
+			guard let lifetimeTie = lifetimeTie else {
+				return
+			}
+			if let object = lifetimeTie.object {
+				UserDefaultsKeyObservation.lifetimeTieAssociationKey[object] = nil
+			}
+			self.lifetimeTie = nil
 		}
 
 		// swiftlint:disable:next block_based_kvo
@@ -104,12 +132,22 @@ extension Defaults {
 			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
 			context: UnsafeMutableRawPointer?
 		) {
+			guard let selfObject = self.object else {
+				invalidate()
+				return
+			}
 			guard
-				let selfObject = self.object,
 				selfObject == object as? NSObject,
 				let change = change
 			else {
 				return
+			}
+
+			if let lifetimeTie = lifetimeTie {
+				guard lifetimeTie.object != nil else {
+					invalidate()
+					return
+				}
 			}
 
 			callback(BaseChange(change: change))

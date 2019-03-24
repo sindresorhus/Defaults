@@ -256,4 +256,52 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key2], nil)
 		XCTAssertEqual(Defaults[key3], newString3)
 	}
+
+	func testObserveWithLifetimeTie() {
+		let key = Defaults.Key<Bool>("lifetimeTie", default: false)
+		let expect = expectation(description: "Observation closure being called twice")
+		// Once from option .initial, once from inside async block
+		expect.expectedFulfillmentCount = 2
+
+		DispatchQueue.global().async {
+			let object = NSObject()
+			defaults.observe(key) { change in
+				expect.fulfill()
+			}.tieToLifetimeOf(object)
+
+			defaults[key] = true
+		}
+
+		sleep(1)
+
+		// expect should not overfulfill
+		defaults[key] = false
+
+		waitForExpectations(timeout: 10)
+	}
+
+	func testObserveWithLifetimeTieManualBreak() {
+		let key = Defaults.Key<Bool>("lifetimeTieManualBreak", default: false)
+		let expect = expectation(description: "Observation closure being called twice")
+		// Once from option .initial, once from inside async block
+		expect.expectedFulfillmentCount = 2
+
+		let object = NSObject()
+		DispatchQueue.global().async {
+			let observation = defaults.observe(key) { change in
+				expect.fulfill()
+			}.tieToLifetimeOf(object)
+
+			defaults[key] = true
+
+			observation.removeLifetimeTie()
+		}
+
+		sleep(1)
+
+		// expect should not overfulfill
+		defaults[key] = false
+
+		waitForExpectations(timeout: 10)
+	}
 }
