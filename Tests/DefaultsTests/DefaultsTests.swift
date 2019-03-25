@@ -271,4 +271,24 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
+
+	func testObserveWithLifetimeTieManualBreak() {
+		let key = Defaults.Key<Bool>("lifetimeTieManualBreak", default: false)
+		let expect = expectation(description: "Observation closure being called")
+
+		weak var observation: DefaultsObservation? =
+			defaults.observe(key, options: []) { _ in }.tieToLifetimeOf(self)
+		observation!.removeLifetimeTie()
+
+		for _ in 0..<10 {
+			if observation == nil {
+				expect.fulfill()
+				break
+			} else {
+				sleep(1)
+			}
+		}
+
+		waitForExpectations(timeout: 10)
+	}
 }
