@@ -1,11 +1,11 @@
 import Foundation
 
 /// TODO: Nest this inside `Defaults` if Swift ever supported nested protocols.
-public protocol DefaultsObservation: NSObjectProtocol {
+public protocol DefaultsObservation: AnyObject {
 	func invalidate()
 
 	@discardableResult
-	func tieToLifetimeOf(_ weaklyHeldObject: AnyObject) -> DefaultsObservation
+	func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self
 	func removeLifetimeTie()
 }
 
@@ -109,7 +109,7 @@ extension Defaults {
 		private var lifetimeTie: LifetimeTie?
 		private static var lifetimeTieAssociationKey = AssociatedObject<UserDefaultsKeyObservation>()
 
-		public func tieToLifetimeOf(_ weaklyHeldObject: AnyObject) -> DefaultsObservation {
+		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
 			UserDefaultsKeyObservation.lifetimeTieAssociationKey[weaklyHeldObject] = self
 			lifetimeTie = LifetimeTie(object: weaklyHeldObject)
 			return self
