@@ -4,8 +4,22 @@ import Foundation
 public protocol DefaultsObservation: AnyObject {
 	func invalidate()
 
+	/**
+	Keep this observation alive for as long as, and no longer than, another
+	object exists.
+
+	```
+	defaults.observe(.xyz) { [unowned self] change in
+		self.xyz = change.newValue
+	}.tieToLifetime(of: self)
+	```
+	*/
 	@discardableResult
 	func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self
+	/**
+	Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
+	- Postcondition: As if `tieToLifetime(of:)` was never called on self.
+	*/
 	func removeLifetimeTie()
 }
 
