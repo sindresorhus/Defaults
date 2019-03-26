@@ -9,6 +9,21 @@ public protocol DefaultsObservation: AnyObject {
 	func removeLifetimeTie()
 }
 
+private struct DefaultsObservationAssociationKeys {
+	static let lifetimeAssociation = AssociatedObject<LifetimeAssociation>()
+}
+
+extension DefaultsObservation {
+	public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+		DefaultsObservationAssociationKeys.lifetimeAssociation[self] = associate(self, with: weaklyHeldObject)
+		return self
+	}
+	
+	public func removeLifetimeTie() {
+		DefaultsObservationAssociationKeys.lifetimeAssociation[self] = nil
+	}
+}
+
 extension Defaults {
 	private static func deserialize<T: Decodable>(_ value: Any?, to type: T.Type) -> T? {
 		guard
@@ -99,30 +114,7 @@ extension Defaults {
 		public func invalidate() {
 			object?.removeObserver(self, forKeyPath: key, context: nil)
 			object = nil
-			lifetimeTie = nil
-		}
-
-		private struct LifetimeTie {
-			weak var object: AnyObject?
-		}
-
-		private var lifetimeTie: LifetimeTie?
-		private static var lifetimeTieAssociationKey = AssociatedObject<UserDefaultsKeyObservation>()
-
-		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
-			UserDefaultsKeyObservation.lifetimeTieAssociationKey[weaklyHeldObject] = self
-			lifetimeTie = LifetimeTie(object: weaklyHeldObject)
-			return self
-		}
-
-		public func removeLifetimeTie() {
-			guard let lifetimeTie = lifetimeTie else {
-				return
-			}
-			if let object = lifetimeTie.object {
-				UserDefaultsKeyObservation.lifetimeTieAssociationKey[object] = nil
-			}
-			self.lifetimeTie = nil
+			DefaultsObservationAssociationKeys.lifetimeAssociation[self] = nil
 		}
 
 		// swiftlint:disable:next block_based_kvo
@@ -143,8 +135,8 @@ extension Defaults {
 				return
 			}
 
-			if let lifetimeTie = lifetimeTie {
-				guard lifetimeTie.object != nil else {
+			if let lifetimeAssociation = DefaultsObservationAssociationKeys.lifetimeAssociation[self] {
+				guard lifetimeAssociation.isValid else {
 					invalidate()
 					return
 				}

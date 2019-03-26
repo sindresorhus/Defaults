@@ -27,3 +27,40 @@ final class AssociatedObject<T: Any> {
 		}
 	}
 }
+
+class LifetimeAssociation {
+	private(set) weak var object: AnyObject?
+	private(set) weak var owner: AnyObject?
+
+	fileprivate init(object weaklyHeldObject: AnyObject, owner weaklyHeldOwner: AnyObject) {
+		self.object = weaklyHeldObject
+		self.owner = weaklyHeldOwner
+	}
+
+	/// Whether the owner is still alive and thus keeping its associated object alive.
+	var isValid: Bool {
+		return owner != nil
+	}
+
+	deinit {
+		guard
+			let owner = owner,
+			var associatedObjects = LifetimeAssociationKeys.associatedObjects[owner],
+			let objectIndex = associatedObjects.firstIndex(where: { $0 === object })
+		else {
+			return
+		}
+		associatedObjects.remove(at: objectIndex)
+		LifetimeAssociationKeys.associatedObjects[owner] = associatedObjects
+	}
+}
+
+private struct LifetimeAssociationKeys {
+	static let associatedObjects = AssociatedObject<[AnyObject]>()
+}
+
+func associate(_ object: AnyObject, with owner: AnyObject) -> LifetimeAssociation {
+	let associatedObjects = LifetimeAssociationKeys.associatedObjects[owner] ?? []
+	LifetimeAssociationKeys.associatedObjects[owner] = associatedObjects + [object]
+	return LifetimeAssociation(object: object, owner: owner)
+}
