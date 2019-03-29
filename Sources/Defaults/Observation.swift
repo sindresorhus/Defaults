@@ -18,7 +18,9 @@ public protocol DefaultsObservation: AnyObject {
 	func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self
 	/**
 	Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
-	- Postcondition: As if `tieToLifetime(of:)` was never called on self.
+	- Postcondition: The effects of any call to `tieToLifetime(of:)` are reversed.
+	- Note: If the tied-to object has already died, then self is considered to be
+			invalidated, and this method has no logical effect.
 	*/
 	func removeLifetimeTie()
 }
