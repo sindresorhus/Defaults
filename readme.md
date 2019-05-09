@@ -173,6 +173,8 @@ let observer = defaults.observe(.isUnicornMode) { change in
 defaults[.isUnicornMode] = true
 ```
 
+In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
+
 ### Default values are registered with UserDefaults
 
 When you create a `Defaults.Key`, it automatically registers the `default` value with normal UserDefaults. This means you can make use of the default value in, for example, bindings in Interface Builder.
