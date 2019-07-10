@@ -19,7 +19,8 @@ let package = Package(
 	],
 	targets: [
 		.target(
-			name: "Defaults"
+			name: "Defaults",
+            path: "Sources"
 		),
 		.testTarget(
 			name: "DefaultsTests",
