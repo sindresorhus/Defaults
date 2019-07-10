@@ -20,7 +20,7 @@ let package = Package(
 	targets: [
 		.target(
 			name: "Defaults",
-            path: "Sources"
+			path: "Sources"
 		),
 		.testTarget(
 			name: "DefaultsTests",
