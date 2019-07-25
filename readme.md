@@ -27,7 +27,7 @@ This package is used in production by the [Lungo](https://sindresorhus.com/lungo
 #### SwiftPM
 
 ```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "2.0.1")
+.package(url: "https://github.com/sindresorhus/Defaults", from: "2.0.2")
 ```
 
 #### Carthage
