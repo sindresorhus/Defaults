@@ -17,7 +17,7 @@ extension Defaults.Keys {
 	static let key = Key<Bool>("key", default: false)
 	static let url = Key<URL>("url", default: fixtureURL)
 	static let `enum` = Key<FixtureEnum>("enum", default: .oneHour)
-	static let data = Key<Data>("data", default: Data(bytes: []))
+	static let data = Key<Data>("data", default: Data([]))
 	static let date = Key<Date>("date", default: fixtureDate)
 }
 
@@ -88,9 +88,9 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testDataType() {
-		XCTAssertEqual(defaults[.data], Data(bytes: []))
+		XCTAssertEqual(defaults[.data], Data([]))
 
-		let newData = Data(bytes: [0xFF])
+		let newData = Data([0xFF])
 		defaults[.data] = newData
 		XCTAssertEqual(defaults[.data], newData)
 	}

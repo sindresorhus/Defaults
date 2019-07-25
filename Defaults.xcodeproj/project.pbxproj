@@ -160,9 +160,7 @@
 		8933C7811EB5B7E0000D00A4 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				8933C7841EB5B820000D00A4 /* Defaults.swift */,
-				E3EB3E34216507AE0033B089 /* Observation.swift */,
-				E3EB3E32216505920033B089 /* util.swift */,
+				E30E93D822E9425E00530C8F /* Defaults */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -190,6 +188,16 @@
 				AD2FAA281CD0B6E100659CF4 /* DefaultsTests.plist */,
 			);
 			name = Tests;
+			sourceTree = "<group>";
+		};
+		E30E93D822E9425E00530C8F /* Defaults */ = {
+			isa = PBXGroup;
+			children = (
+				8933C7841EB5B820000D00A4 /* Defaults.swift */,
+				E3EB3E34216507AE0033B089 /* Observation.swift */,
+				E3EB3E32216505920033B089 /* util.swift */,
+			);
+			path = Defaults;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
