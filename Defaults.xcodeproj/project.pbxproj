@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		52D6D9871BEFF229002C0205 /* Defaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* Defaults.framework */; };
+		6614F6E322FC6E1C00B0C9CE /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 6614F6E222FC6E1C00B0C9CE /* readme.md */; };
 		8933C7851EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
 		8933C7861EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
 		8933C7871EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
@@ -57,6 +58,7 @@
 		52D6D9E21BEFFF6E002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9F01BEFFFBE002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6DA0F1BF000BD002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6614F6E222FC6E1C00B0C9CE /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 		8933C7841EB5B820000D00A4 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Defaults.swift; sourceTree = "<group>"; usesTabs = 1; };
 		8933C7891EB5B82A000D00A4 /* DefaultsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DefaultsTests.swift; sourceTree = "<group>"; usesTabs = 1; };
 		AD2FAA261CD0B6D800659CF4 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 		52D6D9721BEFF229002C0205 = {
 			isa = PBXGroup;
 			children = (
+				6614F6E222FC6E1C00B0C9CE /* readme.md */,
 				8933C7811EB5B7E0000D00A4 /* Sources */,
 				8933C7831EB5B7EB000D00A4 /* Tests */,
 				52D6D99C1BEFF38C002C0205 /* Configs */,
@@ -457,6 +460,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6614F6E322FC6E1C00B0C9CE /* readme.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -696,6 +700,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
@@ -724,6 +729,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
 				SKIP_INSTALL = YES;
@@ -791,6 +797,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-watchOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = watchos;
@@ -817,6 +824,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-watchOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = watchos;
@@ -845,6 +853,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-tvOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = appletvos;
@@ -871,6 +880,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-tvOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = appletvos;
@@ -902,6 +912,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-macOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = macosx;
@@ -929,6 +940,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-macOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = macosx;

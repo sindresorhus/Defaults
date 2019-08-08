@@ -65,6 +65,18 @@ public final class Defaults {
 			suite.removeObject(forKey: key)
 		}
 	}
+	
+	public func clear<T: Codable>(key: Defaults.Key<T>, suite: UserDefaults = .standard) {
+		for key in suite.dictionaryRepresentation().keys.filter({ $0 == key.name }) {
+			suite.removeObject(forKey: key)
+		}
+	}
+	
+	public func clear<T: Codable>(key: Defaults.OptionalKey<T>, suite: UserDefaults = .standard) {
+		for key in suite.dictionaryRepresentation().keys.filter({ $0 == key.name }) {
+			suite.removeObject(forKey: key)
+		}
+	}
 }
 
 // Has to be `defaults` lowercase until Swift supports static subscripts…

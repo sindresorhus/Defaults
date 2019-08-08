@@ -27,7 +27,7 @@ This package is used in production by the [Lungo](https://sindresorhus.com/lungo
 #### SwiftPM
 
 ```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "2.0.2")
+.package(url: "https://github.com/sindresorhus/Defaults", from: "2.1")
 ```
 
 #### Carthage
@@ -170,6 +170,23 @@ defaults[.isUnicornMode] = true
 ```
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
+
+### Reset keys to default
+```swift
+extension Defaults.Keys {
+	static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+}
+
+defaults[.isUnicornMode] = true
+//=> true
+
+defaults.clear(key: defaults[.isUnicornMode])
+
+defaults[.isUnicornMode]
+//=> false
+```
+
+Setting back to the default values can be easily done as well. The same is also valid for optional keys - they will be reset to `nil`.
 
 ### Default values are registered with UserDefaults
 

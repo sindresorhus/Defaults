@@ -191,4 +191,30 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
+	
+	func testClearKey() {
+		let defaultString1 = "foo1"
+		let defaultString2 = "foo2"
+		let newString1 = "bar1"
+		let newString2 = "bar2"
+		let key1 = Defaults.Key<String>("key1", default: defaultString1)
+		let key2 = Defaults.Key<String>("key2", default: defaultString2)
+		defaults[key1] = newString1
+		defaults[key2] = newString2
+		defaults.clear(key: key1)
+		XCTAssertEqual(defaults[key1], defaultString1)
+		XCTAssertEqual(defaults[key2], newString2)
+	}
+	
+	func testClearOptionalKey() {
+		let newString1 = "bar1"
+		let newString2 = "bar2"
+		let key1 = Defaults.OptionalKey<String>("optionalKey1")
+		let key2 = Defaults.OptionalKey<String>("optionalKey2")
+		defaults[key1] = newString1
+		defaults[key2] = newString2
+		defaults.clear(key: key1)
+		XCTAssertEqual(defaults[key1], nil)
+		XCTAssertEqual(defaults[key2], newString2)
+	}
 }
