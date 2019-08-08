@@ -66,15 +66,35 @@ public final class Defaults {
 		}
 	}
 	
-	public func clear<T: Codable>(key: Defaults.Key<T>, suite: UserDefaults = .standard) {
-		for key in suite.dictionaryRepresentation().keys.filter({ $0 == key.name }) {
-			suite.removeObject(forKey: key)
+	/// Reset aribitrary number of keys back to its default value
+	/// - Parameter keys: keys to be reset
+	/// - Parameter suite: defaults suites
+	public func reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard) {
+		reset(keys, suite: suite)
+	}
+	
+	/// Reset array of keys back to its default values
+	/// - Parameter keys: keys to be reset
+	/// - Parameter suite: default suites
+	public func reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard) {
+		for key in keys {
+			key.suite[key] = key.defaultValue
 		}
 	}
 	
-	public func clear<T: Codable>(key: Defaults.OptionalKey<T>, suite: UserDefaults = .standard) {
-		for key in suite.dictionaryRepresentation().keys.filter({ $0 == key.name }) {
-			suite.removeObject(forKey: key)
+	/// Reset aribitrary number of optional keys back to `nil`
+	/// - Parameter keys: keys to be reset
+	/// - Parameter suite: default suites
+	public func reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard) {
+		reset(keys, suite: suite)
+	}
+	
+	/// Reset array of keys back to its default values
+	/// - Parameter keys: keys to be reset
+	/// - Parameter suite: default suites
+	public func reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard) {
+		for key in keys {
+			key.suite[key] = nil
 		}
 	}
 }
