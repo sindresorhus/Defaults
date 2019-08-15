@@ -171,7 +171,7 @@ defaults[.isUnicornMode] = true
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
 
-### Reset keys to their default value
+### Reset keys to their default values
 
 ```swift
 extension Defaults.Keys {
