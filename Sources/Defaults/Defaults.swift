@@ -66,32 +66,32 @@ public final class Defaults {
 		}
 	}
 	
-	/// Reset aribitrary number of keys back to its default value
-	/// - Parameter keys: keys to be reset
-	/// - Parameter suite: defaults suites
+	/// Reset keys back to their default values.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
 	public func reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
-	/// Reset array of keys back to its default values
-	/// - Parameter keys: keys to be reset
-	/// - Parameter suite: default suites
+	/// Reset an array of keys back to their default values.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
 	public func reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = key.defaultValue
 		}
 	}
 	
-	/// Reset aribitrary number of optional keys back to `nil`
-	/// - Parameter keys: keys to be reset
-	/// - Parameter suite: default suites
+	/// Reset optional keys back to `nil`.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
 	public func reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
-	/// Reset array of keys back to its default values
-	/// - Parameter keys: keys to be reset
-	/// - Parameter suite: default suites
+	/// Reset an array of optional keys back to `nil`.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
 	public func reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = nil
