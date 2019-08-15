@@ -86,6 +86,8 @@ if let name = defaults[.name] {
 }
 ```
 
+The default value is then `nil`.
+
 ### Enum example
 
 ```swift
