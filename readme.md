@@ -173,6 +173,24 @@ defaults[.isUnicornMode] = true
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
 
+### Reset keys to their default values
+
+```swift
+extension Defaults.Keys {
+	static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+}
+
+defaults[.isUnicornMode] = true
+//=> true
+
+defaults.reset(.isUnicornMode)
+
+defaults[.isUnicornMode]
+//=> false
+```
+
+This works for `OptionalKey` too, which will be reset back to `nil`.
+
 ### Default values are registered with UserDefaults
 
 When you create a `Defaults.Key`, it automatically registers the `default` value with normal UserDefaults. This means you can make use of the default value in, for example, bindings in Interface Builder.

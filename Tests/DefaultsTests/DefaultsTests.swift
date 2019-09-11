@@ -191,4 +191,65 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
+	
+	func testResetKey() {
+		let defaultString1 = "foo1"
+		let defaultString2 = "foo2"
+		let newString1 = "bar1"
+		let newString2 = "bar2"
+		let key1 = Defaults.Key<String>("key1", default: defaultString1)
+		let key2 = Defaults.Key<String>("key2", default: defaultString2)
+		defaults[key1] = newString1
+		defaults[key2] = newString2
+		defaults.reset(key1)
+		XCTAssertEqual(defaults[key1], defaultString1)
+		XCTAssertEqual(defaults[key2], newString2)
+	}
+	
+	func testResetKeyArray() {
+		let defaultString1 = "foo1"
+		let defaultString2 = "foo2"
+		let defaultString3 = "foo3"
+		let newString1 = "bar1"
+		let newString2 = "bar2"
+		let newString3 = "bar3"
+		let key1 = Defaults.Key<String>("akey1", default: defaultString1)
+		let key2 = Defaults.Key<String>("akey2", default: defaultString2)
+		let key3 = Defaults.Key<String>("akey3", default: defaultString3)
+		defaults[key1] = newString1
+		defaults[key2] = newString2
+		defaults[key3] = newString3
+		defaults.reset(key1, key2)
+		XCTAssertEqual(defaults[key1], defaultString1)
+		XCTAssertEqual(defaults[key2], defaultString2)
+		XCTAssertEqual(defaults[key3], newString3)
+	}
+	
+	func testResetOptionalKey() {
+		let newString1 = "bar1"
+		let newString2 = "bar2"
+		let key1 = Defaults.OptionalKey<String>("optionalKey1")
+		let key2 = Defaults.OptionalKey<String>("optionalKey2")
+		defaults[key1] = newString1
+		defaults[key2] = newString2
+		defaults.reset(key1)
+		XCTAssertEqual(defaults[key1], nil)
+		XCTAssertEqual(defaults[key2], newString2)
+	}
+	
+	func testResetOptionalKeyArray() {
+		let newString1 = "bar1"
+		let newString2 = "bar2"
+		let newString3 = "bar3"
+		let key1 = Defaults.OptionalKey<String>("aoptionalKey1")
+		let key2 = Defaults.OptionalKey<String>("aoptionalKey2")
+		let key3 = Defaults.OptionalKey<String>("aoptionalKey3")
+		defaults[key1] = newString1
+		defaults[key2] = newString2
+		defaults[key3] = newString3
+		defaults.reset(key1, key2)
+		XCTAssertEqual(defaults[key1], nil)
+		XCTAssertEqual(defaults[key2], nil)
+		XCTAssertEqual(defaults[key3], newString3)
+	}
 }

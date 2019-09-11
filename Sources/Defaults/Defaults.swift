@@ -65,6 +65,38 @@ public final class Defaults {
 			suite.removeObject(forKey: key)
 		}
 	}
+	
+	/// Reset keys back to their default values.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
+	public func reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard) {
+		reset(keys, suite: suite)
+	}
+	
+	/// Reset an array of keys back to their default values.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
+	public func reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard) {
+		for key in keys {
+			key.suite[key] = key.defaultValue
+		}
+	}
+	
+	/// Reset optional keys back to `nil`.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
+	public func reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard) {
+		reset(keys, suite: suite)
+	}
+	
+	/// Reset an array of optional keys back to `nil`.
+	/// - Parameter keys: Keys to reset.
+	/// - Parameter suite: `UserDefaults` suite.
+	public func reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard) {
+		for key in keys {
+			key.suite[key] = nil
+		}
+	}
 }
 
 // Has to be `defaults` lowercase until Swift supports static subscripts…
