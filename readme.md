@@ -274,15 +274,15 @@ Observe changes to a key or an optional key.
 
 By default, it will also trigger an initial event on creation. This can be useful for setting default values on controls. You can override this behavior with the `options` argument.
 
-#### `Defaults.clear`
+#### `Defaults.removeAll`
 
 ```swift
-Defaults.clear(suite: UserDefaults = .standard)
+Defaults.removeAll(suite: UserDefaults = .standard)
 ```
 
 Type: `func`
 
-Clear the user defaults.
+Remove all entries from the `UserDefaults` suite.
 
 
 ## FAQ

@@ -161,7 +161,7 @@ public final class Defaults {
 	/**
 	Remove all entries from the `UserDefaults` suite.
 	*/
-	public static func clear(suite: UserDefaults = .standard) {
+	public static func removeAll(suite: UserDefaults = .standard) {
 		for key in suite.dictionaryRepresentation().keys {
 			suite.removeObject(forKey: key)
 		}

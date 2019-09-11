@@ -24,12 +24,12 @@ extension Defaults.Keys {
 final class DefaultsTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
-		Defaults.clear()
+		Defaults.removeAll()
 	}
 
 	override func tearDown() {
 		super.setUp()
-		Defaults.clear()
+		Defaults.removeAll()
 	}
 
 	func testKey() {
@@ -103,12 +103,16 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[.date], newDate)
 	}
 
-	func testClear() {
-		let key = Defaults.Key<Bool>("clear", default: false)
+	func testRemoveAll() {
+		let key = Defaults.Key<Bool>("removeAll", default: false)
+		let key2 = Defaults.Key<Bool>("removeAll2", default: false)
 		Defaults[key] = true
+		Defaults[key2] = true
 		XCTAssertTrue(Defaults[key])
-		Defaults.clear()
+		XCTAssertTrue(Defaults[key2])
+		Defaults.removeAll()
 		XCTAssertFalse(Defaults[key])
+		XCTAssertFalse(Defaults[key2])
 	}
 
 	func testCustomSuite() {
@@ -119,7 +123,7 @@ final class DefaultsTests: XCTestCase {
 		Defaults[key] = true
 		XCTAssertTrue(customSuite[key])
 		XCTAssertTrue(Defaults[key])
-		Defaults.clear(suite: customSuite)
+		Defaults.removeAll(suite: customSuite)
 	}
 
 	func testObserveKey() {
