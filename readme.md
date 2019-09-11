@@ -27,7 +27,7 @@ This package is used in production by apps like [Gifski](https://github.com/sind
 #### SwiftPM
 
 ```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "2.0.2")
+.package(url: "https://github.com/sindresorhus/Defaults", from: "3.0.0")
 ```
 
 #### Carthage
