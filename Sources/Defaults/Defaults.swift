@@ -14,6 +14,7 @@ public final class Defaults {
 		public let defaultValue: T
 		public let suite: UserDefaults
 
+		/// Create a defaults key.
 		public init(_ key: String, default defaultValue: T, suite: UserDefaults = .standard) {
 			self.name = key
 			self.defaultValue = defaultValue
@@ -34,6 +35,7 @@ public final class Defaults {
 		public let name: String
 		public let suite: UserDefaults
 
+		/// Create an optional defaults key.
 		public init(_ key: String, suite: UserDefaults = .standard) {
 			self.name = key
 			self.suite = suite
@@ -42,65 +44,129 @@ public final class Defaults {
 
 	fileprivate init() {}
 
-	public subscript<T: Codable>(key: Defaults.Key<T>) -> T {
-		get {
-			return key.suite[key]
-		}
+	/// Access a defaults value using a `Defaults.Key`.
+	public static subscript<T: Codable>(key: Defaults.Key<T>) -> T {
+		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
 		}
 	}
 
-	public subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
-		get {
-			return key.suite[key]
-		}
+	/// Access a defaults value using a `Defaults.OptionalKey`.
+	public static subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
+		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
-		}
-	}
-
-	public func clear(suite: UserDefaults = .standard) {
-		for key in suite.dictionaryRepresentation().keys {
-			suite.removeObject(forKey: key)
 		}
 	}
 	
-	/// Reset keys back to their default values.
-	/// - Parameter keys: Keys to reset.
-	/// - Parameter suite: `UserDefaults` suite.
-	public func reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard) {
+	/**
+	Reset the given keys back to their default values.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+
+	```
+	extension Defaults.Keys {
+		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+	}
+
+	Defaults[.isUnicornMode] = true
+	//=> true
+
+	Defaults.reset(.isUnicornMode)
+
+	Defaults[.isUnicornMode]
+	//=> false
+	```
+	*/
+	public static func reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
-	/// Reset an array of keys back to their default values.
-	/// - Parameter keys: Keys to reset.
-	/// - Parameter suite: `UserDefaults` suite.
-	public func reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard) {
+	/**
+	Reset the given array of keys back to their default values.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+
+	```
+	extension Defaults.Keys {
+		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+	}
+
+	Defaults[.isUnicornMode] = true
+	//=> true
+
+	Defaults.reset(.isUnicornMode)
+
+	Defaults[.isUnicornMode]
+	//=> false
+	```
+	*/
+	public static func reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = key.defaultValue
 		}
 	}
 	
-	/// Reset optional keys back to `nil`.
-	/// - Parameter keys: Keys to reset.
-	/// - Parameter suite: `UserDefaults` suite.
-	public func reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard) {
+	/**
+	Reset the given optional keys back to `nil`.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+
+	```
+	extension Defaults.Keys {
+		static let unicorn = OptionalKey<String>("unicorn")
+	}
+
+	Defaults[.unicorn] = "🦄"
+
+	Defaults.reset(.unicorn)
+
+	Defaults[.unicorn]
+	//=> nil
+	```
+	*/
+	public static func reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
-	/// Reset an array of optional keys back to `nil`.
-	/// - Parameter keys: Keys to reset.
-	/// - Parameter suite: `UserDefaults` suite.
-	public func reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard) {
+	/**
+	Reset the given array of optional keys back to `nil`.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+
+	```
+	extension Defaults.Keys {
+		static let unicorn = OptionalKey<String>("unicorn")
+	}
+
+	Defaults[.unicorn] = "🦄"
+
+	Defaults.reset(.unicorn)
+
+	Defaults[.unicorn]
+	//=> nil
+	```
+	*/
+	public static func reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = nil
 		}
 	}
-}
 
-// Has to be `defaults` lowercase until Swift supports static subscripts…
-public let defaults = Defaults()
+	/**
+	Remove all entries from the `UserDefaults` suite.
+	*/
+	public static func clear(suite: UserDefaults = .standard) {
+		for key in suite.dictionaryRepresentation().keys {
+			suite.removeObject(forKey: key)
+		}
+	}
+}
 
 extension UserDefaults {
 	private func _get<T: Codable>(_ key: String) -> T? {
@@ -147,18 +213,14 @@ extension UserDefaults {
 	}
 
 	public subscript<T: Codable>(key: Defaults.Key<T>) -> T {
-		get {
-			return _get(key.name) ?? key.defaultValue
-		}
+		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)
 		}
 	}
 
 	public subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
-		get {
-			return _get(key.name)
-		}
+		get { _get(key.name) }
 		set {
 			guard let value = newValue else {
 				set(nil, forKey: key.name)

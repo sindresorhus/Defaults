@@ -2,7 +2,7 @@
 
 > Swifty and modern [UserDefaults](https://developer.apple.com/documentation/foundation/userdefaults)
 
-This package is used in production by the [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter) app.
+This package is used in production by the [Gifski](https://github.com/sindresorhus/Gifski), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter) app.
 
 
 ## Highlights
@@ -58,19 +58,19 @@ extension Defaults.Keys {
 }
 ```
 
-You can then access it as a subscript on the `defaults` global (note lowercase):
+You can then access it as a subscript on the `Defaults` global:
 
 ```swift
-defaults[.quality]
+Defaults[.quality]
 //=> 0.8
 
-defaults[.quality] = 0.5
+Defaults[.quality] = 0.5
 //=> 0.5
 
-defaults[.quality] += 0.1
+Defaults[.quality] += 0.1
 //=> 0.6
 
-defaults[.quality] = "🦄"
+Defaults[.quality] = "🦄"
 //=> [Cannot assign value of type 'String' to type 'Double']
 ```
 
@@ -81,7 +81,7 @@ extension Defaults.Keys {
 	static let name = OptionalKey<Double>("name")
 }
 
-if let name = defaults[.name] {
+if let name = Defaults[.name] {
 	print(name)
 }
 ```
@@ -101,7 +101,7 @@ extension Defaults.Keys {
 	static let defaultDuration = Key<DurationKeys>("defaultDuration", default: .oneHour)
 }
 
-defaults[.defaultDuration].rawValue
+Defaults[.defaultDuration].rawValue
 //=> "1 Hour"
 ```
 
@@ -127,7 +127,7 @@ extension Defaults.Keys {
 	static let isUnicorn = Key<Bool>("isUnicorn", default: true, suite: extensionDefaults)
 }
 
-defaults[.isUnicorn]
+Defaults[.isUnicorn]
 //=> true
 
 // Or
@@ -143,7 +143,7 @@ You are not required to attach keys to `Defaults.Keys`.
 ```swift
 let isUnicorn = Defaults.Key<Bool>("isUnicorn", default: true)
 
-defaults[isUnicorn]
+Defaults[isUnicorn]
 //=> true
 ```
 
@@ -154,7 +154,7 @@ extension Defaults.Keys {
 	static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 }
 
-let observer = defaults.observe(.isUnicornMode) { change in
+let observer = Defaults.observe(.isUnicornMode) { change in
 	// Initial event
 	print(change.oldValue)
 	//=> false
@@ -168,7 +168,7 @@ let observer = defaults.observe(.isUnicornMode) { change in
 	//=> true
 }
 
-defaults[.isUnicornMode] = true
+Defaults[.isUnicornMode] = true
 ```
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
@@ -180,12 +180,12 @@ extension Defaults.Keys {
 	static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 }
 
-defaults[.isUnicornMode] = true
+Defaults[.isUnicornMode] = true
 //=> true
 
-defaults.reset(.isUnicornMode)
+Defaults.reset(.isUnicornMode)
 
-defaults[.isUnicornMode]
+Defaults[.isUnicornMode]
 //=> false
 ```
 
@@ -207,7 +207,7 @@ print(UserDefaults.standard.bool(forKey: isUnicornMode.name))
 
 ## API
 
-### `let defaults = Defaults()`
+### `Defaults`
 
 #### `Defaults.Keys`
 
@@ -225,7 +225,7 @@ Type: `class`
 
 Create a key with a default value.
 
-The default value is written to the actual `UserDefaults` and can be used elsewhere. For example, with Interface Builder binding.
+The default value is written to the actual `UserDefaults` and can be used elsewhere. For example, with a Interface Builder binding.
 
 #### `Defaults.OptionalKey` *(alias `Defaults.Keys.OptionalKey`)*
 
@@ -237,20 +237,23 @@ Type: `class`
 
 Create a key with an optional value.
 
-#### `Defaults#clear`
+#### `Defaults.reset`
 
 ```swift
-clear(suite: UserDefaults = .standard)
+Defaults.reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard)
+Defaults.reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard)
+Defaults.reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard)
+Defaults.reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard)
 ```
 
 Type: `func`
 
-Clear the user defaults.
+Reset the given keys back to their default values.
 
-#### `Defaults#observe`
+#### `Defaults.observe`
 
 ```swift
-observe<T: Codable>(
+Defaults.observe<T: Codable>(
 	_ key: Defaults.Key<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (KeyChange<T>) -> Void
@@ -258,7 +261,7 @@ observe<T: Codable>(
 ```
 
 ```swift
-observe<T: Codable>(
+Defaults.observe<T: Codable>(
 	_ key: Defaults.OptionalKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (OptionalKeyChange<T>) -> Void
@@ -270,6 +273,16 @@ Type: `func`
 Observe changes to a key or an optional key.
 
 By default, it will also trigger an initial event on creation. This can be useful for setting default values on controls. You can override this behavior with the `options` argument.
+
+#### `Defaults.clear`
+
+```swift
+Defaults.clear(suite: UserDefaults = .standard)
+```
+
+Type: `func`
+
+Clear the user defaults.
 
 
 ## FAQ

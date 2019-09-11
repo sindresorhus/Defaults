@@ -24,30 +24,30 @@ extension Defaults.Keys {
 final class DefaultsTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
-		defaults.clear()
+		Defaults.clear()
 	}
 
 	override func tearDown() {
 		super.setUp()
-		defaults.clear()
+		Defaults.clear()
 	}
 
 	func testKey() {
 		let key = Defaults.Key<Bool>("independentKey", default: false)
-		XCTAssertFalse(defaults[key])
-		defaults[key] = true
-		XCTAssertTrue(defaults[key])
+		XCTAssertFalse(Defaults[key])
+		Defaults[key] = true
+		XCTAssertTrue(Defaults[key])
 	}
 
 	func testOptionalKey() {
 		let key = Defaults.OptionalKey<Bool>("independentOptionalKey")
-		XCTAssertNil(defaults[key])
-		defaults[key] = true
-		XCTAssertTrue(defaults[key]!)
-		defaults[key] = nil
-		XCTAssertNil(defaults[key])
-		defaults[key] = false
-		XCTAssertFalse(defaults[key]!)
+		XCTAssertNil(Defaults[key])
+		Defaults[key] = true
+		XCTAssertTrue(Defaults[key]!)
+		Defaults[key] = nil
+		XCTAssertNil(Defaults[key])
+		Defaults[key] = false
+		XCTAssertFalse(Defaults[key]!)
 	}
 
 	func testKeyRegistersDefault() {
@@ -56,7 +56,7 @@ final class DefaultsTests: XCTestCase {
 		_ = Defaults.Key<Bool>(keyName, default: true)
 		XCTAssertEqual(UserDefaults.standard.bool(forKey: keyName), true)
 
-		// Test that it works with multiple keys with defaults
+		// Test that it works with multiple keys with Defaults.
 		let keyName2 = "registersDefault2"
 		_ = Defaults.Key<String>(keyName2, default: keyName2)
 		XCTAssertEqual(UserDefaults.standard.string(forKey: keyName2), keyName2)
@@ -70,56 +70,56 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testKeys() {
-		XCTAssertFalse(defaults[.key])
-		defaults[.key] = true
-		XCTAssertTrue(defaults[.key])
+		XCTAssertFalse(Defaults[.key])
+		Defaults[.key] = true
+		XCTAssertTrue(Defaults[.key])
 	}
 
 	func testUrlType() {
-		XCTAssertEqual(defaults[.url], fixtureURL)
+		XCTAssertEqual(Defaults[.url], fixtureURL)
 
 		let newUrl = URL(string: "https://twitter.com")!
-		defaults[.url] = newUrl
-		XCTAssertEqual(defaults[.url], newUrl)
+		Defaults[.url] = newUrl
+		XCTAssertEqual(Defaults[.url], newUrl)
 	}
 
 	func testEnumType() {
-		XCTAssertEqual(defaults[.enum], FixtureEnum.oneHour)
+		XCTAssertEqual(Defaults[.enum], FixtureEnum.oneHour)
 	}
 
 	func testDataType() {
-		XCTAssertEqual(defaults[.data], Data([]))
+		XCTAssertEqual(Defaults[.data], Data([]))
 
 		let newData = Data([0xFF])
-		defaults[.data] = newData
-		XCTAssertEqual(defaults[.data], newData)
+		Defaults[.data] = newData
+		XCTAssertEqual(Defaults[.data], newData)
 	}
 
 	func testDateType() {
-		XCTAssertEqual(defaults[.date], fixtureDate)
+		XCTAssertEqual(Defaults[.date], fixtureDate)
 
 		let newDate = Date()
-		defaults[.date] = newDate
-		XCTAssertEqual(defaults[.date], newDate)
+		Defaults[.date] = newDate
+		XCTAssertEqual(Defaults[.date], newDate)
 	}
 
 	func testClear() {
 		let key = Defaults.Key<Bool>("clear", default: false)
-		defaults[key] = true
-		XCTAssertTrue(defaults[key])
-		defaults.clear()
-		XCTAssertFalse(defaults[key])
+		Defaults[key] = true
+		XCTAssertTrue(Defaults[key])
+		Defaults.clear()
+		XCTAssertFalse(Defaults[key])
 	}
 
 	func testCustomSuite() {
 		let customSuite = UserDefaults(suiteName: "com.sindresorhus.customSuite")!
 		let key = Defaults.Key<Bool>("customSuite", default: false, suite: customSuite)
 		XCTAssertFalse(customSuite[key])
-		XCTAssertFalse(defaults[key])
-		defaults[key] = true
+		XCTAssertFalse(Defaults[key])
+		Defaults[key] = true
 		XCTAssertTrue(customSuite[key])
-		XCTAssertTrue(defaults[key])
-		defaults.clear(suite: customSuite)
+		XCTAssertTrue(Defaults[key])
+		Defaults.clear(suite: customSuite)
 	}
 
 	func testObserveKey() {
@@ -127,14 +127,14 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: DefaultsObservation!
-		observation = defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertFalse(change.oldValue)
 			XCTAssertTrue(change.newValue)
 			observation.invalidate()
 			expect.fulfill()
 		}
 
-		defaults[key] = true
+		Defaults[key] = true
 
 		waitForExpectations(timeout: 10)
 	}
@@ -144,14 +144,14 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: DefaultsObservation!
-		observation = defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertNil(change.oldValue)
 			XCTAssertTrue(change.newValue!)
 			observation.invalidate()
 			expect.fulfill()
 		}
 
-		defaults[key] = true
+		Defaults[key] = true
 
 		waitForExpectations(timeout: 10)
 	}
@@ -163,14 +163,14 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: DefaultsObservation!
-		observation = defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertEqual(change.oldValue, fixtureURL)
 			XCTAssertEqual(change.newValue, fixtureURL2)
 			observation.invalidate()
 			expect.fulfill()
 		}
 
-		defaults[key] = fixtureURL2
+		Defaults[key] = fixtureURL2
 
 		waitForExpectations(timeout: 10)
 	}
@@ -180,14 +180,14 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: DefaultsObservation!
-		observation = defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertEqual(change.oldValue, .oneHour)
 			XCTAssertEqual(change.newValue, .tenMinutes)
 			observation.invalidate()
 			expect.fulfill()
 		}
 
-		defaults[key] = .tenMinutes
+		Defaults[key] = .tenMinutes
 
 		waitForExpectations(timeout: 10)
 	}
@@ -199,11 +199,11 @@ final class DefaultsTests: XCTestCase {
 		let newString2 = "bar2"
 		let key1 = Defaults.Key<String>("key1", default: defaultString1)
 		let key2 = Defaults.Key<String>("key2", default: defaultString2)
-		defaults[key1] = newString1
-		defaults[key2] = newString2
-		defaults.reset(key1)
-		XCTAssertEqual(defaults[key1], defaultString1)
-		XCTAssertEqual(defaults[key2], newString2)
+		Defaults[key1] = newString1
+		Defaults[key2] = newString2
+		Defaults.reset(key1)
+		XCTAssertEqual(Defaults[key1], defaultString1)
+		XCTAssertEqual(Defaults[key2], newString2)
 	}
 	
 	func testResetKeyArray() {
@@ -216,13 +216,13 @@ final class DefaultsTests: XCTestCase {
 		let key1 = Defaults.Key<String>("akey1", default: defaultString1)
 		let key2 = Defaults.Key<String>("akey2", default: defaultString2)
 		let key3 = Defaults.Key<String>("akey3", default: defaultString3)
-		defaults[key1] = newString1
-		defaults[key2] = newString2
-		defaults[key3] = newString3
-		defaults.reset(key1, key2)
-		XCTAssertEqual(defaults[key1], defaultString1)
-		XCTAssertEqual(defaults[key2], defaultString2)
-		XCTAssertEqual(defaults[key3], newString3)
+		Defaults[key1] = newString1
+		Defaults[key2] = newString2
+		Defaults[key3] = newString3
+		Defaults.reset(key1, key2)
+		XCTAssertEqual(Defaults[key1], defaultString1)
+		XCTAssertEqual(Defaults[key2], defaultString2)
+		XCTAssertEqual(Defaults[key3], newString3)
 	}
 	
 	func testResetOptionalKey() {
@@ -230,11 +230,11 @@ final class DefaultsTests: XCTestCase {
 		let newString2 = "bar2"
 		let key1 = Defaults.OptionalKey<String>("optionalKey1")
 		let key2 = Defaults.OptionalKey<String>("optionalKey2")
-		defaults[key1] = newString1
-		defaults[key2] = newString2
-		defaults.reset(key1)
-		XCTAssertEqual(defaults[key1], nil)
-		XCTAssertEqual(defaults[key2], newString2)
+		Defaults[key1] = newString1
+		Defaults[key2] = newString2
+		Defaults.reset(key1)
+		XCTAssertEqual(Defaults[key1], nil)
+		XCTAssertEqual(Defaults[key2], newString2)
 	}
 	
 	func testResetOptionalKeyArray() {
@@ -244,12 +244,12 @@ final class DefaultsTests: XCTestCase {
 		let key1 = Defaults.OptionalKey<String>("aoptionalKey1")
 		let key2 = Defaults.OptionalKey<String>("aoptionalKey2")
 		let key3 = Defaults.OptionalKey<String>("aoptionalKey3")
-		defaults[key1] = newString1
-		defaults[key2] = newString2
-		defaults[key3] = newString3
-		defaults.reset(key1, key2)
-		XCTAssertEqual(defaults[key1], nil)
-		XCTAssertEqual(defaults[key2], nil)
-		XCTAssertEqual(defaults[key3], newString3)
+		Defaults[key1] = newString1
+		Defaults[key2] = newString2
+		Defaults[key3] = newString3
+		Defaults.reset(key1, key2)
+		XCTAssertEqual(Defaults[key1], nil)
+		XCTAssertEqual(Defaults[key2], nil)
+		XCTAssertEqual(Defaults[key3], newString3)
 	}
 }

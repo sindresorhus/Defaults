@@ -117,20 +117,20 @@ extension Defaults {
 	}
 
 	/**
-	Observe a defaults key
+	Observe a defaults key.
 
 	```
 	extension Defaults.Keys {
 		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 	}
 
-	let observer = defaults.observe(.isUnicornMode) { change in
+	let observer = Defaults.observe(.isUnicornMode) { change in
 		print(change.newValue)
 		//=> false
 	}
 	```
 	*/
-	public func observe<T: Codable>(
+	public static func observe<T: Codable>(
 		_ key: Defaults.Key<T>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
 		handler: @escaping (KeyChange<T>) -> Void
@@ -145,20 +145,20 @@ extension Defaults {
 	}
 
 	/**
-	Observe an optional defaults key
+	Observe an optional defaults key.
 
 	```
 	extension Defaults.Keys {
 		static let isUnicornMode = OptionalKey<Bool>("isUnicornMode")
 	}
 
-	let observer = defaults.observe(.isUnicornMode) { change in
+	let observer = Defaults.observe(.isUnicornMode) { change in
 		print(change.newValue)
 		//=> Optional(nil)
 	}
 	```
 	*/
-	public func observe<T: Codable>(
+	public static func observe<T: Codable>(
 		_ key: Defaults.OptionalKey<T>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
 		handler: @escaping (OptionalKeyChange<T>) -> Void
