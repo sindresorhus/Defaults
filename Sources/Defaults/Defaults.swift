@@ -45,7 +45,7 @@ public final class Defaults {
 	fileprivate init() {}
 
 	/// Access a defaults value using a `Defaults.Key`.
-	public static subscript<T: Codable>(key: Defaults.Key<T>) -> T {
+	public static subscript<T: Codable>(key: Key<T>) -> T {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -53,7 +53,7 @@ public final class Defaults {
 	}
 
 	/// Access a defaults value using a `Defaults.OptionalKey`.
-	public static subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
+	public static subscript<T: Codable>(key: OptionalKey<T>) -> T? {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -80,7 +80,7 @@ public final class Defaults {
 	//=> false
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard) {
+	public static func reset<T: Codable>(_ keys: Key<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
@@ -104,7 +104,7 @@ public final class Defaults {
 	//=> false
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard) {
+	public static func reset<T: Codable>(_ keys: [Key<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = key.defaultValue
 		}
@@ -129,7 +129,7 @@ public final class Defaults {
 	//=> nil
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard) {
+	public static func reset<T: Codable>(_ keys: OptionalKey<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
@@ -152,7 +152,7 @@ public final class Defaults {
 	//=> nil
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard) {
+	public static func reset<T: Codable>(_ keys: [OptionalKey<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = nil
 		}

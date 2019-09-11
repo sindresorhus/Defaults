@@ -702,8 +702,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_COMPILATION_MODE = singlefile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -728,8 +730,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -982,6 +986,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
@@ -1003,6 +1008,7 @@
 				SDKROOT = appletvos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;

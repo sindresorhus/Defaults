@@ -2,7 +2,7 @@
 
 > Swifty and modern [UserDefaults](https://developer.apple.com/documentation/foundation/userdefaults)
 
-This package is used in production by the [Gifski](https://github.com/sindresorhus/Gifski), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter) app.
+This package is used in production by apps like [Gifski](https://github.com/sindresorhus/Gifski), [Dato](https://sindresorhus.com/dato), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter).
 
 
 ## Highlights
@@ -105,37 +105,6 @@ Defaults[.defaultDuration].rawValue
 //=> "1 Hour"
 ```
 
-### It's just UserDefaults with sugar
-
-This works too:
-
-```swift
-extension Defaults.Keys {
-	static let isUnicorn = Key<Bool>("isUnicorn", default: true)
-}
-
-UserDefaults.standard[.isUnicorn]
-//=> true
-```
-
-### Shared UserDefaults
-
-```swift
-let extensionDefaults = UserDefaults(suiteName: "com.unicorn.app")!
-
-extension Defaults.Keys {
-	static let isUnicorn = Key<Bool>("isUnicorn", default: true, suite: extensionDefaults)
-}
-
-Defaults[.isUnicorn]
-//=> true
-
-// Or
-
-extensionDefaults[.isUnicorn]
-//=> true
-```
-
 ### Use keys directly
 
 You are not required to attach keys to `Defaults.Keys`.
@@ -191,9 +160,40 @@ Defaults[.isUnicornMode]
 
 This works for `OptionalKey` too, which will be reset back to `nil`.
 
-### Default values are registered with UserDefaults
+### It's just `UserDefaults` with sugar
 
-When you create a `Defaults.Key`, it automatically registers the `default` value with normal UserDefaults. This means you can make use of the default value in, for example, bindings in Interface Builder.
+This works too:
+
+```swift
+extension Defaults.Keys {
+	static let isUnicorn = Key<Bool>("isUnicorn", default: true)
+}
+
+UserDefaults.standard[.isUnicorn]
+//=> true
+```
+
+### Shared `UserDefaults`
+
+```swift
+let extensionDefaults = UserDefaults(suiteName: "com.unicorn.app")!
+
+extension Defaults.Keys {
+	static let isUnicorn = Key<Bool>("isUnicorn", default: true, suite: extensionDefaults)
+}
+
+Defaults[.isUnicorn]
+//=> true
+
+// Or
+
+extensionDefaults[.isUnicorn]
+//=> true
+```
+
+### Default values are registered with `UserDefaults`
+
+When you create a `Defaults.Key`, it automatically registers the `default` value with normal `UserDefaults`. This means you can make use of the default value in, for example, bindings in Interface Builder.
 
 ```swift
 extension Defaults.Keys {

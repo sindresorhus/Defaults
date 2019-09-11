@@ -56,7 +56,7 @@ final class DefaultsTests: XCTestCase {
 		_ = Defaults.Key<Bool>(keyName, default: true)
 		XCTAssertEqual(UserDefaults.standard.bool(forKey: keyName), true)
 
-		// Test that it works with multiple keys with Defaults.
+		// Test that it works with multiple keys with `Defaults`.
 		let keyName2 = "registersDefault2"
 		_ = Defaults.Key<String>(keyName2, default: keyName2)
 		XCTAssertEqual(UserDefaults.standard.string(forKey: keyName2), keyName2)
