@@ -28,39 +28,91 @@ final class AssociatedObject<T: Any> {
 	}
 }
 
-class LifetimeAssociation {
-	private(set) weak var object: AnyObject?
-	private(set) weak var owner: AnyObject?
-
-	fileprivate init(object weaklyHeldObject: AnyObject, owner weaklyHeldOwner: AnyObject) {
-		self.object = weaklyHeldObject
-		self.owner = weaklyHeldOwner
+/**
+Causes a given target object to live at least as long as a given owner object.
+*/
+final class LifetimeAssociation {
+	private class ObjectLifetimeTracker {
+		var object: AnyObject?
+		var deinitHandler: () -> Void
+		init(for weaklyHeldObject: AnyObject, deinitHandler: @escaping () -> Void) {
+			self.object = weaklyHeldObject
+			self.deinitHandler = deinitHandler
+		}
+		deinit {
+			deinitHandler()
+		}
 	}
 
-	/// Whether the owner is still alive and thus keeping its associated object alive.
-	var isValid: Bool {
-		return owner != nil
+	private static let associatedObjects = AssociatedObject<[ObjectLifetimeTracker]>()
+
+	private weak var wrappedObject: ObjectLifetimeTracker?
+	private weak var owner: AnyObject?
+
+	/**
+	Causes the given target object to live at least as long as either
+	the given owner object or the resulting `LifetimeAssociation`, whichever
+	is deallocated first.
+
+	When either the owner or the new `LifetimeAssociation` is destroyed, the
+	given deinit handler, if any, is called.
+
+	```
+	class Ghost {
+		var association: LifetimeAssociation?
+		func haunt(_ host: Furniture) {
+			association = LifetimeAssociation(of: self, with: host) { [weak self]
+				// host has been deinitialized
+				self?.haunt(seekHost())
+			}
+		}
+	}
+
+	let piano = Piano()
+	Ghost().haunt(piano)
+	// The Ghost will remain alive as long as `piano` remains alive.
+	```
+
+	- Parameter target: The object whose lifetime will be extended.
+	- Parameter owner: The object whose lifetime extends the target
+					   object's lifetime.
+	- Parameter deinitHandler: An optional closure to call when either `owner`
+							   or the resulting `LifetimeAssociation` is deallocated.
+	*/
+	init(of target: AnyObject, with owner: AnyObject, deinitHandler: @escaping () -> Void = { }) {
+		let wrappedObject = ObjectLifetimeTracker(for: target, deinitHandler: deinitHandler)
+		
+		let associatedObjects = LifetimeAssociation.associatedObjects[owner] ?? []
+		LifetimeAssociation.associatedObjects[owner] = associatedObjects + [wrappedObject]
+		
+		self.wrappedObject = wrappedObject
+		self.owner = owner
+	}
+
+	/**
+	Invalidates the association, unlinking the target object's lifetime from
+	that of the owner object. The provided deinit handler is not called.
+	*/
+	func cancel() {
+		wrappedObject?.deinitHandler = { }
+		invalidate()
 	}
 
 	deinit {
+		invalidate()
+	}
+
+	private func invalidate() {
 		guard
 			let owner = owner,
-			var associatedObjects = LifetimeAssociationKeys.associatedObjects[owner],
-			let objectIndex = associatedObjects.firstIndex(where: { $0 === object })
+			let wrappedObject = wrappedObject,
+			var associatedObjects = LifetimeAssociation.associatedObjects[owner],
+			let wrappedObjectAssociationIndex = associatedObjects.firstIndex(where: { $0 === wrappedObject })
 		else {
 			return
 		}
-		associatedObjects.remove(at: objectIndex)
-		LifetimeAssociationKeys.associatedObjects[owner] = associatedObjects
+		associatedObjects.remove(at: wrappedObjectAssociationIndex)
+		LifetimeAssociation.associatedObjects[owner] = associatedObjects
+		self.owner = nil
 	}
-}
-
-private struct LifetimeAssociationKeys {
-	static let associatedObjects = AssociatedObject<[AnyObject]>()
-}
-
-func associate(_ object: AnyObject, with owner: AnyObject) -> LifetimeAssociation {
-	let associatedObjects = LifetimeAssociationKeys.associatedObjects[owner] ?? []
-	LifetimeAssociationKeys.associatedObjects[owner] = associatedObjects + [object]
-	return LifetimeAssociation(object: object, owner: owner)
 }
