@@ -23,6 +23,27 @@ extension Defaults {
 		return [T].init(jsonString: "\([value])")?.first
 	}
 
+	@available(iOSApplicationExtension 11.0, *)
+	private static func deserialize<T: NSSecureCoding>(_ value: Any?, to type: T.Type) -> T? {
+		guard
+			let value = value,
+			!(value is NSNull)
+		else {
+			return nil
+		}
+
+		// This handles the case where the value was a plist value using `isNativelySupportedType`
+		if let value = value as? T {
+			return value
+		}
+
+		guard let dataValue = value as? Data else {
+			return nil
+		}
+
+		return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dataValue) as? T
+	}
+
 	fileprivate final class BaseChange {
 		fileprivate let kind: NSKeyValueChange
 		fileprivate let indexes: IndexSet?
@@ -55,7 +76,41 @@ extension Defaults {
 		}
 	}
 
+	@available(iOSApplicationExtension 11.0, *)
+	public struct NSSecureCodingKeyChange<T: NSSecureCoding> {
+		public let kind: NSKeyValueChange
+		public let indexes: IndexSet?
+		public let isPrior: Bool
+		public let newValue: T
+		public let oldValue: T
+
+		fileprivate init(change: BaseChange, defaultValue: T) {
+			self.kind = change.kind
+			self.indexes = change.indexes
+			self.isPrior = change.isPrior
+			self.oldValue = deserialize(change.oldValue, to: T.self) ?? defaultValue
+			self.newValue = deserialize(change.newValue, to: T.self) ?? defaultValue
+		}
+	}
+
 	public struct OptionalKeyChange<T: Codable> {
+		public let kind: NSKeyValueChange
+		public let indexes: IndexSet?
+		public let isPrior: Bool
+		public let newValue: T?
+		public let oldValue: T?
+
+		fileprivate init(change: BaseChange) {
+			self.kind = change.kind
+			self.indexes = change.indexes
+			self.isPrior = change.isPrior
+			self.oldValue = deserialize(change.oldValue, to: T.self)
+			self.newValue = deserialize(change.newValue, to: T.self)
+		}
+	}
+
+	@available(iOSApplicationExtension 11.0, *)
+	public struct NSSecureCodingOptionalKeyChange<T: NSSecureCoding> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
@@ -145,6 +200,24 @@ extension Defaults {
 	}
 
 	/**
+	Observe a defaults key.
+	*/
+	@available(iOSApplicationExtension 11.0, *)
+	public static func observe<T: NSSecureCoding>(
+		_ key: Defaults.NSSecureCodingKey<T>,
+		options: NSKeyValueObservingOptions = [.initial, .old, .new],
+		handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
+	) -> DefaultsObservation {
+		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
+			handler(
+				NSSecureCodingKeyChange<T>(change: change, defaultValue: key.defaultValue)
+			)
+		}
+		observation.start(options: options)
+		return observation
+	}
+
+	/**
 	Observe an optional defaults key.
 
 	```
@@ -166,6 +239,24 @@ extension Defaults {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				OptionalKeyChange<T>(change: change)
+			)
+		}
+		observation.start(options: options)
+		return observation
+	}
+
+	/**
+	Observe an optional defaults key.
+	*/
+	@available(iOSApplicationExtension 11.0, *)
+	public static func observe<T: NSSecureCoding>(
+		_ key: Defaults.NSSecureCodingOptionalKey<T>,
+		options: NSKeyValueObservingOptions = [.initial, .old, .new],
+		handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
+	) -> DefaultsObservation {
+		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
+			handler(
+				NSSecureCodingOptionalKeyChange<T>(change: change)
 			)
 		}
 		observation.start(options: options)

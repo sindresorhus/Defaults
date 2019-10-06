@@ -4,7 +4,14 @@ import Foundation
 public final class Defaults {
 	public class Keys {
 		public typealias Key = Defaults.Key
+
+		@available(iOSApplicationExtension 11.0, *)
+		public typealias NSSecureCodingKey = Defaults.NSSecureCodingKey
+
 		public typealias OptionalKey = Defaults.OptionalKey
+
+		@available(iOSApplicationExtension 11.0, *)
+		public typealias NSSecureCodingOptionalKey = Defaults.NSSecureCodingOptionalKey
 
 		fileprivate init() {}
 	}
@@ -31,7 +38,42 @@ public final class Defaults {
 		}
 	}
 
+	@available(iOSApplicationExtension 11.0, *)
+	public final class NSSecureCodingKey<T: NSSecureCoding>: Keys {
+		public let name: String
+		public let defaultValue: T
+		public let suite: UserDefaults
+
+		/// Create a defaults key.
+		public init(_ key: String, default defaultValue: T, suite: UserDefaults = .standard) {
+			self.name = key
+			self.defaultValue = defaultValue
+			self.suite = suite
+
+			super.init()
+
+			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
+			if UserDefaults.isNativelySupportedType(T.self) {
+				suite.register(defaults: [key: defaultValue])
+			} else if let value = try? NSKeyedArchiver.archivedData(withRootObject: defaultValue, requiringSecureCoding: true) {
+				suite.register(defaults: [key: value])
+			}
+		}
+	}
+
 	public final class OptionalKey<T: Codable>: Keys {
+		public let name: String
+		public let suite: UserDefaults
+
+		/// Create an optional defaults key.
+		public init(_ key: String, suite: UserDefaults = .standard) {
+			self.name = key
+			self.suite = suite
+		}
+	}
+
+	@available(iOSApplicationExtension 11.0, *)
+	public final class NSSecureCodingOptionalKey<T: NSSecureCoding>: Keys {
 		public let name: String
 		public let suite: UserDefaults
 
@@ -46,6 +88,15 @@ public final class Defaults {
 
 	/// Access a defaults value using a `Defaults.Key`.
 	public static subscript<T: Codable>(key: Key<T>) -> T {
+		get { key.suite[key] }
+		set {
+			key.suite[key] = newValue
+		}
+	}
+
+	/// Access a defaults value using a `Defaults.NSSecureCodingKey`.
+	@available(iOSApplicationExtension 11.0, *)
+	public static subscript<T: NSSecureCoding>(key: NSSecureCodingKey<T>) -> T {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -83,6 +134,17 @@ public final class Defaults {
 	public static func reset<T: Codable>(_ keys: Key<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
+
+	/**
+	Reset the given keys back to their default values.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+	*/
+	@available(iOSApplicationExtension 11.0, *)
+	public static func reset<T: NSSecureCoding>(_ keys: NSSecureCodingKey<T>..., suite: UserDefaults = .standard) {
+		reset(keys, suite: suite)
+	}
 	
 	/**
 	Reset the given array of keys back to their default values.
@@ -105,6 +167,19 @@ public final class Defaults {
 	```
 	*/
 	public static func reset<T: Codable>(_ keys: [Key<T>], suite: UserDefaults = .standard) {
+		for key in keys {
+			key.suite[key] = key.defaultValue
+		}
+	}
+
+	/**
+	Reset the given array of keys back to their default values.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+	*/
+	@available(iOSApplicationExtension 11.0, *)
+	public static func reset<T: NSSecureCoding>(_ keys: [NSSecureCodingKey<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = key.defaultValue
 		}
@@ -132,6 +207,18 @@ public final class Defaults {
 	public static func reset<T: Codable>(_ keys: OptionalKey<T>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
+
+	/**
+	Reset the given optional keys back to `nil`.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+	```
+	*/
+	@available(iOSApplicationExtension 11.0, *)
+	public static func reset<T: NSSecureCoding>(_ keys: NSSecureCodingOptionalKey<T>..., suite: UserDefaults = .standard) {
+		reset(keys, suite: suite)
+	}
 	
 	/**
 	Reset the given array of optional keys back to `nil`.
@@ -153,6 +240,19 @@ public final class Defaults {
 	```
 	*/
 	public static func reset<T: Codable>(_ keys: [OptionalKey<T>], suite: UserDefaults = .standard) {
+		for key in keys {
+			key.suite[key] = nil
+		}
+	}
+
+	/**
+	Reset the given array of optional keys back to `nil`.
+
+	- Parameter keys: Keys to reset.
+	- Parameter suite: `UserDefaults` suite.
+	*/
+	@available(iOSApplicationExtension 11.0, *)
+	public static func reset<T: NSSecureCoding>(_ keys: [NSSecureCodingOptionalKey<T>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = nil
 		}
@@ -190,6 +290,27 @@ extension UserDefaults {
 		return nil
 	}
 
+	@available(iOSApplicationExtension 11.0, *)
+	private func _get<T: NSSecureCoding>(_ key: String) -> T? {
+		if UserDefaults.isNativelySupportedType(T.self) {
+			return object(forKey: key) as? T
+		}
+
+		guard
+			let data = data(forKey: key)
+		else {
+			return nil
+		}
+
+		do {
+			return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? T
+		} catch {
+			print(error)
+		}
+
+		return nil
+	}
+
 	fileprivate func _encode<T: Codable>(_ value: T) -> String? {
 		do {
 			// Some codable values like URL and enum are encoded as a top-level
@@ -212,6 +333,16 @@ extension UserDefaults {
 		set(_encode(value), forKey: key)
 	}
 
+	@available(iOSApplicationExtension 11.0, *)
+	private func _set<T: NSSecureCoding>(_ key: String, to value: T) {
+		if UserDefaults.isNativelySupportedType(T.self) {
+			set(value, forKey: key)
+			return
+		}
+
+		set(try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true), forKey: key)
+	}
+
 	public subscript<T: Codable>(key: Defaults.Key<T>) -> T {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
@@ -219,7 +350,28 @@ extension UserDefaults {
 		}
 	}
 
+	@available(iOSApplicationExtension 11.0, *)
+	public subscript<T: NSSecureCoding>(key: Defaults.NSSecureCodingKey<T>) -> T {
+		get { _get(key.name) ?? key.defaultValue }
+		set {
+			_set(key.name, to: newValue)
+		}
+	}
+
 	public subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
+		get { _get(key.name) }
+		set {
+			guard let value = newValue else {
+				set(nil, forKey: key.name)
+				return
+			}
+
+			_set(key.name, to: value)
+		}
+	}
+
+	@available(iOSApplicationExtension 11.0, *)
+	public subscript<T: NSSecureCoding>(key: Defaults.NSSecureCodingOptionalKey<T>) -> T? {
 		get { _get(key.name) }
 		set {
 			guard let value = newValue else {

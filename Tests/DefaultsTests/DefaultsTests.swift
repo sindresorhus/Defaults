@@ -1,6 +1,7 @@
 import Foundation
 import XCTest
 import Defaults
+import CoreData
 
 let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureURL2 = URL(string: "https://example.com")!
@@ -13,12 +14,42 @@ enum FixtureEnum: String, Codable {
 
 let fixtureDate = Date()
 
+@available(iOS 11.0, *)
+final class ExamplePersistentHistory: NSPersistentHistoryToken {
+
+	let value: String
+
+	init(value: String) {
+		self.value = value
+		super.init()
+	}
+
+	required init?(coder: NSCoder) {
+		self.value = coder.decodeObject(forKey: "value") as! String
+		super.init()
+	}
+
+	override func encode(with coder: NSCoder) {
+		coder.encode(value, forKey: "value")
+	}
+
+	override class var supportsSecureCoding: Bool {
+		return true
+	}
+}
+
 extension Defaults.Keys {
 	static let key = Key<Bool>("key", default: false)
 	static let url = Key<URL>("url", default: fixtureURL)
 	static let `enum` = Key<FixtureEnum>("enum", default: .oneHour)
 	static let data = Key<Data>("data", default: Data([]))
 	static let date = Key<Date>("date", default: fixtureDate)
+
+	// NSSecureCoding
+	@available(iOS 11.0, *)
+	static let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
+	@available(iOS 11.0, *)
+	static let persistentHistory = NSSecureCodingKey<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
 }
 
 final class DefaultsTests: XCTestCase {
@@ -73,6 +104,14 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertFalse(Defaults[.key])
 		Defaults[.key] = true
 		XCTAssertTrue(Defaults[.key])
+	}
+
+	@available(iOS 11.0, *)
+	func testNSSecureCodingKeys() {
+		XCTAssertEqual(Defaults.Keys.persistentHistoryValue.value, Defaults[.persistentHistory].value)
+		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
+		Defaults[.persistentHistory] = newPersistentHistory
+		XCTAssertEqual(newPersistentHistory.value, Defaults[.persistentHistory].value)
 	}
 
 	func testUrlType() {
