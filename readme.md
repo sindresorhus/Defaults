@@ -88,6 +88,19 @@ if let name = Defaults[.name] {
 
 The default value is then `nil`.
 
+---------------------------
+
+If you have `NSSecureCoding` classes which you want to save, you can use them as follows:
+
+```swift
+extension Defaults.Keys {
+	static let someSecureCoding = NSSecureCodingKey<SomeNSSecureCodingClass>("someSecureCoding", default: SomeNSSecureCodingClass(string: "Default", int: 5, bool: true))
+	static let someOptionalSecureCoding = NSSecureCodingOptionalKey<Double>("someOptionalSecureCoding")
+}
+```
+
+You can use those keys just like in all other examples. The return value will be your `NSSecureCoding` class.
+
 ### Enum example
 
 ```swift
