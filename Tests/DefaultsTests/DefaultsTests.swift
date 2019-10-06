@@ -182,6 +182,24 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
+	@available(iOS 11.0, *)
+	func testObserveNSSecureCodingKey() {
+		let key = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: DefaultsObservation!
+		observation = Defaults.observe(key, options: [.old, .new]) { change in
+			XCTAssertEqual(change.oldValue.value, "TestValue")
+			XCTAssertEqual(change.newValue.value, "NewTestValue")
+			observation.invalidate()
+			expect.fulfill()
+		}
+
+		Defaults[key] = ExamplePersistentHistory(value: "NewTestValue")
+
+		waitForExpectations(timeout: 10)
+	}
+
 	func testObserveOptionalKey() {
 		let key = Defaults.OptionalKey<Bool>("observeOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
@@ -195,6 +213,24 @@ final class DefaultsTests: XCTestCase {
 		}
 
 		Defaults[key] = true
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 11.0, *)
+	func testObserveNSSecureCodingOptionalKey() {
+		let key = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingOptionalKey")
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: DefaultsObservation!
+		observation = Defaults.observe(key, options: [.old, .new]) { change in
+			XCTAssertNil(change.oldValue)
+			XCTAssertEqual(change.newValue?.value, "NewOptionalValue")
+			observation.invalidate()
+			expect.fulfill()
+		}
+
+		Defaults[key] = ExamplePersistentHistory(value: "NewOptionalValue")
 
 		waitForExpectations(timeout: 10)
 	}
@@ -238,8 +274,10 @@ final class DefaultsTests: XCTestCase {
 	func testResetKey() {
 		let defaultString1 = "foo1"
 		let defaultString2 = "foo2"
+		let defaultString3 = "foo3"
 		let newString1 = "bar1"
 		let newString2 = "bar2"
+		let newString3 = "bar3"
 		let key1 = Defaults.Key<String>("key1", default: defaultString1)
 		let key2 = Defaults.Key<String>("key2", default: defaultString2)
 		Defaults[key1] = newString1
@@ -247,6 +285,14 @@ final class DefaultsTests: XCTestCase {
 		Defaults.reset(key1)
 		XCTAssertEqual(Defaults[key1], defaultString1)
 		XCTAssertEqual(Defaults[key2], newString2)
+
+		if #available(iOS 11.0, *) {
+			let key3 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("key3", default: ExamplePersistentHistory(value: defaultString3))
+			Defaults[key3] = ExamplePersistentHistory(value: newString3)
+			Defaults.reset(key3)
+
+			XCTAssertEqual(Defaults[key3].value, defaultString3)
+		}
 	}
 	
 	func testResetKeyArray() {
@@ -271,6 +317,7 @@ final class DefaultsTests: XCTestCase {
 	func testResetOptionalKey() {
 		let newString1 = "bar1"
 		let newString2 = "bar2"
+		let newString3 = "bar3"
 		let key1 = Defaults.OptionalKey<String>("optionalKey1")
 		let key2 = Defaults.OptionalKey<String>("optionalKey2")
 		Defaults[key1] = newString1
@@ -278,6 +325,13 @@ final class DefaultsTests: XCTestCase {
 		Defaults.reset(key1)
 		XCTAssertEqual(Defaults[key1], nil)
 		XCTAssertEqual(Defaults[key2], newString2)
+
+		if #available(iOS 11.0, *) {
+			let key3 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("optionalKey3")
+			Defaults[key3] = ExamplePersistentHistory(value: newString3)
+			Defaults.reset(key3)
+			XCTAssertEqual(Defaults[key3], nil)
+		}
 	}
 	
 	func testResetOptionalKeyArray() {

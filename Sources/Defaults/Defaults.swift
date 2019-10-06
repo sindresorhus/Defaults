@@ -110,6 +110,15 @@ public final class Defaults {
 			key.suite[key] = newValue
 		}
 	}
+
+	/// Access a defaults value using a `Defaults.OptionalKey`.
+	@available(iOSApplicationExtension 11.0, *)
+	public static subscript<T: NSSecureCoding>(key: NSSecureCodingOptionalKey<T>) -> T? {
+		get { key.suite[key] }
+		set {
+			key.suite[key] = newValue
+		}
+	}
 	
 	/**
 	Reset the given keys back to their default values.
