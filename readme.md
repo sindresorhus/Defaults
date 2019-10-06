@@ -97,6 +97,15 @@ extension Defaults.Keys {
 	static let someSecureCoding = NSSecureCodingKey<SomeNSSecureCodingClass>("someSecureCoding", default: SomeNSSecureCodingClass(string: "Default", int: 5, bool: true))
 	static let someOptionalSecureCoding = NSSecureCodingOptionalKey<Double>("someOptionalSecureCoding")
 }
+
+Defaults[.someSecureCoding].string
+//=> "Default"
+
+Defaults[.someSecureCoding].int
+//=> 5
+
+Defaults[.someSecureCoding].bool
+//=> true
 ```
 
 You can use those keys just like in all other examples. The return value will be your `NSSecureCoding` class.
