@@ -275,15 +275,16 @@ final class DefaultsTests: XCTestCase {
 	func testObserveWithLifetimeTieManualBreak() {
 		let key = Defaults.Key<Bool>("lifetimeTieManualBreak", default: false)
 
-		weak var observation: DefaultsObservation? =
-			Defaults.observe(key, options: []) { _ in }.tieToLifetime(of: self)
+		weak var observation: DefaultsObservation? = Defaults.observe(key, options: []) { _ in }.tieToLifetime(of: self)
 		observation!.removeLifetimeTie()
 
 		for i in 1...10 {
 			if observation == nil {
 				break
 			}
+
 			sleep(1)
+
 			if i == 10 {
 				XCTFail()
 			}
