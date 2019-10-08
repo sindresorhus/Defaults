@@ -5,8 +5,7 @@ public protocol DefaultsObservation: AnyObject {
 	func invalidate()
 
 	/**
-	Keep this observation alive for as long as, and no longer than, another
-	object exists.
+	Keep this observation alive for as long as, and no longer than, another object exists.
 
 	```
 	defaults.observe(.xyz) { [unowned self] change in
@@ -19,8 +18,7 @@ public protocol DefaultsObservation: AnyObject {
 	/**
 	Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
 	- Postcondition: The effects of any call to `tieToLifetime(of:)` are reversed.
-	- Note: If the tied-to object has already died, then self is considered to be
-			invalidated, and this method has no logical effect.
+	- Note: If the tied-to object has already died, then self is considered to be invalidated, and this method has no logical effect.
 	*/
 	func removeLifetimeTie()
 }
