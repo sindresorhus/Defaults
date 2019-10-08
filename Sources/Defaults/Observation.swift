@@ -140,6 +140,7 @@ extension Defaults {
 				invalidate()
 				return
 			}
+
 			guard
 				selfObject == object as? NSObject,
 				let change = change
