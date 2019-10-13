@@ -8,7 +8,7 @@ public protocol DefaultsObservation: AnyObject {
 	Keep this observation alive for as long as, and no longer than, another object exists.
 
 	```
-	defaults.observe(.xyz) { [unowned self] change in
+	Defaults.observe(.xyz) { [unowned self] change in
 		self.xyz = change.newValue
 	}.tieToLifetime(of: self)
 	```
