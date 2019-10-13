@@ -120,14 +120,14 @@ extension Defaults {
 
 		private var lifetimeAssociation: LifetimeAssociation? = nil
 
-		func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
 				self?.invalidate()
 			})
 			return self
 		}
 
-		func removeLifetimeTie() {
+		public func removeLifetimeTie() {
 			lifetimeAssociation?.cancel()
 		}
 
