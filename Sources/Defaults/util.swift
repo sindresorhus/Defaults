@@ -60,7 +60,7 @@ final class LifetimeAssociation {
 		var association: LifetimeAssociation?
 
 		func haunt(_ host: Furniture) {
-			association = LifetimeAssociation(of: self, with: host) { [weak self]
+			association = LifetimeAssociation(of: self, with: host) { [weak self] in
 				// Host has been deinitialized
 				self?.haunt(seekHost())
 			}
