@@ -149,13 +149,18 @@ extension Defaults.Keys {
 	static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 }
 
-Defaults.observe(.isUnicornMode) { change in
-	print(change.oldValue)
-	print(change.newValue)
-}.tieToLifetime(of: self)
+final class Foo {
+	init() {
+		Defaults.observe(.isUnicornMode) { change in
+			print(change.oldValue)
+			print(change.newValue)
+		}.tieToLifetime(of: self)
+	}
+}
 
 Defaults[.isUnicornMode] = true
 ```
+
 The observation will be valid until `self` is deinitialized.
 
 ### Reset keys to their default values
