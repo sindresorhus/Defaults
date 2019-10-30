@@ -90,7 +90,7 @@ final class LifetimeAssociation {
 	Invalidates the association, unlinking the target object's lifetime from that of the owner object. The provided deinit handler is not called.
 	*/
 	func cancel() {
-		wrappedObject?.deinitHandler = { }
+		wrappedObject?.deinitHandler = {}
 		invalidate()
 	}
 
