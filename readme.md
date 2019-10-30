@@ -12,7 +12,7 @@ This package is used in production by apps like [Gifski](https://github.com/sind
 - **NSSecureCoding support:** You can store any [NSSecureCoding](https://developer.apple.com/documentation/foundation/nssecurecoding) value.
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Observation:** Observe changes to keys.
-- **Lightweight:** It's only ~300 lines of code.
+- **Lightweight:** It's only some hundred lines of code.
 
 
 ## Compatibility
@@ -28,7 +28,7 @@ This package is used in production by apps like [Gifski](https://github.com/sind
 #### SwiftPM
 
 ```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "3.0.0")
+.package(url: "https://github.com/sindresorhus/Defaults", from: "3.1.0")
 ```
 
 #### Carthage
