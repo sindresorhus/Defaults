@@ -14,7 +14,7 @@ enum FixtureEnum: String, Codable {
 
 let fixtureDate = Date()
 
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
+@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 final class ExamplePersistentHistory: NSPersistentHistoryToken {
 
 	let value: String
@@ -46,9 +46,9 @@ extension Defaults.Keys {
 	static let date = Key<Date>("date", default: fixtureDate)
 
 	// NSSecureCoding
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	static let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	static let persistentHistory = NSSecureCodingKey<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
 }
 
@@ -106,7 +106,7 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertTrue(Defaults[.key])
 	}
 
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	func testNSSecureCodingKeys() {
 		XCTAssertEqual(Defaults.Keys.persistentHistoryValue.value, Defaults[.persistentHistory].value)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
@@ -182,7 +182,7 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	func testObserveNSSecureCodingKey() {
 		let key = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
 		let expect = expectation(description: "Observation closure being called")
@@ -217,7 +217,7 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	func testObserveNSSecureCodingOptionalKey() {
 		let key = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
@@ -286,7 +286,7 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key1], defaultString1)
 		XCTAssertEqual(Defaults[key2], newString2)
 
-		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *) {
+		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
 			let key3 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("key3", default: ExamplePersistentHistory(value: defaultString3))
 			Defaults[key3] = ExamplePersistentHistory(value: newString3)
 			Defaults.reset(key3)
@@ -326,7 +326,7 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key1], nil)
 		XCTAssertEqual(Defaults[key2], newString2)
 
-		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *) {
+		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
 			let key3 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("optionalKey3")
 			Defaults[key3] = ExamplePersistentHistory(value: newString3)
 			Defaults.reset(key3)

@@ -43,7 +43,7 @@ extension Defaults {
 		return [T].init(jsonString: "\([value])")?.first
 	}
 
-	@available(iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	private static func deserialize<T: NSSecureCoding>(_ value: Any?, to type: T.Type) -> T? {
 		guard
 			let value = value,
@@ -96,7 +96,7 @@ extension Defaults {
 		}
 	}
 
-	@available(iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public struct NSSecureCodingKeyChange<T: NSSecureCoding> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
@@ -129,7 +129,7 @@ extension Defaults {
 		}
 	}
 
-	@available(iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public struct NSSecureCodingOptionalKeyChange<T: NSSecureCoding> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
@@ -240,7 +240,7 @@ extension Defaults {
 	/**
 	Observe a defaults key.
 	*/
-	@available(iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func observe<T: NSSecureCoding>(
 		_ key: Defaults.NSSecureCodingKey<T>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
@@ -286,7 +286,7 @@ extension Defaults {
 	/**
 	Observe an optional defaults key.
 	*/
-	@available(iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func observe<T: NSSecureCoding>(
 		_ key: Defaults.NSSecureCodingOptionalKey<T>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
