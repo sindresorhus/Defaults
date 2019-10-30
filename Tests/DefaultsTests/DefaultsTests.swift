@@ -256,4 +256,38 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key2], nil)
 		XCTAssertEqual(Defaults[key3], newString3)
 	}
+
+	func testObserveWithLifetimeTie() {
+		let key = Defaults.Key<Bool>("lifetimeTie", default: false)
+		let expect = expectation(description: "Observation closure being called")
+
+		weak var observation: DefaultsObservation!
+		observation = Defaults.observe(key, options: []) { change in
+			observation.invalidate()
+			expect.fulfill()
+		}.tieToLifetime(of: self)
+
+		Defaults[key] = true
+
+		waitForExpectations(timeout: 10)
+	}
+
+	func testObserveWithLifetimeTieManualBreak() {
+		let key = Defaults.Key<Bool>("lifetimeTieManualBreak", default: false)
+
+		weak var observation: DefaultsObservation? = Defaults.observe(key, options: []) { _ in }.tieToLifetime(of: self)
+		observation!.removeLifetimeTie()
+
+		for i in 1...10 {
+			if observation == nil {
+				break
+			}
+
+			sleep(1)
+
+			if i == 10 {
+				XCTFail()
+			}
+		}
+	}
 }

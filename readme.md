@@ -142,6 +142,27 @@ Defaults[.isUnicornMode] = true
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
 
+### Invalidate observations automatically
+
+```swift
+extension Defaults.Keys {
+	static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+}
+
+final class Foo {
+	init() {
+		Defaults.observe(.isUnicornMode) { change in
+			print(change.oldValue)
+			print(change.newValue)
+		}.tieToLifetime(of: self)
+	}
+}
+
+Defaults[.isUnicornMode] = true
+```
+
+The observation will be valid until `self` is deinitialized.
+
 ### Reset keys to their default values
 
 ```swift
@@ -283,6 +304,47 @@ Defaults.removeAll(suite: UserDefaults = .standard)
 Type: `func`
 
 Remove all entries from the `UserDefaults` suite.
+
+### `DefaultsObservation`
+
+Type: `protocol`
+
+Represents an observation of a defaults key.
+
+#### `DefaultsObservation.invalidate`
+
+```swift
+DefaultsObservation.invalidate()
+```
+
+Type: `func`
+
+Invalidate the observation.
+
+#### `DefaultsObservation.tieToLifetime`
+
+```swift
+@discardableResult
+DefaultsObservation.tieToLifetime(of weaklyHeldObject: AnyObject) -> Self
+```
+
+Type: `func`
+
+Keep the observation alive for as long as, and no longer than, another object exists.
+
+When `weaklyHeldObject` is deinitialized, the observation is invalidated automatically.
+
+#### `DefaultsObservation.removeLifetimeTie`
+
+```swift
+DefaultsObservation.removeLifetimeTie()
+```
+
+Type: `func`
+
+Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
+
+The effects of any call to `tieToLifetime(of:)` are reversed. Note however that if the tied-to object has already died, then the observation is already invalid and this method has no logical effect.
 
 
 ## FAQ

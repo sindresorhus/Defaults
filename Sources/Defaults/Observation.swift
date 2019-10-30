@@ -1,8 +1,28 @@
 import Foundation
 
 /// TODO: Nest this inside `Defaults` if Swift ever supported nested protocols.
-public protocol DefaultsObservation {
+public protocol DefaultsObservation: AnyObject {
 	func invalidate()
+
+	/**
+	Keep this observation alive for as long as, and no longer than, another object exists.
+
+	```
+	Defaults.observe(.xyz) { [unowned self] change in
+		self.xyz = change.newValue
+	}.tieToLifetime(of: self)
+	```
+	*/
+	@discardableResult
+	func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self
+
+	/**
+	Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
+
+	- Postcondition: The effects of any call to `tieToLifetime(of:)` are reversed.
+	- Note: If the tied-to object has already died, then self is considered to be invalidated, and this method has no logical effect.
+	*/
+	func removeLifetimeTie()
 }
 
 extension Defaults {
@@ -95,6 +115,20 @@ extension Defaults {
 		public func invalidate() {
 			object?.removeObserver(self, forKeyPath: key, context: nil)
 			object = nil
+			lifetimeAssociation?.cancel()
+		}
+
+		private var lifetimeAssociation: LifetimeAssociation? = nil
+
+		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
+				self?.invalidate()
+			})
+			return self
+		}
+
+		public func removeLifetimeTie() {
+			lifetimeAssociation?.cancel()
 		}
 
 		// swiftlint:disable:next block_based_kvo
@@ -104,8 +138,12 @@ extension Defaults {
 			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
 			context: UnsafeMutableRawPointer?
 		) {
+			guard let selfObject = self.object else {
+				invalidate()
+				return
+			}
+
 			guard
-				let selfObject = self.object,
 				selfObject == object as? NSObject,
 				let change = change
 			else {
