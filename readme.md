@@ -9,6 +9,7 @@ This package is used in production by apps like [Gifski](https://github.com/sind
 
 - **Strongly typed:** You declare the type and default value upfront.
 - **Codable support:** You can store any [Codable](https://developer.apple.com/documentation/swift/codable) value, like an enum.
+- **NSSecureCoding support:** You can store any [NSSecureCoding](https://developer.apple.com/documentation/foundation/nssecurecoding) value.
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Observation:** Observe changes to keys.
 - **Lightweight:** It's only ~300 lines of code.
@@ -87,6 +88,28 @@ if let name = Defaults[.name] {
 ```
 
 The default value is then `nil`.
+
+---
+
+If you have `NSSecureCoding` classes which you want to save, you can use them as follows:
+
+```swift
+extension Defaults.Keys {
+	static let someSecureCoding = NSSecureCodingKey<SomeNSSecureCodingClass>("someSecureCoding", default: SomeNSSecureCodingClass(string: "Default", int: 5, bool: true))
+	static let someOptionalSecureCoding = NSSecureCodingOptionalKey<Double>("someOptionalSecureCoding")
+}
+
+Defaults[.someSecureCoding].string
+//=> "Default"
+
+Defaults[.someSecureCoding].int
+//=> 5
+
+Defaults[.someSecureCoding].bool
+//=> true
+```
+
+You can use those keys just like in all the other examples. The return value will be your `NSSecureCoding` class.
 
 ### Enum example
 
@@ -248,6 +271,18 @@ Create a key with a default value.
 
 The default value is written to the actual `UserDefaults` and can be used elsewhere. For example, with a Interface Builder binding.
 
+#### `Defaults.NSSecureCodingKey` *(alias `Defaults.Keys.NSSecureCodingKey`)*
+
+```swift
+Defaults.NSSecureCodingKey<T>(_ key: String, default: T, suite: UserDefaults = .standard)
+```
+
+Type: `class`
+
+Create a NSSecureCoding key with a default value.
+
+The default value is written to the actual `UserDefaults` and can be used elsewhere. For example, with a Interface Builder binding.
+
 #### `Defaults.OptionalKey` *(alias `Defaults.Keys.OptionalKey`)*
 
 ```swift
@@ -258,6 +293,16 @@ Type: `class`
 
 Create a key with an optional value.
 
+#### `Defaults.NSSecureCodingOptionalKey` *(alias `Defaults.Keys.NSSecureCodingOptionalKey`)*
+
+```swift
+Defaults.NSSecureCodingOptionalKey<T>(_ key: String, suite: UserDefaults = .standard)
+```
+
+Type: `class`
+
+Create a NSSecureCoding key with an optional value.
+
 #### `Defaults.reset`
 
 ```swift
@@ -265,6 +310,11 @@ Defaults.reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .st
 Defaults.reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard)
 Defaults.reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard)
 Defaults.reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard)
+
+Defaults.reset<T: Codable>(_ keys: Defaults.NSSecureCodingKey<T>..., suite: UserDefaults = .standard)
+Defaults.reset<T: Codable>(_ keys: [Defaults.NSSecureCodingKey<T>], suite: UserDefaults = .standard)
+Defaults.reset<T: Codable>(_ keys: Defaults.NSSecureCodingOptionalKey<T>..., suite: UserDefaults = .standard)
+Defaults.reset<T: Codable>(_ keys: [Defaults.NSSecureCodingOptionalKey<T>], suite: UserDefaults = .standard)
 ```
 
 Type: `func`
@@ -283,9 +333,25 @@ Defaults.observe<T: Codable>(
 
 ```swift
 Defaults.observe<T: Codable>(
+	_ key: Defaults.NSSecureCodingKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new],
+	handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
+) -> DefaultsObservation
+```
+
+```swift
+Defaults.observe<T: Codable>(
 	_ key: Defaults.OptionalKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (OptionalKeyChange<T>) -> Void
+) -> DefaultsObservation
+```
+
+```swift
+Defaults.observe<T: Codable>(
+	_ key: Defaults.NSSecureCodingOptionalKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new],
+	handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
 ) -> DefaultsObservation
 ```
 
