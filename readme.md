@@ -187,7 +187,7 @@ Defaults[.isUnicornMode] = true
 cancellable.cancel()
 ```
 
-There is also observation API using Combine framework, exposing `Publisher` object for key changes.
+There is also observation API using [Combine](https://developer.apple.com/documentation/combine) framework, exposing [Publisher](https://developer.apple.com/documentation/combine/publisher) object for key changes.
 
 ### Invalidate observations automatically
 
@@ -417,7 +417,7 @@ Defaults.publisher<T: NSSecureCoding>(
 
 Type: `func`
 
-Observation API using `Publisher` from Combine framework. Available on iOS 13.0+, tvOS 13.0+, macOS 10.15+ or watchOS 6.0+.
+Observation API using [Publisher](https://developer.apple.com/documentation/combine/publisher) from [Combine](https://developer.apple.com/documentation/combine) framework. Available on iOS 13.0+, tvOS 13.0+, macOS 10.15+ or watchOS 6.0+.
 
 #### `Defaults.removeAll`
 
