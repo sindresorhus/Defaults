@@ -37,7 +37,7 @@ extension Defaults {
 	}
 	
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	fileprivate struct DefaultsPublisher: Publisher {
+	internal struct DefaultsPublisher: Publisher {
 		typealias Output = BaseChange
 		typealias Failure = Never
 		
@@ -75,7 +75,7 @@ extension Defaults {
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<T: Codable>(
+	public static func publisher<T: NSSecureCoding>(
 		_ key: Defaults.NSSecureCodingKey<T>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new]
 	) -> AnyPublisher<NSSecureCodingKeyChange<T>, Never> {
@@ -103,8 +103,8 @@ extension Defaults {
 	}
 	
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<T: Codable>(
-		_ key: Defaults.OptionalKey<T>,
+	public static func publisher<T: NSSecureCoding>(
+		_ key: Defaults.NSSecureCodingOptionalKey<T>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new]
 	) -> AnyPublisher<NSSecureCodingOptionalKeyChange<T>, Never> {
 		let publisher =
