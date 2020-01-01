@@ -165,6 +165,30 @@ Defaults[.isUnicornMode] = true
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
 
+```swift
+let publisher = Defaults.publisher(.isUnicornMode)
+let cancellable = publisher.sink { change in
+	// Initial event
+	print(change.oldValue)
+	//=> false
+	print(change.newValue)
+	//=> false
+
+	// First actual event
+	print(change.oldValue)
+	//=> false
+	print(change.newValue)
+	//=> true
+}
+
+Defaults[.isUnicornMode] = true
+
+// to invalidate observation
+cancellable.cancel()
+```
+
+There is also observation API using Combine framework, exposing `Publisher` object for key changes.
+
 ### Invalidate observations automatically
 
 ```swift
@@ -332,7 +356,7 @@ Defaults.observe<T: Codable>(
 ```
 
 ```swift
-Defaults.observe<T: Codable>(
+Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
@@ -348,7 +372,7 @@ Defaults.observe<T: Codable>(
 ```
 
 ```swift
-Defaults.observe<T: Codable>(
+Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingOptionalKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
@@ -360,6 +384,40 @@ Type: `func`
 Observe changes to a key or an optional key.
 
 By default, it will also trigger an initial event on creation. This can be useful for setting default values on controls. You can override this behavior with the `options` argument.
+
+#### `Defaults.publisher`
+
+```swift
+Defaults.publisher<T: Codable>(
+	_ key: Defaults.Key<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<KeyChange<T>, Never>
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	_ key: Defaults.NSSecureCodingKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<NSSecureCodingKeyChange<T>, Never>
+```
+
+```swift
+Defaults.publisher<T: Codable>(
+	_ key: Defaults.OptionalKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<OptionalKeyChange<T>, Never>
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	_ key: Defaults.NSSecureCodingOptionalKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<NSSecureCodingOptionalKeyChange<T>, Never>
+```
+
+Type: `func`
+
+Observation API using `Publisher` from Combine framework. Available on iOS 13.0+, tvOS 13.0+, macOS 10.15+ or watchOS 6.0+.
 
 #### `Defaults.removeAll`
 
