@@ -16,7 +16,7 @@ extension Defaults {
 		Custom Subscription for user defaults key observation
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	internal final class DefaultsSubscription<SubscriberType: Subscriber>: Subscription where SubscriberType.Input == BaseChange {
+	final class DefaultsSubscription<SubscriberType: Subscriber>: Subscription where SubscriberType.Input == BaseChange {
 		private var subscriber: SubscriberType?
 		private var observation: UserDefaultsKeyObservation?
 		
@@ -45,7 +45,7 @@ extension Defaults {
 		Custom Publisher, which is using DefaultsSubscription
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	internal struct DefaultsPublisher: Publisher {
+	struct DefaultsPublisher: Publisher {
 		typealias Output = BaseChange
 		typealias Failure = Never
 		

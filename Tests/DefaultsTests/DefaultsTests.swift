@@ -2,9 +2,7 @@ import Foundation
 import XCTest
 import Defaults
 import CoreData
-#if canImport(Combine)
 import Combine
-#endif
 
 let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureURL2 = URL(string: "https://example.com")!
@@ -168,7 +166,6 @@ final class DefaultsTests: XCTestCase {
 		Defaults.removeAll(suite: customSuite)
 	}
 
-	#if canImport(Combine)
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
@@ -270,7 +267,6 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-	#endif
 
 	func testObserveKey() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)

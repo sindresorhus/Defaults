@@ -64,7 +64,7 @@ extension Defaults {
 		return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dataValue) as? T
 	}
 
-	internal final class BaseChange {
+	final class BaseChange {
 		let kind: NSKeyValueChange
 		let indexes: IndexSet?
 		let isPrior: Bool
@@ -87,7 +87,7 @@ extension Defaults {
 		public let newValue: T
 		public let oldValue: T
 
-		internal init(change: BaseChange, defaultValue: T) {
+		init(change: BaseChange, defaultValue: T) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
@@ -104,7 +104,7 @@ extension Defaults {
 		public let newValue: T
 		public let oldValue: T
 
-		internal init(change: BaseChange, defaultValue: T) {
+		init(change: BaseChange, defaultValue: T) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
@@ -120,7 +120,7 @@ extension Defaults {
 		public let newValue: T?
 		public let oldValue: T?
 
-		internal init(change: BaseChange) {
+		init(change: BaseChange) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
@@ -137,7 +137,7 @@ extension Defaults {
 		public let newValue: T?
 		public let oldValue: T?
 
-		internal init(change: BaseChange) {
+		init(change: BaseChange) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
@@ -146,14 +146,14 @@ extension Defaults {
 		}
 	}
 
-	internal final class UserDefaultsKeyObservation: NSObject, DefaultsObservation {
-		internal typealias Callback = (BaseChange) -> Void
+	final class UserDefaultsKeyObservation: NSObject, DefaultsObservation {
+		typealias Callback = (BaseChange) -> Void
 
 		private weak var object: UserDefaults?
 		private let key: String
 		private let callback: Callback
 
-		internal init(object: UserDefaults, key: String, callback: @escaping Callback) {
+		init(object: UserDefaults, key: String, callback: @escaping Callback) {
 			self.object = object
 			self.key = key
 			self.callback = callback
@@ -163,7 +163,7 @@ extension Defaults {
 			invalidate()
 		}
 
-		internal func start(options: NSKeyValueObservingOptions) {
+		func start(options: NSKeyValueObservingOptions) {
 			object?.addObserver(self, forKeyPath: key, options: options, context: nil)
 		}
 
