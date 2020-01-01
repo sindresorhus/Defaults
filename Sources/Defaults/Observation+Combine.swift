@@ -12,6 +12,9 @@ import Foundation
 import Combine
 
 extension Defaults {
+	/**
+		Custom Subscription for user defaults key observation
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	internal final class DefaultsSubscription<SubscriberType: Subscriber>: Subscription where SubscriberType.Input == BaseChange {
 		private var subscriber: SubscriberType?
@@ -23,7 +26,9 @@ extension Defaults {
 			self.observation?.start(options: options)
 		}
 		
-		func request(_ demand: Subscribers.Demand) {}
+		func request(_ demand: Subscribers.Demand) {
+			// nothing as we send events only when they occur
+		}
 		
 		func cancel() {
 			observation?.invalidate()
@@ -36,6 +41,9 @@ extension Defaults {
 		}
 	}
 	
+	/**
+		Custom Publisher, which is using DefaultsSubscription
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	internal struct DefaultsPublisher: Publisher {
 		typealias Output = BaseChange
@@ -60,6 +68,21 @@ extension Defaults {
 		}
 	}
 
+	/**
+		Returns type-erased Publisher object, publishing changes related to specified key.
+
+		```
+		extension Defaults.Keys {
+			static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+		}
+
+		let publisher = Defaults.publisher(.isUnicornMode).map { $0.newValue }
+		let cancellable = publisher.sink { (value)
+			print(value)
+			//=> false
+		}
+		```
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: Codable>(
 		_ key: Defaults.Key<T>,
@@ -74,6 +97,9 @@ extension Defaults {
 		return AnyPublisher(publisher)
 	}
 
+	/**
+		Returns type-erased Publisher object, publishing changes related to specified key.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: NSSecureCoding>(
 		_ key: Defaults.NSSecureCodingKey<T>,
@@ -88,6 +114,9 @@ extension Defaults {
 		return AnyPublisher(publisher)
 	}
 
+	/**
+		Returns type-erased Publisher object, publishing changes related to specified optional key.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: Codable>(
 		_ key: Defaults.OptionalKey<T>,
@@ -102,6 +131,9 @@ extension Defaults {
 		return AnyPublisher(publisher)
 	}
 	
+	/**
+		Returns type-erased Publisher object, publishing changes related to specified optional key.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: NSSecureCoding>(
 		_ key: Defaults.NSSecureCodingOptionalKey<T>,
