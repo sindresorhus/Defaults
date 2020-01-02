@@ -419,6 +419,14 @@ Type: `func`
 
 Observation API using [Publisher](https://developer.apple.com/documentation/combine/publisher) from [Combine](https://developer.apple.com/documentation/combine) framework. Available on iOS 13.0+, tvOS 13.0+, macOS 10.15+ or watchOS 6.0+.
 
+#### `Defaults.publisherAll`
+
+```swift
+Defaults.publisherAll() -> AnyPublisher<UserDefaults, Never>
+```
+
+Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all UserDefaults key change events. Wrapper around `UserDefaults.didChangeNotification` notification. 
+
 #### `Defaults.removeAll`
 
 ```swift

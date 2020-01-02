@@ -147,6 +147,14 @@ extension Defaults {
 		
 		return AnyPublisher(publisher)
 	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	public static func publisherAll() -> AnyPublisher<UserDefaults, Never> {
+		let publisher = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
+		return publisher
+			.map { $0.object as! UserDefaults }
+			.eraseToAnyPublisher()
+	}
 }
 
 #endif
