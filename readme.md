@@ -419,6 +419,40 @@ Type: `func`
 
 Observation API using [Publisher](https://developer.apple.com/documentation/combine/publisher) from [Combine](https://developer.apple.com/documentation/combine) framework. Available on iOS 13.0+, tvOS 13.0+, macOS 10.15+ or watchOS 6.0+.
 
+#### `Defaults.publisher`
+
+```swift
+Defaults.publisher<T: Codable>(
+	keys: Defaults.Key<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	keys: Defaults.NSSecureCodingKey<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+```swift
+Defaults.publisher<T: Codable>(
+	keys: Defaults.OptionalKey<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	keys: Defaults.NSSecureCodingOptionalKey<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+Type: `func`
+
+[Combine](https://developer.apple.com/documentation/combine) observation API for multiple key observation, but without specific information about changes.
+
 #### `Defaults.publisherAll`
 
 ```swift
