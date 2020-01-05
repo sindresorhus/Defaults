@@ -155,6 +155,90 @@ extension Defaults {
 			.map { $0.object as! UserDefaults }
 			.eraseToAnyPublisher()
 	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	public static func publisher<T: Codable>(
+		keys: Defaults.Key<T>...,
+		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	) -> AnyPublisher<Void, Never> {
+		let initial =
+			Empty<Void, Never>(completeImmediately: false)
+				.eraseToAnyPublisher()
+
+		let combinedPublisher =
+			keys.map { key in
+				return Defaults.publisher(key, options: options)
+					.map { _ in () }
+					.eraseToAnyPublisher()
+			}.reduce(initial) { (combined, keyPublisher) in
+				combined.merge(with: keyPublisher).eraseToAnyPublisher()
+			}
+		
+		return combinedPublisher
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	public static func publisher<T: Codable>(
+		keys: Defaults.OptionalKey<T>...,
+		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	) -> AnyPublisher<Void, Never> {
+		let initial =
+			Empty<Void, Never>(completeImmediately: false)
+				.eraseToAnyPublisher()
+
+		let combinedPublisher =
+			keys.map { key in
+				return Defaults.publisher(key, options: options)
+					.map { _ in () }
+					.eraseToAnyPublisher()
+			}.reduce(initial) { (combined, keyPublisher) in
+				combined.merge(with: keyPublisher).eraseToAnyPublisher()
+			}
+		
+		return combinedPublisher
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	public static func publisher<T: NSSecureCoding>(
+		keys: Defaults.NSSecureCodingKey<T>...,
+		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	) -> AnyPublisher<Void, Never> {
+		let initial =
+			Empty<Void, Never>(completeImmediately: false)
+				.eraseToAnyPublisher()
+
+		let combinedPublisher =
+			keys.map { key in
+				return Defaults.publisher(key, options: options)
+					.map { _ in () }
+					.eraseToAnyPublisher()
+			}.reduce(initial) { (combined, keyPublisher) in
+				combined.merge(with: keyPublisher).eraseToAnyPublisher()
+			}
+		
+		return combinedPublisher
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	public static func publisher<T: NSSecureCoding>(
+		keys: Defaults.NSSecureCodingOptionalKey<T>...,
+		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	) -> AnyPublisher<Void, Never> {
+		let initial =
+			Empty<Void, Never>(completeImmediately: false)
+				.eraseToAnyPublisher()
+
+		let combinedPublisher =
+			keys.map { key in
+				return Defaults.publisher(key, options: options)
+					.map { _ in () }
+					.eraseToAnyPublisher()
+			}.reduce(initial) { (combined, keyPublisher) in
+				combined.merge(with: keyPublisher).eraseToAnyPublisher()
+			}
+		
+		return combinedPublisher
+	}
 }
 
 #endif
