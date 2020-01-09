@@ -2,8 +2,9 @@
 
 > Swifty and modern [UserDefaults](https://developer.apple.com/documentation/foundation/userdefaults)
 
-This package is used in production by apps like [Gifski](https://github.com/sindresorhus/Gifski), [Dato](https://sindresorhus.com/dato), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter).
+It uses `NSUserDefaults` underneath but exposes a type-safe facade with lots of nice conveniences.
 
+It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gifski), [Dato](https://sindresorhus.com/dato), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter).
 
 ## Highlights
 
@@ -14,14 +15,12 @@ This package is used in production by apps like [Gifski](https://github.com/sind
 - **Observation:** Observe changes to keys.
 - **Lightweight:** It's only some hundred lines of code.
 
-
 ## Compatibility
 
 - macOS 10.12+
 - iOS 10+
 - tvOS 10+
 - watchOS 3+
-
 
 ## Install
 
@@ -42,7 +41,6 @@ github "sindresorhus/Defaults"
 ```ruby
 pod 'Defaults'
 ```
-
 
 ## Usage
 
@@ -248,7 +246,6 @@ print(UserDefaults.standard.bool(forKey: isUnicornMode.name))
 //=> true
 ```
 
-
 ## API
 
 ### `Defaults`
@@ -412,13 +409,11 @@ Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
 
 The effects of any call to `tieToLifetime(of:)` are reversed. Note however that if the tied-to object has already died, then the observation is already invalid and this method has no logical effect.
 
-
 ## FAQ
 
 ### How is this different from [`SwiftyUserDefaults`](https://github.com/radex/SwiftyUserDefaults)?
 
 It's inspired by that package and other solutions. The main difference is that this module doesn't hardcode the default values and comes with Codable support.
-
 
 ## Related
 
