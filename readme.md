@@ -418,9 +418,11 @@ Defaults.publisher<T: NSSecureCoding>(
 
 Type: `func`
 
-Observation API using [Publisher](https://developer.apple.com/documentation/combine/publisher) from [Combine](https://developer.apple.com/documentation/combine) framework. Available on iOS 13.0+, tvOS 13.0+, macOS 10.15+ or watchOS 6.0+.
+Observation API using [Publisher](https://developer.apple.com/documentation/combine/publisher) from the [Combine](https://developer.apple.com/documentation/combine) framework.
 
-#### `Defaults.publisher`
+Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
+
+#### `Defaults.publisher(keys:)`
 
 ```swift
 Defaults.publisher<T: Codable>(
@@ -454,13 +456,17 @@ Type: `func`
 
 [Combine](https://developer.apple.com/documentation/combine) observation API for multiple key observation, but without specific information about changes.
 
+Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
+
 #### `Defaults.publisherAll`
 
 ```swift
 Defaults.publisherAll() -> AnyPublisher<UserDefaults, Never>
 ```
 
-Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all UserDefaults key change events. Wrapper around `UserDefaults.didChangeNotification` notification. 
+Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all `UserDefaults` key change events. A wrapper around the [`UserDefaults.didChangeNotification` notification](https://developer.apple.com/documentation/foundation/userdefaults/1408206-didchangenotification).
+
+Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 
 #### `Defaults.removeAll`
 
