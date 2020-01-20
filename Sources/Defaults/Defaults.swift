@@ -16,13 +16,13 @@ public final class Defaults {
 		fileprivate init() {}
 	}
 
-	public final class Key<T: Codable>: Keys {
+	public final class Key<Value: Codable>: Keys {
 		public let name: String
-		public let defaultValue: T
+		public let defaultValue: Value
 		public let suite: UserDefaults
 
 		/// Create a defaults key.
-		public init(_ key: String, default defaultValue: T, suite: UserDefaults = .standard) {
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
 			self.name = key
 			self.defaultValue = defaultValue
 			self.suite = suite
@@ -30,7 +30,7 @@ public final class Defaults {
 			super.init()
 
 			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
-			if UserDefaults.isNativelySupportedType(T.self) {
+			if UserDefaults.isNativelySupportedType(Value.self) {
 				suite.register(defaults: [key: defaultValue])
 			} else if let value = suite._encode(defaultValue) {
 				suite.register(defaults: [key: value])
@@ -39,13 +39,13 @@ public final class Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingKey<T: NSSecureCoding>: Keys {
+	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys {
 		public let name: String
-		public let defaultValue: T
+		public let defaultValue: Value
 		public let suite: UserDefaults
 
 		/// Create a defaults key.
-		public init(_ key: String, default defaultValue: T, suite: UserDefaults = .standard) {
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
 			self.name = key
 			self.defaultValue = defaultValue
 			self.suite = suite
@@ -53,7 +53,7 @@ public final class Defaults {
 			super.init()
 
 			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
-			if UserDefaults.isNativelySupportedType(T.self) {
+			if UserDefaults.isNativelySupportedType(Value.self) {
 				suite.register(defaults: [key: defaultValue])
 			} else if let value = try? NSKeyedArchiver.archivedData(withRootObject: defaultValue, requiringSecureCoding: true) {
 				suite.register(defaults: [key: value])
@@ -61,7 +61,7 @@ public final class Defaults {
 		}
 	}
 
-	public final class OptionalKey<T: Codable>: Keys {
+	public final class OptionalKey<Value: Codable>: Keys {
 		public let name: String
 		public let suite: UserDefaults
 
@@ -73,7 +73,7 @@ public final class Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingOptionalKey<T: NSSecureCoding>: Keys {
+	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys {
 		public let name: String
 		public let suite: UserDefaults
 
@@ -87,7 +87,7 @@ public final class Defaults {
 	fileprivate init() {}
 
 	/// Access a defaults value using a `Defaults.Key`.
-	public static subscript<T: Codable>(key: Key<T>) -> T {
+	public static subscript<Value: Codable>(key: Key<Value>) -> Value {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -96,7 +96,7 @@ public final class Defaults {
 
 	/// Access a defaults value using a `Defaults.NSSecureCodingKey`.
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static subscript<T: NSSecureCoding>(key: NSSecureCodingKey<T>) -> T {
+	public static subscript<Value: NSSecureCoding>(key: NSSecureCodingKey<Value>) -> Value {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -104,7 +104,7 @@ public final class Defaults {
 	}
 
 	/// Access a defaults value using a `Defaults.OptionalKey`.
-	public static subscript<T: Codable>(key: OptionalKey<T>) -> T? {
+	public static subscript<Value: Codable>(key: OptionalKey<Value>) -> Value? {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -113,7 +113,7 @@ public final class Defaults {
 
 	/// Access a defaults value using a `Defaults.OptionalKey`.
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static subscript<T: NSSecureCoding>(key: NSSecureCodingOptionalKey<T>) -> T? {
+	public static subscript<Value: NSSecureCoding>(key: NSSecureCodingOptionalKey<Value>) -> Value? {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -140,7 +140,7 @@ public final class Defaults {
 	//=> false
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: Key<T>..., suite: UserDefaults = .standard) {
+	public static func reset<Value: Codable>(_ keys: Key<Value>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 
@@ -151,7 +151,7 @@ public final class Defaults {
 	- Parameter suite: `UserDefaults` suite.
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<T: NSSecureCoding>(_ keys: NSSecureCodingKey<T>..., suite: UserDefaults = .standard) {
+	public static func reset<Value: NSSecureCoding>(_ keys: NSSecureCodingKey<Value>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
@@ -175,7 +175,7 @@ public final class Defaults {
 	//=> false
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: [Key<T>], suite: UserDefaults = .standard) {
+	public static func reset<Value: Codable>(_ keys: [Key<Value>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = key.defaultValue
 		}
@@ -188,7 +188,7 @@ public final class Defaults {
 	- Parameter suite: `UserDefaults` suite.
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<T: NSSecureCoding>(_ keys: [NSSecureCodingKey<T>], suite: UserDefaults = .standard) {
+	public static func reset<Value: NSSecureCoding>(_ keys: [NSSecureCodingKey<Value>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = key.defaultValue
 		}
@@ -213,7 +213,7 @@ public final class Defaults {
 	//=> nil
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: OptionalKey<T>..., suite: UserDefaults = .standard) {
+	public static func reset<Value: Codable>(_ keys: OptionalKey<Value>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 
@@ -225,7 +225,7 @@ public final class Defaults {
 	```
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<T: NSSecureCoding>(_ keys: NSSecureCodingOptionalKey<T>..., suite: UserDefaults = .standard) {
+	public static func reset<Value: NSSecureCoding>(_ keys: NSSecureCodingOptionalKey<Value>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
 	}
 	
@@ -248,7 +248,7 @@ public final class Defaults {
 	//=> nil
 	```
 	*/
-	public static func reset<T: Codable>(_ keys: [OptionalKey<T>], suite: UserDefaults = .standard) {
+	public static func reset<Value: Codable>(_ keys: [OptionalKey<Value>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = nil
 		}
@@ -261,7 +261,7 @@ public final class Defaults {
 	- Parameter suite: `UserDefaults` suite.
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<T: NSSecureCoding>(_ keys: [NSSecureCodingOptionalKey<T>], suite: UserDefaults = .standard) {
+	public static func reset<Value: NSSecureCoding>(_ keys: [NSSecureCodingOptionalKey<Value>], suite: UserDefaults = .standard) {
 		for key in keys {
 			key.suite[key] = nil
 		}
@@ -278,9 +278,9 @@ public final class Defaults {
 }
 
 extension UserDefaults {
-	private func _get<T: Codable>(_ key: String) -> T? {
-		if UserDefaults.isNativelySupportedType(T.self) {
-			return object(forKey: key) as? T
+	private func _get<Value: Codable>(_ key: String) -> Value? {
+		if UserDefaults.isNativelySupportedType(Value.self) {
+			return object(forKey: key) as? Value
 		}
 
 		guard
@@ -291,7 +291,7 @@ extension UserDefaults {
 		}
 
 		do {
-			return (try JSONDecoder().decode([T].self, from: data)).first
+			return (try JSONDecoder().decode([Value].self, from: data)).first
 		} catch {
 			print(error)
 		}
@@ -300,9 +300,9 @@ extension UserDefaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	private func _get<T: NSSecureCoding>(_ key: String) -> T? {
-		if UserDefaults.isNativelySupportedType(T.self) {
-			return object(forKey: key) as? T
+	private func _get<Value: NSSecureCoding>(_ key: String) -> Value? {
+		if UserDefaults.isNativelySupportedType(Value.self) {
+			return object(forKey: key) as? Value
 		}
 
 		guard
@@ -312,7 +312,7 @@ extension UserDefaults {
 		}
 
 		do {
-			return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? T
+			return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? Value
 		} catch {
 			print(error)
 		}
@@ -320,7 +320,7 @@ extension UserDefaults {
 		return nil
 	}
 
-	fileprivate func _encode<T: Codable>(_ value: T) -> String? {
+	fileprivate func _encode<Value: Codable>(_ value: Value) -> String? {
 		do {
 			// Some codable values like URL and enum are encoded as a top-level
 			// string which JSON can't handle, so we need to wrap it in an array
@@ -333,8 +333,8 @@ extension UserDefaults {
 		}
 	}
 
-	private func _set<T: Codable>(_ key: String, to value: T) {
-		if UserDefaults.isNativelySupportedType(T.self) {
+	private func _set<Value: Codable>(_ key: String, to value: Value) {
+		if UserDefaults.isNativelySupportedType(Value.self) {
 			set(value, forKey: key)
 			return
 		}
@@ -343,8 +343,8 @@ extension UserDefaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	private func _set<T: NSSecureCoding>(_ key: String, to value: T) {
-		if UserDefaults.isNativelySupportedType(T.self) {
+	private func _set<Value: NSSecureCoding>(_ key: String, to value: Value) {
+		if UserDefaults.isNativelySupportedType(Value.self) {
 			set(value, forKey: key)
 			return
 		}
@@ -352,7 +352,7 @@ extension UserDefaults {
 		set(try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true), forKey: key)
 	}
 
-	public subscript<T: Codable>(key: Defaults.Key<T>) -> T {
+	public subscript<Value: Codable>(key: Defaults.Key<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)
@@ -360,14 +360,14 @@ extension UserDefaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public subscript<T: NSSecureCoding>(key: Defaults.NSSecureCodingKey<T>) -> T {
+	public subscript<Value: NSSecureCoding>(key: Defaults.NSSecureCodingKey<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)
 		}
 	}
 
-	public subscript<T: Codable>(key: Defaults.OptionalKey<T>) -> T? {
+	public subscript<Value: Codable>(key: Defaults.OptionalKey<Value>) -> Value? {
 		get { _get(key.name) }
 		set {
 			guard let value = newValue else {
@@ -380,7 +380,7 @@ extension UserDefaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public subscript<T: NSSecureCoding>(key: Defaults.NSSecureCodingOptionalKey<T>) -> T? {
+	public subscript<Value: NSSecureCoding>(key: Defaults.NSSecureCodingOptionalKey<Value>) -> Value? {
 		get { _get(key.name) }
 		set {
 			guard let value = newValue else {
@@ -392,15 +392,16 @@ extension UserDefaults {
 		}
 	}
 
-	fileprivate static func isNativelySupportedType<T>(_ type: T.Type) -> Bool {
+	fileprivate static func isNativelySupportedType<Value>(_ type: Value.Type) -> Bool {
 		switch type {
-		case is Bool.Type,
-			 is String.Type,
-			 is Int.Type,
-			 is Double.Type,
-			 is Float.Type,
-			 is Date.Type,
-			 is Data.Type:
+		case
+			is Bool.Type,
+			is String.Type,
+			is Int.Type,
+			is Double.Type,
+			is Float.Type,
+			is Date.Type,
+			is Data.Type:
 			return true
 		default:
 			return false

@@ -26,7 +26,7 @@ public protocol DefaultsObservation: AnyObject {
 }
 
 extension Defaults {
-	private static func deserialize<T: Decodable>(_ value: Any?, to type: T.Type) -> T? {
+	private static func deserialize<Value: Decodable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
 			!(value is NSNull)
@@ -35,16 +35,16 @@ extension Defaults {
 		}
 
 		// This handles the case where the value was a plist value using `isNativelySupportedType`
-		if let value = value as? T {
+		if let value = value as? Value {
 			return value
 		}
 
 		// Using the array trick as done below in `UserDefaults#_set()`
-		return [T].init(jsonString: "\([value])")?.first
+		return [Value].init(jsonString: "\([value])")?.first
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	private static func deserialize<T: NSSecureCoding>(_ value: Any?, to type: T.Type) -> T? {
+	private static func deserialize<Value: NSSecureCoding>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
 			!(value is NSNull)
@@ -53,7 +53,7 @@ extension Defaults {
 		}
 
 		// This handles the case where the value was a plist value using `isNativelySupportedType`
-		if let value = value as? T {
+		if let value = value as? Value {
 			return value
 		}
 
@@ -61,7 +61,7 @@ extension Defaults {
 			return nil
 		}
 
-		return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dataValue) as? T
+		return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dataValue) as? Value
 	}
 
 	final class BaseChange {
@@ -80,69 +80,69 @@ extension Defaults {
 		}
 	}
 
-	public struct KeyChange<T: Codable> {
+	public struct KeyChange<Value: Codable> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
-		public let newValue: T
-		public let oldValue: T
+		public let newValue: Value
+		public let oldValue: Value
 
-		init(change: BaseChange, defaultValue: T) {
+		init(change: BaseChange, defaultValue: Value) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
-			self.oldValue = deserialize(change.oldValue, to: T.self) ?? defaultValue
-			self.newValue = deserialize(change.newValue, to: T.self) ?? defaultValue
+			self.oldValue = deserialize(change.oldValue, to: Value.self) ?? defaultValue
+			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
 		}
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public struct NSSecureCodingKeyChange<T: NSSecureCoding> {
+	public struct NSSecureCodingKeyChange<Value: NSSecureCoding> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
-		public let newValue: T
-		public let oldValue: T
+		public let newValue: Value
+		public let oldValue: Value
 
-		init(change: BaseChange, defaultValue: T) {
+		init(change: BaseChange, defaultValue: Value) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
-			self.oldValue = deserialize(change.oldValue, to: T.self) ?? defaultValue
-			self.newValue = deserialize(change.newValue, to: T.self) ?? defaultValue
+			self.oldValue = deserialize(change.oldValue, to: Value.self) ?? defaultValue
+			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
 		}
 	}
 
-	public struct OptionalKeyChange<T: Codable> {
+	public struct OptionalKeyChange<Value: Codable> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
-		public let newValue: T?
-		public let oldValue: T?
+		public let newValue: Value?
+		public let oldValue: Value?
 
 		init(change: BaseChange) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
-			self.oldValue = deserialize(change.oldValue, to: T.self)
-			self.newValue = deserialize(change.newValue, to: T.self)
+			self.oldValue = deserialize(change.oldValue, to: Value.self)
+			self.newValue = deserialize(change.newValue, to: Value.self)
 		}
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public struct NSSecureCodingOptionalKeyChange<T: NSSecureCoding> {
+	public struct NSSecureCodingOptionalKeyChange<Value: NSSecureCoding> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
-		public let newValue: T?
-		public let oldValue: T?
+		public let newValue: Value?
+		public let oldValue: Value?
 
 		init(change: BaseChange) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
-			self.oldValue = deserialize(change.oldValue, to: T.self)
-			self.newValue = deserialize(change.newValue, to: T.self)
+			self.oldValue = deserialize(change.oldValue, to: Value.self)
+			self.newValue = deserialize(change.newValue, to: Value.self)
 		}
 	}
 
@@ -223,14 +223,14 @@ extension Defaults {
 	}
 	```
 	*/
-	public static func observe<T: Codable>(
-		_ key: Defaults.Key<T>,
+	public static func observe<Value: Codable>(
+		_ key: Defaults.Key<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
-		handler: @escaping (KeyChange<T>) -> Void
+		handler: @escaping (KeyChange<Value>) -> Void
 	) -> DefaultsObservation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
-				KeyChange<T>(change: change, defaultValue: key.defaultValue)
+				KeyChange<Value>(change: change, defaultValue: key.defaultValue)
 			)
 		}
 		observation.start(options: options)
@@ -241,14 +241,14 @@ extension Defaults {
 	Observe a defaults key.
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func observe<T: NSSecureCoding>(
-		_ key: Defaults.NSSecureCodingKey<T>,
+	public static func observe<Value: NSSecureCoding>(
+		_ key: Defaults.NSSecureCodingKey<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
-		handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
+		handler: @escaping (NSSecureCodingKeyChange<Value>) -> Void
 	) -> DefaultsObservation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
-				NSSecureCodingKeyChange<T>(change: change, defaultValue: key.defaultValue)
+				NSSecureCodingKeyChange<Value>(change: change, defaultValue: key.defaultValue)
 			)
 		}
 		observation.start(options: options)
@@ -269,14 +269,14 @@ extension Defaults {
 	}
 	```
 	*/
-	public static func observe<T: Codable>(
-		_ key: Defaults.OptionalKey<T>,
+	public static func observe<Value: Codable>(
+		_ key: Defaults.OptionalKey<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
-		handler: @escaping (OptionalKeyChange<T>) -> Void
+		handler: @escaping (OptionalKeyChange<Value>) -> Void
 	) -> DefaultsObservation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
-				OptionalKeyChange<T>(change: change)
+				OptionalKeyChange<Value>(change: change)
 			)
 		}
 		observation.start(options: options)
@@ -287,14 +287,14 @@ extension Defaults {
 	Observe an optional defaults key.
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func observe<T: NSSecureCoding>(
-		_ key: Defaults.NSSecureCodingOptionalKey<T>,
+	public static func observe<Value: NSSecureCoding>(
+		_ key: Defaults.NSSecureCodingOptionalKey<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
-		handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
+		handler: @escaping (NSSecureCodingOptionalKeyChange<Value>) -> Void
 	) -> DefaultsObservation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
-				NSSecureCodingOptionalKeyChange<T>(change: change)
+				NSSecureCodingOptionalKeyChange<Value>(change: change)
 			)
 		}
 		observation.start(options: options)

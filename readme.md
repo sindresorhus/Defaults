@@ -2,6 +2,8 @@
 
 > Swifty and modern [UserDefaults](https://developer.apple.com/documentation/foundation/userdefaults)
 
+**Note:** The readme reflects the master branch. [Click here](https://github.com/sindresorhus/Defaults/tree/55ffea9487fb9b559406d909ee31dcd955fe77aa#readme) for docs for the latest version. The code in the master branch cannot be released until Apple fixes [this bug](https://github.com/feedback-assistant/reports/issues/44).
+
 It uses `NSUserDefaults` underneath but exposes a type-safe facade with lots of nice conveniences.
 
 It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gifski), [Dato](https://sindresorhus.com/dato), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter).
@@ -462,7 +464,7 @@ Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 Defaults.publisherAll(initialEvent: Bool = true) -> AnyPublisher<UserDefaults, Never>
 ```
 
-Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all `UserDefaults` key change events. A wrapper around the [`UserDefaults.didChangeNotification` notification](https://developer.apple.com/documentation/foundation/userdefaults/1408206-didchangenotification). 
+Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all `UserDefaults` key change events. A wrapper around the [`UserDefaults.didChangeNotification` notification](https://developer.apple.com/documentation/foundation/userdefaults/1408206-didchangenotification).
 
 - Parameter `initialEvent`: Trigger an initial event immediately.
 

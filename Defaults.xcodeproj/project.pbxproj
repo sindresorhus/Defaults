@@ -68,7 +68,7 @@
 		AD2FAA281CD0B6E100659CF4 /* DefaultsTests.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = DefaultsTests.plist; sourceTree = "<group>"; };
 		DD75027A1C68FCFC006590AF /* Defaults-macOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Defaults-macOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD75028D1C690C7A006590AF /* Defaults-tvOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Defaults-tvOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E286D0C623B8D51100570D1E /* Observation+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Observation+Combine.swift"; sourceTree = "<group>"; };
+		E286D0C623B8D51100570D1E /* Observation+Combine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = "Observation+Combine.swift"; sourceTree = "<group>"; usesTabs = 1; };
 		E3EB3E32216505920033B089 /* util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = util.swift; sourceTree = "<group>"; usesTabs = 1; };
 		E3EB3E34216507AE0033B089 /* Observation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Observation.swift; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */

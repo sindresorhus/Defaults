@@ -344,7 +344,7 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-	
+
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleOptionalKeysCombine() {
@@ -489,7 +489,7 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-	
+
 	func testResetKey() {
 		let defaultString1 = "foo1"
 		let defaultString2 = "foo2"
@@ -513,7 +513,7 @@ final class DefaultsTests: XCTestCase {
 			XCTAssertEqual(Defaults[key3].value, defaultString3)
 		}
 	}
-	
+
 	func testResetKeyArray() {
 		let defaultString1 = "foo1"
 		let defaultString2 = "foo2"
@@ -532,7 +532,7 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key2], defaultString2)
 		XCTAssertEqual(Defaults[key3], newString3)
 	}
-	
+
 	func testResetOptionalKey() {
 		let newString1 = "bar1"
 		let newString2 = "bar2"
@@ -552,7 +552,7 @@ final class DefaultsTests: XCTestCase {
 			XCTAssertEqual(Defaults[key3], nil)
 		}
 	}
-	
+
 	func testResetOptionalKeyArray() {
 		let newString1 = "bar1"
 		let newString2 = "bar2"
