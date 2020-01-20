@@ -462,10 +462,13 @@ Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 #### `Defaults.publisherAll`
 
 ```swift
-Defaults.publisherAll() -> AnyPublisher<UserDefaults, Never>
+Defaults.publisherAll(initialEvent: Bool = true) -> AnyPublisher<UserDefaults, Never>
 ```
 
-Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all `UserDefaults` key change events. A wrapper around the [`UserDefaults.didChangeNotification` notification](https://developer.apple.com/documentation/foundation/userdefaults/1408206-didchangenotification).
+Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all `UserDefaults` key change events. A wrapper around the [`UserDefaults.didChangeNotification` notification](https://developer.apple.com/documentation/foundation/userdefaults/1408206-didchangenotification). 
+
+Parameters:
+- `initialEvent` - trigger event immediately after subscription 
 
 Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 

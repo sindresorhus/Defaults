@@ -292,10 +292,10 @@ final class DefaultsTests: XCTestCase {
 	func testObserveAllCombine() {
 		let key = Defaults.Key<Bool>("observeAllKey", default: false)
 		let expect = expectation(description: "Observation closure being called")
-		let publisher = Defaults.publisherAll().collect(2)
+		let publisher = Defaults.publisherAll().collect(3)
 
 		let cancellable = publisher.sink { actualValues in
-			XCTAssertEqual(2, actualValues.count)
+			XCTAssertEqual(3, actualValues.count)
 			expect.fulfill()
 		}
 
