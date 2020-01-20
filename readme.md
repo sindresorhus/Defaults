@@ -166,8 +166,11 @@ Defaults[.isUnicornMode] = true
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
 
+There is also an observation API using the [Combine](https://developer.apple.com/documentation/combine) framework, exposing a [Publisher](https://developer.apple.com/documentation/combine/publisher) for key changes:
+
 ```swift
 let publisher = Defaults.publisher(.isUnicornMode)
+
 let cancellable = publisher.sink { change in
 	// Initial event
 	print(change.oldValue)
@@ -184,11 +187,9 @@ let cancellable = publisher.sink { change in
 
 Defaults[.isUnicornMode] = true
 
-// to invalidate observation
+// To invalidate the observation.
 cancellable.cancel()
 ```
-
-There is also observation API using [Combine](https://developer.apple.com/documentation/combine) framework, exposing [Publisher](https://developer.apple.com/documentation/combine/publisher) object for key changes.
 
 ### Invalidate observations automatically
 
