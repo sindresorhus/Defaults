@@ -296,7 +296,6 @@ final class DefaultsTests: XCTestCase {
 
 		let cancellable = publisher.sink { actualValues in
 			XCTAssertEqual(2, actualValues.count)
-			XCTAssertTrue(actualValues.allSatisfy { $0 == key.suite })
 			expect.fulfill()
 		}
 

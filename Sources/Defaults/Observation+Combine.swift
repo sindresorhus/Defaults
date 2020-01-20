@@ -134,6 +134,9 @@ extension Defaults {
 		return AnyPublisher(publisher)
 	}
 
+	/**
+	Publisher for multiple `Key<T>` observation, but without specific information about changes.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: Codable>(
 		keys: Defaults.Key<T>...,
@@ -153,6 +156,9 @@ extension Defaults {
 		return combinedPublisher
 	}
 
+	/**
+	Publisher for multiple `OptionalKey<T>` observation, but without specific information about changes.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: Codable>(
 		keys: Defaults.OptionalKey<T>...,
@@ -172,6 +178,9 @@ extension Defaults {
 		return combinedPublisher
 	}
 
+	/**
+	Publisher for multiple `NSSecureCodingKey<T>` observation, but without specific information about changes.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: NSSecureCoding>(
 		keys: Defaults.NSSecureCodingKey<T>...,
@@ -191,6 +200,9 @@ extension Defaults {
 		return combinedPublisher
 	}
 
+	/**
+	Publisher for multiple `NSSecureCodingOptionalKey<T>` observation, but without specific information about changes.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<T: NSSecureCoding>(
 		keys: Defaults.NSSecureCodingOptionalKey<T>...,
@@ -210,11 +222,15 @@ extension Defaults {
 		return combinedPublisher
 	}
 	
+	/**
+	Convenience `Publisher` for all `UserDefaults` key change events.
+	A wrapper around the `UserDefaults.didChangeNotification`.
+	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisherAll() -> AnyPublisher<UserDefaults, Never> {
+	public static func publisherAll() -> AnyPublisher<Void, Never> {
 		let publisher = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
 		return publisher
-			.map { $0.object as! UserDefaults }
+			.map { _ in () }
 			.eraseToAnyPublisher()
 	}
 }
