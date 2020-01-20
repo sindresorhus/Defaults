@@ -12,6 +12,7 @@ This package is used in production by apps like [Gifski](https://github.com/sind
 - **NSSecureCoding support:** You can store any [NSSecureCoding](https://developer.apple.com/documentation/foundation/nssecurecoding) value.
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Observation:** Observe changes to keys.
+- **Publishers:** Combine publishers built-in.
 - **Lightweight:** It's only some hundred lines of code.
 
 
