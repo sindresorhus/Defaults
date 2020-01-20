@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import Defaults
 import CoreData
+import Combine
 
 let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureURL2 = URL(string: "https://example.com")!
@@ -163,6 +164,224 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertTrue(customSuite[key])
 		XCTAssertTrue(Defaults[key])
 		Defaults.removeAll(suite: customSuite)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveKeyCombine() {
+		let key = Defaults.Key<Bool>("observeKey", default: false)
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [.old, .new])
+			.map { ($0.oldValue, $0.newValue) }
+			.collect(2)
+
+		let cancellable = publisher.sink { tuples in
+			for (i, expected) in [(false, true), (true, false)].enumerated() {
+				XCTAssertEqual(expected.0, tuples[i].0)
+				XCTAssertEqual(expected.1, tuples[i].1)
+			}
+
+			expect.fulfill()
+		}
+
+		Defaults[key] = true
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveNSSecureCodingKeyCombine() {
+		let key = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [.old, .new])
+			.map { ($0.oldValue.value, $0.newValue.value) }
+			.collect(3)
+
+		let expectedValues = [
+			("TestValue", "NewTestValue"),
+			("NewTestValue", "NewTestValue2"),
+			("NewTestValue2", "TestValue")
+		]
+
+		let cancellable = publisher.sink { actualValues in
+			for (expected, actual) in zip(expectedValues, actualValues) {
+				XCTAssertEqual(expected.0, actual.0)
+				XCTAssertEqual(expected.1, actual.1)
+			}
+
+			expect.fulfill()
+		}
+
+		Defaults[key] = ExamplePersistentHistory(value: "NewTestValue")
+		Defaults[key] = ExamplePersistentHistory(value: "NewTestValue2")
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveOptionalKeyCombine() {
+		let key = Defaults.OptionalKey<Bool>("observeOptionalKey")
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [.old, .new])
+			.map { ($0.oldValue, $0.newValue) }
+			.collect(3)
+
+		let expectedValues: [(Bool?, Bool?)] = [(nil, true), (true, false), (false, nil)]
+
+		let cancellable = publisher.sink { actualValues in
+			for (expected, actual) in zip(expectedValues, actualValues) {
+				XCTAssertEqual(expected.0, actual.0)
+				XCTAssertEqual(expected.1, actual.1)
+			}
+
+			expect.fulfill()
+		}
+
+		Defaults[key] = true
+		Defaults[key] = false
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveNSSecureCodingOptionalKeyCombine() {
+		let key = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingOptionalKey")
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [.old, .new])
+			.map { ($0.oldValue?.value, $0.newValue?.value) }
+			.collect(3)
+
+		let expectedValues: [(String?, String?)] = [
+			(nil, "NewTestValue"),
+			("NewTestValue", "NewTestValue2"),
+			("NewTestValue2", nil)
+		]
+
+		let cancellable = publisher.sink { actualValues in
+			for (expected, actual) in zip(expectedValues, actualValues) {
+				XCTAssertEqual(expected.0, actual.0)
+				XCTAssertEqual(expected.1, actual.1)
+			}
+
+			expect.fulfill()
+		}
+
+		XCTAssertNil(Defaults[key])
+		Defaults[key] = ExamplePersistentHistory(value: "NewTestValue")
+		Defaults[key] = ExamplePersistentHistory(value: "NewTestValue2")
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveAllCombine() {
+		let key = Defaults.Key<Bool>("observeAllKey", default: false)
+		let expect = expectation(description: "Observation closure being called")
+		let publisher = Defaults.publisherAll().collect(3)
+
+		let cancellable = publisher.sink { actualValues in
+			XCTAssertEqual(3, actualValues.count)
+			expect.fulfill()
+		}
+
+		Defaults[key] = true
+		Defaults[key] = false
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveMultipleKeysCombine() {
+		let key1 = Defaults.Key<Bool>("observeKey1", default: false)
+		let key2 = Defaults.Key<Bool>("observeKey2", default: true)
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+
+		let cancellable = publisher.sink { _ in
+			expect.fulfill()
+		}
+
+		Defaults[key1] = true
+		Defaults[key2] = false
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveMultipleNSSecureKeysCombine() {
+		let key1 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
+		let key2 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+
+		let cancellable = publisher.sink { _ in
+			expect.fulfill()
+		}
+
+		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
+		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+	
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveMultipleOptionalKeysCombine() {
+		let key1 = Defaults.OptionalKey<Bool>("observeOptionalKey1")
+		let key2 = Defaults.OptionalKey<Bool>("observeOptionalKey2")
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+
+		let cancellable = publisher.sink { _ in
+			expect.fulfill()
+		}
+
+		Defaults[key1] = true
+		Defaults[key2] = false
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveMultipleNSSecureOptionalKeysCombine() {
+		let key1 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingKey1")
+		let key2 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingKey2")
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+
+		let cancellable = publisher.sink { _ in
+			expect.fulfill()
+		}
+
+		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
+		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
 	}
 
 	func testObserveKey() {

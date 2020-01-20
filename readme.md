@@ -13,6 +13,7 @@ It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gi
 - **NSSecureCoding support:** You can store any [NSSecureCoding](https://developer.apple.com/documentation/foundation/nssecurecoding) value.
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Observation:** Observe changes to keys.
+- **Publishers:** Combine publishers built-in.
 - **Lightweight:** It's only some hundred lines of code.
 
 ## Compatibility
@@ -162,6 +163,31 @@ Defaults[.isUnicornMode] = true
 ```
 
 In contrast to the native `UserDefaults` key observation, here you receive a strongly-typed change object.
+
+There is also an observation API using the [Combine](https://developer.apple.com/documentation/combine) framework, exposing a [Publisher](https://developer.apple.com/documentation/combine/publisher) for key changes:
+
+```swift
+let publisher = Defaults.publisher(.isUnicornMode)
+
+let cancellable = publisher.sink { change in
+	// Initial event
+	print(change.oldValue)
+	//=> false
+	print(change.newValue)
+	//=> false
+
+	// First actual event
+	print(change.oldValue)
+	//=> false
+	print(change.newValue)
+	//=> true
+}
+
+Defaults[.isUnicornMode] = true
+
+// To invalidate the observation.
+cancellable.cancel()
+```
 
 ### Invalidate observations automatically
 
@@ -329,7 +355,7 @@ Defaults.observe<T: Codable>(
 ```
 
 ```swift
-Defaults.observe<T: Codable>(
+Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
@@ -345,7 +371,7 @@ Defaults.observe<T: Codable>(
 ```
 
 ```swift
-Defaults.observe<T: Codable>(
+Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingOptionalKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
@@ -357,6 +383,90 @@ Type: `func`
 Observe changes to a key or an optional key.
 
 By default, it will also trigger an initial event on creation. This can be useful for setting default values on controls. You can override this behavior with the `options` argument.
+
+#### `Defaults.publisher`
+
+```swift
+Defaults.publisher<T: Codable>(
+	_ key: Defaults.Key<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<KeyChange<T>, Never>
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	_ key: Defaults.NSSecureCodingKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<NSSecureCodingKeyChange<T>, Never>
+```
+
+```swift
+Defaults.publisher<T: Codable>(
+	_ key: Defaults.OptionalKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<OptionalKeyChange<T>, Never>
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	_ key: Defaults.NSSecureCodingOptionalKey<T>,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<NSSecureCodingOptionalKeyChange<T>, Never>
+```
+
+Type: `func`
+
+Observation API using [Publisher](https://developer.apple.com/documentation/combine/publisher) from the [Combine](https://developer.apple.com/documentation/combine) framework.
+
+Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
+
+#### `Defaults.publisher(keys:)`
+
+```swift
+Defaults.publisher<T: Codable>(
+	keys: Defaults.Key<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	keys: Defaults.NSSecureCodingKey<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+```swift
+Defaults.publisher<T: Codable>(
+	keys: Defaults.OptionalKey<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+```swift
+Defaults.publisher<T: NSSecureCoding>(
+	keys: Defaults.NSSecureCodingOptionalKey<T>...,
+	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+) -> AnyPublisher<Void, Never> {
+```
+
+Type: `func`
+
+[Combine](https://developer.apple.com/documentation/combine) observation API for multiple key observation, but without specific information about changes.
+
+Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
+
+#### `Defaults.publisherAll`
+
+```swift
+Defaults.publisherAll(initialEvent: Bool = true) -> AnyPublisher<UserDefaults, Never>
+```
+
+Convenience [Publisher](https://developer.apple.com/documentation/combine/publisher) for all `UserDefaults` key change events. A wrapper around the [`UserDefaults.didChangeNotification` notification](https://developer.apple.com/documentation/foundation/userdefaults/1408206-didchangenotification). 
+
+- Parameter `initialEvent`: Trigger an initial event immediately.
+
+Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 
 #### `Defaults.removeAll`
 
