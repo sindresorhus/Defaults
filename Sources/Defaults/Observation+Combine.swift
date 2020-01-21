@@ -60,7 +60,7 @@ extension Defaults {
 			self.options = options
 		}
 
-		func receive<S>(subscriber: S) where S : Subscriber, DefaultsPublisher.Failure == S.Failure, DefaultsPublisher.Output == S.Input {
+		func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
 			let subscription = DefaultsSubscription(
 				subscriber: subscriber,
 				suite: suite,
@@ -81,7 +81,7 @@ extension Defaults {
 		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 	}
 
-	let publisher = Defaults.publisher(.isUnicornMode).map { $0.newValue }
+	let publisher = Defaults.publisher(.isUnicornMode).map(\.newValue)
 
 	let cancellable = publisher.sink { value in
 		print(value)
@@ -118,20 +118,6 @@ extension Defaults {
 	Returns a type-erased `Publisher` that publishes changes related to the given optional key.
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: Codable>(
-		_ key: Defaults.OptionalKey<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
-	) -> AnyPublisher<OptionalKeyChange<Value>, Never> {
-		let publisher = DefaultsPublisher(suite: key.suite, key: key.name, options: options)
-			.map { OptionalKeyChange<Value>(change: $0) }
-
-		return AnyPublisher(publisher)
-	}
-
-	/**
-	Returns a type-erased `Publisher` that publishes changes related to the given optional key.
-	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: NSSecureCoding>(
 		_ key: Defaults.NSSecureCodingOptionalKey<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new]
@@ -154,29 +140,7 @@ extension Defaults {
 
 		let combinedPublisher =
 			keys.map { key in
-				return Defaults.publisher(key, options: options)
-					.map { _ in () }
-					.eraseToAnyPublisher()
-			}.reduce(initial) { (combined, keyPublisher) in
-				combined.merge(with: keyPublisher).eraseToAnyPublisher()
-			}
-
-		return combinedPublisher
-	}
-
-	/**
-	Publisher for multiple `OptionalKey<T>` observation, but without specific information about changes.
-	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: Codable>(
-		keys: Defaults.OptionalKey<Value>...,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
-	) -> AnyPublisher<Void, Never> {
-		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
-
-		let combinedPublisher =
-			keys.map { key in
-				return Defaults.publisher(key, options: options)
+				Defaults.publisher(key, options: options)
 					.map { _ in () }
 					.eraseToAnyPublisher()
 			}.reduce(initial) { (combined, keyPublisher) in
@@ -198,7 +162,7 @@ extension Defaults {
 
 		let combinedPublisher =
 			keys.map { key in
-				return Defaults.publisher(key, options: options)
+				Defaults.publisher(key, options: options)
 					.map { _ in () }
 					.eraseToAnyPublisher()
 			}.reduce(initial) { (combined, keyPublisher) in
@@ -220,7 +184,7 @@ extension Defaults {
 
 		let combinedPublisher =
 			keys.map { key in
-				return Defaults.publisher(key, options: options)
+				Defaults.publisher(key, options: options)
 					.map { _ in () }
 					.eraseToAnyPublisher()
 			}.reduce(initial) { (combined, keyPublisher) in

@@ -8,8 +8,6 @@ public final class Defaults {
 		@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 		public typealias NSSecureCodingKey = Defaults.NSSecureCodingKey
 
-		public typealias OptionalKey = Defaults.OptionalKey
-
 		@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 		public typealias NSSecureCodingOptionalKey = Defaults.NSSecureCodingOptionalKey
 
@@ -28,6 +26,10 @@ public final class Defaults {
 			self.suite = suite
 
 			super.init()
+
+			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
+				return
+			}
 
 			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
 			if UserDefaults.isNativelySupportedType(Value.self) {
@@ -52,23 +54,16 @@ public final class Defaults {
 
 			super.init()
 
+			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
+				return
+			}
+
 			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
 			if UserDefaults.isNativelySupportedType(Value.self) {
 				suite.register(defaults: [key: defaultValue])
 			} else if let value = try? NSKeyedArchiver.archivedData(withRootObject: defaultValue, requiringSecureCoding: true) {
 				suite.register(defaults: [key: value])
 			}
-		}
-	}
-
-	public final class OptionalKey<Value: Codable>: Keys {
-		public let name: String
-		public let suite: UserDefaults
-
-		/// Create an optional defaults key.
-		public init(_ key: String, suite: UserDefaults = .standard) {
-			self.name = key
-			self.suite = suite
 		}
 	}
 
@@ -103,15 +98,7 @@ public final class Defaults {
 		}
 	}
 
-	/// Access a defaults value using a `Defaults.OptionalKey`.
-	public static subscript<Value: Codable>(key: OptionalKey<Value>) -> Value? {
-		get { key.suite[key] }
-		set {
-			key.suite[key] = newValue
-		}
-	}
-
-	/// Access a defaults value using a `Defaults.OptionalKey`.
+	/// Access a defaults value using a `Defaults.NSSecureCodingOptionalKey`.
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static subscript<Value: NSSecureCoding>(key: NSSecureCodingOptionalKey<Value>) -> Value? {
 		get { key.suite[key] }
@@ -193,29 +180,6 @@ public final class Defaults {
 			key.suite[key] = key.defaultValue
 		}
 	}
-	
-	/**
-	Reset the given optional keys back to `nil`.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-
-	```
-	extension Defaults.Keys {
-		static let unicorn = OptionalKey<String>("unicorn")
-	}
-
-	Defaults[.unicorn] = "🦄"
-
-	Defaults.reset(.unicorn)
-
-	Defaults[.unicorn]
-	//=> nil
-	```
-	*/
-	public static func reset<Value: Codable>(_ keys: OptionalKey<Value>..., suite: UserDefaults = .standard) {
-		reset(keys, suite: suite)
-	}
 
 	/**
 	Reset the given optional keys back to `nil`.
@@ -227,31 +191,6 @@ public final class Defaults {
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<Value: NSSecureCoding>(_ keys: NSSecureCodingOptionalKey<Value>..., suite: UserDefaults = .standard) {
 		reset(keys, suite: suite)
-	}
-	
-	/**
-	Reset the given array of optional keys back to `nil`.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-
-	```
-	extension Defaults.Keys {
-		static let unicorn = OptionalKey<String>("unicorn")
-	}
-
-	Defaults[.unicorn] = "🦄"
-
-	Defaults.reset(.unicorn)
-
-	Defaults[.unicorn]
-	//=> nil
-	```
-	*/
-	public static func reset<Value: Codable>(_ keys: [OptionalKey<Value>], suite: UserDefaults = .standard) {
-		for key in keys {
-			key.suite[key] = nil
-		}
 	}
 
 	/**
@@ -274,6 +213,19 @@ public final class Defaults {
 		for key in suite.dictionaryRepresentation().keys {
 			suite.removeObject(forKey: key)
 		}
+	}
+}
+
+extension Defaults.Key where Value: _DefaultsOptionalType {
+	public convenience init(_ key: String, suite: UserDefaults = .standard) {
+		self.init(key, default: nil, suite: suite)
+	}
+}
+
+@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+extension Defaults.NSSecureCodingKey where Value: _DefaultsOptionalType {
+	public convenience init(_ key: String, suite: UserDefaults = .standard) {
+		self.init(key, default: nil, suite: suite)
 	}
 }
 
@@ -334,6 +286,11 @@ extension UserDefaults {
 	}
 
 	private func _set<Value: Codable>(_ key: String, to value: Value) {
+		if (value as? _DefaultsOptionalType)?.isNil == true {
+			removeObject(forKey: key)
+			return
+		}
+
 		if UserDefaults.isNativelySupportedType(Value.self) {
 			set(value, forKey: key)
 			return
@@ -344,6 +301,7 @@ extension UserDefaults {
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	private func _set<Value: NSSecureCoding>(_ key: String, to value: Value) {
+		// TODO: Handle nil here too.
 		if UserDefaults.isNativelySupportedType(Value.self) {
 			set(value, forKey: key)
 			return
@@ -367,18 +325,6 @@ extension UserDefaults {
 		}
 	}
 
-	public subscript<Value: Codable>(key: Defaults.OptionalKey<Value>) -> Value? {
-		get { _get(key.name) }
-		set {
-			guard let value = newValue else {
-				set(nil, forKey: key.name)
-				return
-			}
-
-			_set(key.name, to: value)
-		}
-	}
-
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public subscript<Value: NSSecureCoding>(key: Defaults.NSSecureCodingOptionalKey<Value>) -> Value? {
 		get { _get(key.name) }
@@ -392,16 +338,23 @@ extension UserDefaults {
 		}
 	}
 
-	fileprivate static func isNativelySupportedType<Value>(_ type: Value.Type) -> Bool {
+	fileprivate static func isNativelySupportedType<T>(_ type: T.Type) -> Bool {
 		switch type {
 		case
 			is Bool.Type,
+			is Bool?.Type, // swiftlint:disable:this discouraged_optional_boolean
 			is String.Type,
+			is String?.Type,
 			is Int.Type,
+			is Int?.Type,
 			is Double.Type,
+			is Double?.Type,
 			is Float.Type,
+			is Float?.Type,
 			is Date.Type,
-			is Data.Type:
+			is Date?.Type,
+			is Data.Type,
+			is Data?.Type:
 			return true
 		default:
 			return false

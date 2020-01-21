@@ -18,15 +18,18 @@ extension Decodable {
 	}
 }
 
-final class AssociatedObject<T: Any> {
-	subscript(index: Any) -> T? {
+
+final class ObjectAssociation<T: Any> {
+	subscript(index: AnyObject) -> T? {
 		get {
-			return objc_getAssociatedObject(index, Unmanaged.passUnretained(self).toOpaque()) as! T?
-		} set {
+			objc_getAssociatedObject(index, Unmanaged.passUnretained(self).toOpaque()) as! T?
+		}
+		set {
 			objc_setAssociatedObject(index, Unmanaged.passUnretained(self).toOpaque(), newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 		}
 	}
 }
+
 
 /**
 Causes a given target object to live at least as long as a given owner object.
@@ -46,7 +49,7 @@ final class LifetimeAssociation {
 		}
 	}
 
-	private static let associatedObjects = AssociatedObject<[ObjectLifetimeTracker]>()
+	private static let associatedObjects = ObjectAssociation<[ObjectLifetimeTracker]>()
 	private weak var wrappedObject: ObjectLifetimeTracker?
 	private weak var owner: AnyObject?
 
@@ -112,4 +115,20 @@ final class LifetimeAssociation {
 		LifetimeAssociation.associatedObjects[owner] = associatedObjects
 		self.owner = nil
 	}
+}
+
+
+/// A protocol for making generic type constraints of optionals.
+/// - Note: It's intentionally not including `associatedtype Wrapped` as that limits a lot of the use-cases.
+public protocol _DefaultsOptionalType: ExpressibleByNilLiteral {
+	/// This is useful as you can't compare `_OptionalType` to `nil`.
+	var isNil: Bool { get }
+}
+
+extension Optional: _DefaultsOptionalType {
+	public var isNil: Bool { self == nil }
+}
+
+func isOptionalType<T>(_ type: T.Type) -> Bool {
+	type is _DefaultsOptionalType.Type
 }

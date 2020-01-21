@@ -1,8 +1,8 @@
 import Foundation
-import XCTest
-import Defaults
 import CoreData
 import Combine
+import XCTest
+import Defaults
 
 let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureURL2 = URL(string: "https://example.com")!
@@ -17,7 +17,6 @@ let fixtureDate = Date()
 
 @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 final class ExamplePersistentHistory: NSPersistentHistoryToken {
-
 	let value: String
 
 	init(value: String) {
@@ -34,9 +33,7 @@ final class ExamplePersistentHistory: NSPersistentHistoryToken {
 		coder.encode(value, forKey: "value")
 	}
 
-	override class var supportsSecureCoding: Bool {
-		return true
-	}
+	override class var supportsSecureCoding: Bool { true }
 }
 
 extension Defaults.Keys {
@@ -72,7 +69,7 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testOptionalKey() {
-		let key = Defaults.OptionalKey<Bool>("independentOptionalKey")
+		let key = Defaults.Key<Bool?>("independentOptionalKey")
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = true
 		XCTAssertTrue(Defaults[key]!)
@@ -227,7 +224,7 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
-		let key = Defaults.OptionalKey<Bool>("observeOptionalKey")
+		let key = Defaults.Key<Bool?>("observeOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -348,8 +345,8 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleOptionalKeysCombine() {
-		let key1 = Defaults.OptionalKey<Bool>("observeOptionalKey1")
-		let key2 = Defaults.OptionalKey<Bool>("observeOptionalKey2")
+		let key1 = Defaults.Key<Bool?>("observeOptionalKey1")
+		let key2 = Defaults.Key<Bool?>("observeOptionalKey2")
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
@@ -441,7 +438,7 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testObserveOptionalKey() {
-		let key = Defaults.OptionalKey<Bool>("observeOptionalKey")
+		let key = Defaults.Key<Bool?>("observeOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: DefaultsObservation!
@@ -558,8 +555,8 @@ final class DefaultsTests: XCTestCase {
 		let newString1 = "bar1"
 		let newString2 = "bar2"
 		let newString3 = "bar3"
-		let key1 = Defaults.OptionalKey<String>("optionalKey1")
-		let key2 = Defaults.OptionalKey<String>("optionalKey2")
+		let key1 = Defaults.Key<String?>("optionalKey1")
+		let key2 = Defaults.Key<String?>("optionalKey2")
 		Defaults[key1] = newString1
 		Defaults[key2] = newString2
 		Defaults.reset(key1)
@@ -578,9 +575,9 @@ final class DefaultsTests: XCTestCase {
 		let newString1 = "bar1"
 		let newString2 = "bar2"
 		let newString3 = "bar3"
-		let key1 = Defaults.OptionalKey<String>("aoptionalKey1")
-		let key2 = Defaults.OptionalKey<String>("aoptionalKey2")
-		let key3 = Defaults.OptionalKey<String>("aoptionalKey3")
+		let key1 = Defaults.Key<String?>("aoptionalKey1")
+		let key2 = Defaults.Key<String?>("aoptionalKey2")
+		let key3 = Defaults.Key<String?>("aoptionalKey3")
 		Defaults[key1] = newString1
 		Defaults[key2] = newString2
 		Defaults[key3] = newString3

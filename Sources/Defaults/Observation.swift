@@ -113,22 +113,6 @@ extension Defaults {
 		}
 	}
 
-	public struct OptionalKeyChange<Value: Codable> {
-		public let kind: NSKeyValueChange
-		public let indexes: IndexSet?
-		public let isPrior: Bool
-		public let newValue: Value?
-		public let oldValue: Value?
-
-		init(change: BaseChange) {
-			self.kind = change.kind
-			self.indexes = change.indexes
-			self.isPrior = change.isPrior
-			self.oldValue = deserialize(change.oldValue, to: Value.self)
-			self.newValue = deserialize(change.newValue, to: Value.self)
-		}
-	}
-
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public struct NSSecureCodingOptionalKeyChange<Value: NSSecureCoding> {
 		public let kind: NSKeyValueChange
@@ -179,6 +163,7 @@ extension Defaults {
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
 				self?.invalidate()
 			})
+
 			return self
 		}
 
@@ -249,34 +234,6 @@ extension Defaults {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				NSSecureCodingKeyChange<Value>(change: change, defaultValue: key.defaultValue)
-			)
-		}
-		observation.start(options: options)
-		return observation
-	}
-
-	/**
-	Observe an optional defaults key.
-
-	```
-	extension Defaults.Keys {
-		static let isUnicornMode = OptionalKey<Bool>("isUnicornMode")
-	}
-
-	let observer = Defaults.observe(.isUnicornMode) { change in
-		print(change.newValue)
-		//=> Optional(nil)
-	}
-	```
-	*/
-	public static func observe<Value: Codable>(
-		_ key: Defaults.OptionalKey<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new],
-		handler: @escaping (OptionalKeyChange<Value>) -> Void
-	) -> DefaultsObservation {
-		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
-			handler(
-				OptionalKeyChange<Value>(change: change)
 			)
 		}
 		observation.start(options: options)

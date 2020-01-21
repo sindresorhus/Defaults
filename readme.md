@@ -2,7 +2,7 @@
 
 > Swifty and modern [UserDefaults](https://developer.apple.com/documentation/foundation/userdefaults)
 
-**Note:** The readme reflects the master branch. [Click here](https://github.com/sindresorhus/Defaults/tree/55ffea9487fb9b559406d909ee31dcd955fe77aa#readme) for docs for the latest version. The code in the master branch cannot be released until Apple fixes [this bug](https://github.com/feedback-assistant/reports/issues/44).
+#### Note: The readme reflects the master branch. [Click here](https://github.com/sindresorhus/Defaults/tree/55ffea9487fb9b559406d909ee31dcd955fe77aa#readme) for docs for the latest version. The code in the master branch cannot be released until Apple fixes [this bug](https://github.com/feedback-assistant/reports/issues/44).
 
 It uses `NSUserDefaults` underneath but exposes a type-safe facade with lots of nice conveniences.
 
@@ -80,7 +80,7 @@ You can also declare optional keys for when you don't want to declare a default 
 
 ```swift
 extension Defaults.Keys {
-	static let name = OptionalKey<Double>("name")
+	static let name = Key<Double?>("name")
 }
 
 if let name = Defaults[.name] {
@@ -228,7 +228,7 @@ Defaults[.isUnicornMode]
 //=> false
 ```
 
-This works for `OptionalKey` too, which will be reset back to `nil`.
+This works for a `Key` with an optional too, which will be reset back to `nil`.
 
 ### It's just `UserDefaults` with sugar
 
@@ -308,16 +308,6 @@ Create a NSSecureCoding key with a default value.
 
 The default value is written to the actual `UserDefaults` and can be used elsewhere. For example, with a Interface Builder binding.
 
-#### `Defaults.OptionalKey` *(alias `Defaults.Keys.OptionalKey`)*
-
-```swift
-Defaults.OptionalKey<T>(_ key: String, suite: UserDefaults = .standard)
-```
-
-Type: `class`
-
-Create a key with an optional value.
-
 #### `Defaults.NSSecureCodingOptionalKey` *(alias `Defaults.Keys.NSSecureCodingOptionalKey`)*
 
 ```swift
@@ -333,8 +323,6 @@ Create a NSSecureCoding key with an optional value.
 ```swift
 Defaults.reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard)
 Defaults.reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard)
-Defaults.reset<T: Codable>(_ keys: Defaults.OptionalKey<T>..., suite: UserDefaults = .standard)
-Defaults.reset<T: Codable>(_ keys: [Defaults.OptionalKey<T>], suite: UserDefaults = .standard)
 
 Defaults.reset<T: Codable>(_ keys: Defaults.NSSecureCodingKey<T>..., suite: UserDefaults = .standard)
 Defaults.reset<T: Codable>(_ keys: [Defaults.NSSecureCodingKey<T>], suite: UserDefaults = .standard)
@@ -361,14 +349,6 @@ Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
-) -> DefaultsObservation
-```
-
-```swift
-Defaults.observe<T: Codable>(
-	_ key: Defaults.OptionalKey<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new],
-	handler: @escaping (OptionalKeyChange<T>) -> Void
 ) -> DefaultsObservation
 ```
 
@@ -403,13 +383,6 @@ Defaults.publisher<T: NSSecureCoding>(
 ```
 
 ```swift
-Defaults.publisher<T: Codable>(
-	_ key: Defaults.OptionalKey<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
-) -> AnyPublisher<OptionalKeyChange<T>, Never>
-```
-
-```swift
 Defaults.publisher<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingOptionalKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new]
@@ -434,13 +407,6 @@ Defaults.publisher<T: Codable>(
 ```swift
 Defaults.publisher<T: NSSecureCoding>(
 	keys: Defaults.NSSecureCodingKey<T>...,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
-) -> AnyPublisher<Void, Never> {
-```
-
-```swift
-Defaults.publisher<T: Codable>(
-	keys: Defaults.OptionalKey<T>...,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new]
 ) -> AnyPublisher<Void, Never> {
 ```
