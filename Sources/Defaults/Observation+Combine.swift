@@ -22,7 +22,7 @@ extension Defaults {
 				callback: observationCallback(_:)
 			)
 		}
-	
+
 		func request(_ demand: Subscribers.Demand) {
 			// Nothing as we send events only when they occur.
 		}
