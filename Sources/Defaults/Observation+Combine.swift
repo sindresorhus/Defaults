@@ -11,15 +11,16 @@ extension Defaults {
 	final class DefaultsSubscription<SubscriberType: Subscriber>: Subscription where SubscriberType.Input == BaseChange {
 		private var subscriber: SubscriberType?
 		private var observation: UserDefaultsKeyObservation?
+		private let options: NSKeyValueObservingOptions
 
 		init(subscriber: SubscriberType, suite: UserDefaults, key: String, options: NSKeyValueObservingOptions) {
 			self.subscriber = subscriber
+			self.options = options
 			self.observation = UserDefaultsKeyObservation(
 				object: suite,
 				key: key,
 				callback: observationCallback(_:)
 			)
-			self.observation?.start(options: options)
 		}
 
 		func request(_ demand: Subscribers.Demand) {
@@ -30,6 +31,10 @@ extension Defaults {
 			observation?.invalidate()
 			observation = nil
 			subscriber = nil
+		}
+
+		func start() {
+			observation?.start(options: options)
 		}
 
 		private func observationCallback(_ change: BaseChange) {
@@ -64,6 +69,7 @@ extension Defaults {
 			)
 
 			subscriber.receive(subscription: subscription)
+			subscription.start()
 		}
 	}
 
