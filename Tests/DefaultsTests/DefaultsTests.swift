@@ -169,7 +169,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
-			.publisher(key, options: [.old, .new])
+			.publisher(key, options: [])
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(2)
 
@@ -195,7 +195,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
-			.publisher(key, options: [.old, .new])
+			.publisher(key, options: [])
 			.map { ($0.oldValue.value, $0.newValue.value) }
 			.collect(3)
 
@@ -228,7 +228,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
-			.publisher(key, options: [.old, .new])
+			.publisher(key, options: [])
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(3)
 
@@ -257,7 +257,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
-			.publisher(key, options: [.old, .new])
+			.publisher(key, options: [])
 			.map { ($0.oldValue?.value, $0.newValue?.value) }
 			.collect(3)
 
@@ -309,7 +309,7 @@ final class DefaultsTests: XCTestCase {
 		let key2 = Defaults.Key<Bool>("observeKey2", default: true)
 		let expect = expectation(description: "Observation closure being called")
 
-		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
 
 		let cancellable = publisher.sink { _ in
 			expect.fulfill()
@@ -329,7 +329,7 @@ final class DefaultsTests: XCTestCase {
 		let key2 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
 		let expect = expectation(description: "Observation closure being called")
 
-		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
 
 		let cancellable = publisher.sink { _ in
 			expect.fulfill()
@@ -349,7 +349,7 @@ final class DefaultsTests: XCTestCase {
 		let key2 = Defaults.Key<Bool?>("observeOptionalKey2")
 		let expect = expectation(description: "Observation closure being called")
 
-		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
 
 		let cancellable = publisher.sink { _ in
 			expect.fulfill()
@@ -368,7 +368,7 @@ final class DefaultsTests: XCTestCase {
 		let key2 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingKey2")
 		let expect = expectation(description: "Observation closure being called")
 
-		let publisher = Defaults.publisher(keys: key1, key2, options: [.old, .new]).collect(2)
+		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
 
 		let cancellable = publisher.sink { _ in
 			expect.fulfill()
@@ -387,7 +387,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 		
 		let publisher = Defaults
-			.publisher(key, options: [.initial, .new])
+			.publisher(key)
 			.compactMap { $0.newValue }
 			.eraseToAnyPublisher()
 			.collect(2)
@@ -407,7 +407,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: []) { change in
 			XCTAssertFalse(change.oldValue)
 			XCTAssertTrue(change.newValue)
 			observation.invalidate()
@@ -425,7 +425,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: []) { change in
 			XCTAssertEqual(change.oldValue.value, "TestValue")
 			XCTAssertEqual(change.newValue.value, "NewTestValue")
 			observation.invalidate()
@@ -442,7 +442,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: []) { change in
 			XCTAssertNil(change.oldValue)
 			XCTAssertTrue(change.newValue!)
 			observation.invalidate()
@@ -460,7 +460,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: []) { change in
 			XCTAssertNil(change.oldValue)
 			XCTAssertEqual(change.newValue?.value, "NewOptionalValue")
 			observation.invalidate()
@@ -479,7 +479,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: []) { change in
 			XCTAssertEqual(change.oldValue, fixtureURL)
 			XCTAssertEqual(change.newValue, fixtureURL2)
 			observation.invalidate()
@@ -496,7 +496,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: [.old, .new]) { change in
+		observation = Defaults.observe(key, options: []) { change in
 			XCTAssertEqual(change.oldValue, .oneHour)
 			XCTAssertEqual(change.newValue, .tenMinutes)
 			observation.invalidate()

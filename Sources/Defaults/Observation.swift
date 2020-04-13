@@ -27,6 +27,16 @@ public protocol DefaultsObservation: AnyObject {
 extension Defaults {
 	public typealias Observation = DefaultsObservation
 
+	public enum ObservationOption {
+		/// Whether a notification should be sent to the observer immediately, before the observer registration method even returns.
+		case initial
+
+		/// Whether separate notifications should be sent to the observer before and after each change, instead of a single notification after the change.
+		case prior
+	}
+
+	public typealias ObservationOptions = Set<ObservationOption>
+
 	private static func deserialize<Value: Decodable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
@@ -131,7 +141,7 @@ extension Defaults {
 		}
 	}
 
-	final class UserDefaultsKeyObservation: NSObject, Defaults.Observation {
+	final class UserDefaultsKeyObservation: NSObject, Observation {
 		typealias Callback = (BaseChange) -> Void
 
 		private weak var object: UserDefaults?
@@ -148,8 +158,8 @@ extension Defaults {
 			invalidate()
 		}
 
-		func start(options: NSKeyValueObservingOptions) {
-			object?.addObserver(self, forKeyPath: key, options: options, context: nil)
+		func start(options: ObservationOptions) {
+			object?.addObserver(self, forKeyPath: key, options: options.toNSKeyValueObservingOptions, context: nil)
 		}
 
 		public func invalidate() {
@@ -210,10 +220,10 @@ extension Defaults {
 	```
 	*/
 	public static func observe<Value: Codable>(
-		_ key: Defaults.Key<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new],
+		_ key: Key<Value>,
+		options: ObservationOptions = [.initial],
 		handler: @escaping (KeyChange<Value>) -> Void
-	) -> Defaults.Observation {
+	) -> Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				KeyChange<Value>(change: change, defaultValue: key.defaultValue)
@@ -228,10 +238,10 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func observe<Value: NSSecureCoding>(
-		_ key: Defaults.NSSecureCodingKey<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new],
+		_ key: NSSecureCodingKey<Value>,
+		options: ObservationOptions = [.initial],
 		handler: @escaping (NSSecureCodingKeyChange<Value>) -> Void
-	) -> Defaults.Observation {
+	) -> Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				NSSecureCodingKeyChange<Value>(change: change, defaultValue: key.defaultValue)
@@ -246,10 +256,10 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func observe<Value: NSSecureCoding>(
-		_ key: Defaults.NSSecureCodingOptionalKey<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new],
+		_ key: NSSecureCodingOptionalKey<Value>,
+		options: ObservationOptions = [.initial],
 		handler: @escaping (NSSecureCodingOptionalKeyChange<Value>) -> Void
-	) -> Defaults.Observation {
+	) -> Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				NSSecureCodingOptionalKeyChange<Value>(change: change)
@@ -257,5 +267,19 @@ extension Defaults {
 		}
 		observation.start(options: options)
 		return observation
+	}
+}
+
+extension Defaults.ObservationOptions {
+	var toNSKeyValueObservingOptions: NSKeyValueObservingOptions {
+		var options: NSKeyValueObservingOptions = [.old, .new]
+
+		if contains(.initial) {
+			options.insert(.initial)
+		} else if contains(.prior) {
+			options.insert(.prior)
+		}
+
+		return options
 	}
 }

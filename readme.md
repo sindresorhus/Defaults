@@ -339,7 +339,7 @@ Reset the given keys back to their default values.
 ```swift
 Defaults.observe<T: Codable>(
 	_ key: Defaults.Key<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new],
+	options: ObservationOptions = [.initial],
 	handler: @escaping (KeyChange<T>) -> Void
 ) -> Defaults.Observation
 ```
@@ -347,7 +347,7 @@ Defaults.observe<T: Codable>(
 ```swift
 Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingKey<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new],
+	options: ObservationOptions = [.initial],
 	handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
 ) -> Defaults.Observation
 ```
@@ -355,7 +355,7 @@ Defaults.observe<T: NSSecureCoding>(
 ```swift
 Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingOptionalKey<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new],
+	options: ObservationOptions = [.initial],
 	handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
 ) -> Defaults.Observation
 ```
@@ -371,21 +371,21 @@ By default, it will also trigger an initial event on creation. This can be usefu
 ```swift
 Defaults.publisher<T: Codable>(
 	_ key: Defaults.Key<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	options: ObservationOptions = [.initial]
 ) -> AnyPublisher<KeyChange<T>, Never>
 ```
 
 ```swift
 Defaults.publisher<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingKey<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	options: ObservationOptions = [.initial]
 ) -> AnyPublisher<NSSecureCodingKeyChange<T>, Never>
 ```
 
 ```swift
 Defaults.publisher<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingOptionalKey<T>,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	options: ObservationOptions = [.initial]
 ) -> AnyPublisher<NSSecureCodingOptionalKeyChange<T>, Never>
 ```
 
@@ -400,21 +400,21 @@ Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 ```swift
 Defaults.publisher<T: Codable>(
 	keys: Defaults.Key<T>...,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	options: ObservationOptions = [.initial]
 ) -> AnyPublisher<Void, Never> {
 ```
 
 ```swift
 Defaults.publisher<T: NSSecureCoding>(
 	keys: Defaults.NSSecureCodingKey<T>...,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	options: ObservationOptions = [.initial]
 ) -> AnyPublisher<Void, Never> {
 ```
 
 ```swift
 Defaults.publisher<T: NSSecureCoding>(
 	keys: Defaults.NSSecureCodingOptionalKey<T>...,
-	options: NSKeyValueObservingOptions = [.initial, .old, .new]
+	options: ObservationOptions = [.initial]
 ) -> AnyPublisher<Void, Never> {
 ```
 

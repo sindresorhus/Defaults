@@ -11,9 +11,9 @@ extension Defaults {
 	final class DefaultsSubscription<SubscriberType: Subscriber>: Subscription where SubscriberType.Input == BaseChange {
 		private var subscriber: SubscriberType?
 		private var observation: UserDefaultsKeyObservation?
-		private let options: NSKeyValueObservingOptions
+		private let options: ObservationOptions
 
-		init(subscriber: SubscriberType, suite: UserDefaults, key: String, options: NSKeyValueObservingOptions) {
+		init(subscriber: SubscriberType, suite: UserDefaults, key: String, options: ObservationOptions) {
 			self.subscriber = subscriber
 			self.options = options
 			self.observation = UserDefaultsKeyObservation(
@@ -52,9 +52,9 @@ extension Defaults {
 
 		private let suite: UserDefaults
 		private let key: String
-		private let options: NSKeyValueObservingOptions
+		private let options: ObservationOptions
 
-		init(suite: UserDefaults, key: String, options: NSKeyValueObservingOptions) {
+		init(suite: UserDefaults, key: String, options: ObservationOptions) {
 			self.suite = suite
 			self.key = key
 			self.options = options
@@ -91,8 +91,8 @@ extension Defaults {
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: Codable>(
-		_ key: Defaults.Key<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+		_ key: Key<Value>,
+		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<KeyChange<Value>, Never> {
 		let publisher = DefaultsPublisher(suite: key.suite, key: key.name, options: options)
 			.map { KeyChange<Value>(change: $0, defaultValue: key.defaultValue) }
@@ -105,8 +105,8 @@ extension Defaults {
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: NSSecureCoding>(
-		_ key: Defaults.NSSecureCodingKey<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+		_ key: NSSecureCodingKey<Value>,
+		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<NSSecureCodingKeyChange<Value>, Never> {
 		let publisher = DefaultsPublisher(suite: key.suite, key: key.name, options: options)
 			.map { NSSecureCodingKeyChange<Value>(change: $0, defaultValue: key.defaultValue) }
@@ -119,8 +119,8 @@ extension Defaults {
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: NSSecureCoding>(
-		_ key: Defaults.NSSecureCodingOptionalKey<Value>,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+		_ key: NSSecureCodingOptionalKey<Value>,
+		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<NSSecureCodingOptionalKeyChange<Value>, Never> {
 		let publisher = DefaultsPublisher(suite: key.suite, key: key.name, options: options)
 			.map { NSSecureCodingOptionalKeyChange<Value>(change: $0) }
@@ -133,8 +133,8 @@ extension Defaults {
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: Codable>(
-		keys: Defaults.Key<Value>...,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+		keys:Key<Value>...,
+		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
 
@@ -156,7 +156,7 @@ extension Defaults {
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: NSSecureCoding>(
 		keys: Defaults.NSSecureCodingKey<Value>...,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
 
@@ -178,7 +178,7 @@ extension Defaults {
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: NSSecureCoding>(
 		keys: Defaults.NSSecureCodingOptionalKey<Value>...,
-		options: NSKeyValueObservingOptions = [.initial, .old, .new]
+		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
 
