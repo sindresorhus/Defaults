@@ -341,7 +341,7 @@ Defaults.observe<T: Codable>(
 	_ key: Defaults.Key<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (KeyChange<T>) -> Void
-) -> DefaultsObservation
+) -> Defaults.Observation
 ```
 
 ```swift
@@ -349,7 +349,7 @@ Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
-) -> DefaultsObservation
+) -> Defaults.Observation
 ```
 
 ```swift
@@ -357,7 +357,7 @@ Defaults.observe<T: NSSecureCoding>(
 	_ key: Defaults.NSSecureCodingOptionalKey<T>,
 	options: NSKeyValueObservingOptions = [.initial, .old, .new],
 	handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
-) -> DefaultsObservation
+) -> Defaults.Observation
 ```
 
 Type: `func`
@@ -446,27 +446,27 @@ Type: `func`
 
 Remove all entries from the `UserDefaults` suite.
 
-### `DefaultsObservation`
+### `Defaults.Observation`
 
 Type: `protocol`
 
 Represents an observation of a defaults key.
 
-#### `DefaultsObservation.invalidate`
+#### `Defaults.Observation#invalidate`
 
 ```swift
-DefaultsObservation.invalidate()
+Defaults.Observation#invalidate()
 ```
 
 Type: `func`
 
 Invalidate the observation.
 
-#### `DefaultsObservation.tieToLifetime`
+#### `Defaults.Observation#tieToLifetime`
 
 ```swift
 @discardableResult
-DefaultsObservation.tieToLifetime(of weaklyHeldObject: AnyObject) -> Self
+Defaults.Observation#tieToLifetime(of weaklyHeldObject: AnyObject) -> Self
 ```
 
 Type: `func`
@@ -475,10 +475,10 @@ Keep the observation alive for as long as, and no longer than, another object ex
 
 When `weaklyHeldObject` is deinitialized, the observation is invalidated automatically.
 
-#### `DefaultsObservation.removeLifetimeTie`
+#### `Defaults.Observation.removeLifetimeTie`
 
 ```swift
-DefaultsObservation.removeLifetimeTie()
+Defaults.Observation#removeLifetimeTie()
 ```
 
 Type: `func`

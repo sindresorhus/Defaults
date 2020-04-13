@@ -406,7 +406,7 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
 		let expect = expectation(description: "Observation closure being called")
 
-		var observation: DefaultsObservation!
+		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertFalse(change.oldValue)
 			XCTAssertTrue(change.newValue)
@@ -424,7 +424,7 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
 		let expect = expectation(description: "Observation closure being called")
 
-		var observation: DefaultsObservation!
+		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertEqual(change.oldValue.value, "TestValue")
 			XCTAssertEqual(change.newValue.value, "NewTestValue")
@@ -441,7 +441,7 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.Key<Bool?>("observeOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
-		var observation: DefaultsObservation!
+		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertNil(change.oldValue)
 			XCTAssertTrue(change.newValue!)
@@ -459,7 +459,7 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
-		var observation: DefaultsObservation!
+		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertNil(change.oldValue)
 			XCTAssertEqual(change.newValue?.value, "NewOptionalValue")
@@ -478,7 +478,7 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.Key<URL>("observeKeyURL", default: fixtureURL)
 		let expect = expectation(description: "Observation closure being called")
 
-		var observation: DefaultsObservation!
+		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertEqual(change.oldValue, fixtureURL)
 			XCTAssertEqual(change.newValue, fixtureURL2)
@@ -495,7 +495,7 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.Key<FixtureEnum>("observeKeyEnum", default: .oneHour)
 		let expect = expectation(description: "Observation closure being called")
 
-		var observation: DefaultsObservation!
+		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: [.old, .new]) { change in
 			XCTAssertEqual(change.oldValue, .oneHour)
 			XCTAssertEqual(change.newValue, .tenMinutes)
@@ -591,7 +591,7 @@ final class DefaultsTests: XCTestCase {
 		let key = Defaults.Key<Bool>("lifetimeTie", default: false)
 		let expect = expectation(description: "Observation closure being called")
 
-		weak var observation: DefaultsObservation!
+		weak var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: []) { change in
 			observation.invalidate()
 			expect.fulfill()
@@ -605,7 +605,7 @@ final class DefaultsTests: XCTestCase {
 	func testObserveWithLifetimeTieManualBreak() {
 		let key = Defaults.Key<Bool>("lifetimeTieManualBreak", default: false)
 
-		weak var observation: DefaultsObservation? = Defaults.observe(key, options: []) { _ in }.tieToLifetime(of: self)
+		weak var observation: Defaults.Observation? = Defaults.observe(key, options: []) { _ in }.tieToLifetime(of: self)
 		observation!.removeLifetimeTie()
 
 		for i in 1...10 {

@@ -1,6 +1,5 @@
 import Foundation
 
-/// TODO: Nest this inside `Defaults` if Swift ever supported nested protocols.
 public protocol DefaultsObservation: AnyObject {
 	func invalidate()
 
@@ -26,6 +25,8 @@ public protocol DefaultsObservation: AnyObject {
 }
 
 extension Defaults {
+	public typealias Observation = DefaultsObservation
+
 	private static func deserialize<Value: Decodable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
@@ -130,7 +131,7 @@ extension Defaults {
 		}
 	}
 
-	final class UserDefaultsKeyObservation: NSObject, DefaultsObservation {
+	final class UserDefaultsKeyObservation: NSObject, Defaults.Observation {
 		typealias Callback = (BaseChange) -> Void
 
 		private weak var object: UserDefaults?
@@ -212,7 +213,7 @@ extension Defaults {
 		_ key: Defaults.Key<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
 		handler: @escaping (KeyChange<Value>) -> Void
-	) -> DefaultsObservation {
+	) -> Defaults.Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				KeyChange<Value>(change: change, defaultValue: key.defaultValue)
@@ -230,7 +231,7 @@ extension Defaults {
 		_ key: Defaults.NSSecureCodingKey<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
 		handler: @escaping (NSSecureCodingKeyChange<Value>) -> Void
-	) -> DefaultsObservation {
+	) -> Defaults.Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				NSSecureCodingKeyChange<Value>(change: change, defaultValue: key.defaultValue)
@@ -248,7 +249,7 @@ extension Defaults {
 		_ key: Defaults.NSSecureCodingOptionalKey<Value>,
 		options: NSKeyValueObservingOptions = [.initial, .old, .new],
 		handler: @escaping (NSSecureCodingOptionalKeyChange<Value>) -> Void
-	) -> DefaultsObservation {
+	) -> Defaults.Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				NSSecureCodingOptionalKeyChange<Value>(change: change)
