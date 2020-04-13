@@ -65,7 +65,7 @@ extension Defaults {
 		return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dataValue) as? Value
 	}
 
-	final class BaseChange {
+	struct BaseChange {
 		let kind: NSKeyValueChange
 		let indexes: IndexSet?
 		let isPrior: Bool

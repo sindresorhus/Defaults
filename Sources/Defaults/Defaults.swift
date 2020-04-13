@@ -1,7 +1,7 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
-public final class Defaults {
+public enum Defaults {
 	public class Keys {
 		public typealias Key = Defaults.Key
 
@@ -78,8 +78,6 @@ public final class Defaults {
 			self.suite = suite
 		}
 	}
-
-	fileprivate init() {}
 
 	/// Access a defaults value using a `Defaults.Key`.
 	public static subscript<Value: Codable>(key: Key<Value>) -> Value {
