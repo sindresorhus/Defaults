@@ -489,6 +489,30 @@ The effects of any call to `tieToLifetime(of:)` are reversed. Note however that 
 
 ## FAQ
 
+### How can I store a dictionary of arbitrary values?
+
+You cannot store `[String: Any]` directly as it cannot conform to `Codable`. However, you can use the [`AnyCodable`](https://github.com/Flight-School/AnyCodable) package to work around this `Codable` limitation:
+
+```swift
+import AnyCodable
+
+extension Defaults.Keys {
+	static let magic = Key<[String: AnyCodable]>("magic", default: [:])
+}
+
+// …
+
+Defaults[.magic]["unicorn"] = "🦄"
+
+if let value = Defaults[.magic]["unicorn"]?.value {
+	print(value)
+	//=> "🦄"
+}
+
+Defaults[.magic]["number"] = 3
+Defaults[.magic]["boolean"] = true
+```
+
 ### How is this different from [`SwiftyUserDefaults`](https://github.com/radex/SwiftyUserDefaults)?
 
 It's inspired by that package and other solutions. The main difference is that this module doesn't hardcode the default values and comes with Codable support.
