@@ -226,7 +226,7 @@ extension Defaults {
 	) -> Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
-				KeyChange<Value>(change: change, defaultValue: key.defaultValue)
+				KeyChange(change: change, defaultValue: key.defaultValue)
 			)
 		}
 		observation.start(options: options)
@@ -244,7 +244,7 @@ extension Defaults {
 	) -> Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
-				NSSecureCodingKeyChange<Value>(change: change, defaultValue: key.defaultValue)
+				NSSecureCodingKeyChange(change: change, defaultValue: key.defaultValue)
 			)
 		}
 		observation.start(options: options)
@@ -262,7 +262,7 @@ extension Defaults {
 	) -> Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
-				NSSecureCodingOptionalKeyChange<Value>(change: change)
+				NSSecureCodingOptionalKeyChange(change: change)
 			)
 		}
 		observation.start(options: options)

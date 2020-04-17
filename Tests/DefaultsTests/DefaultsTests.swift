@@ -509,46 +509,46 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testResetKey() {
-		let defaultString1 = "foo1"
-		let defaultString2 = "foo2"
-		let defaultString3 = "foo3"
-		let newString1 = "bar1"
-		let newString2 = "bar2"
-		let newString3 = "bar3"
-		let key1 = Defaults.Key<String>("key1", default: defaultString1)
-		let key2 = Defaults.Key<String>("key2", default: defaultString2)
-		Defaults[key1] = newString1
-		Defaults[key2] = newString2
+		let defaultFixture1 = "foo1"
+		let defaultFixture2 = 0
+		let defaultFixture3 = "foo3"
+		let newFixture1 = "bar1"
+		let newFixture2 = 1
+		let newFixture3 = "bar3"
+		let key1 = Defaults.Key<String>("key1", default: defaultFixture1)
+		let key2 = Defaults.Key<Int>("key2", default: defaultFixture2)
+		Defaults[key1] = newFixture1
+		Defaults[key2] = newFixture2
 		Defaults.reset(key1)
-		XCTAssertEqual(Defaults[key1], defaultString1)
-		XCTAssertEqual(Defaults[key2], newString2)
+		XCTAssertEqual(Defaults[key1], defaultFixture1)
+		XCTAssertEqual(Defaults[key2], newFixture2)
 
 		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
-			let key3 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("key3", default: ExamplePersistentHistory(value: defaultString3))
-			Defaults[key3] = ExamplePersistentHistory(value: newString3)
+			let key3 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("key3", default: ExamplePersistentHistory(value: defaultFixture3))
+			Defaults[key3] = ExamplePersistentHistory(value: newFixture3)
 			Defaults.reset(key3)
 
-			XCTAssertEqual(Defaults[key3].value, defaultString3)
+			XCTAssertEqual(Defaults[key3].value, defaultFixture3)
 		}
 	}
 
-	func testResetKeyArray() {
-		let defaultString1 = "foo1"
-		let defaultString2 = "foo2"
-		let defaultString3 = "foo3"
-		let newString1 = "bar1"
-		let newString2 = "bar2"
-		let newString3 = "bar3"
-		let key1 = Defaults.Key<String>("akey1", default: defaultString1)
-		let key2 = Defaults.Key<String>("akey2", default: defaultString2)
-		let key3 = Defaults.Key<String>("akey3", default: defaultString3)
-		Defaults[key1] = newString1
-		Defaults[key2] = newString2
-		Defaults[key3] = newString3
+	func testResetMultipleKeys() {
+		let defaultFxiture1 = "foo1"
+		let defaultFixture2 = 0
+		let defaultFixture3 = "foo3"
+		let newFixture1 = "bar1"
+		let newFixture2 = 1
+		let newFixture3 = "bar3"
+		let key1 = Defaults.Key<String>("akey1", default: defaultFxiture1)
+		let key2 = Defaults.Key<Int>("akey2", default: defaultFixture2)
+		let key3 = Defaults.Key<String>("akey3", default: defaultFixture3)
+		Defaults[key1] = newFixture1
+		Defaults[key2] = newFixture2
+		Defaults[key3] = newFixture3
 		Defaults.reset(key1, key2)
-		XCTAssertEqual(Defaults[key1], defaultString1)
-		XCTAssertEqual(Defaults[key2], defaultString2)
-		XCTAssertEqual(Defaults[key3], newString3)
+		XCTAssertEqual(Defaults[key1], defaultFxiture1)
+		XCTAssertEqual(Defaults[key2], defaultFixture2)
+		XCTAssertEqual(Defaults[key3], newFixture3)
 	}
 
 	func testResetOptionalKey() {
@@ -571,20 +571,20 @@ final class DefaultsTests: XCTestCase {
 		}
 	}
 
-	func testResetOptionalKeyArray() {
-		let newString1 = "bar1"
-		let newString2 = "bar2"
-		let newString3 = "bar3"
+	func testResetMultipleOptionalKeys() {
+		let newFixture1 = "bar1"
+		let newFixture2 = 1
+		let newFixture3 = "bar3"
 		let key1 = Defaults.Key<String?>("aoptionalKey1")
-		let key2 = Defaults.Key<String?>("aoptionalKey2")
+		let key2 = Defaults.Key<Int?>("aoptionalKey2")
 		let key3 = Defaults.Key<String?>("aoptionalKey3")
-		Defaults[key1] = newString1
-		Defaults[key2] = newString2
-		Defaults[key3] = newString3
+		Defaults[key1] = newFixture1
+		Defaults[key2] = newFixture2
+		Defaults[key3] = newFixture3
 		Defaults.reset(key1, key2)
 		XCTAssertEqual(Defaults[key1], nil)
 		XCTAssertEqual(Defaults[key2], nil)
-		XCTAssertEqual(Defaults[key3], newString3)
+		XCTAssertEqual(Defaults[key3], newFixture3)
 	}
 
 	func testObserveWithLifetimeTie() {

@@ -133,7 +133,7 @@ extension Defaults {
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: Codable>(
-		keys:Key<Value>...,
+		keys: Key<Value>...,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
@@ -155,7 +155,7 @@ extension Defaults {
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: NSSecureCoding>(
-		keys: Defaults.NSSecureCodingKey<Value>...,
+		keys: NSSecureCodingKey<Value>...,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
@@ -177,7 +177,7 @@ extension Defaults {
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: NSSecureCoding>(
-		keys: Defaults.NSSecureCodingOptionalKey<Value>...,
+		keys: NSSecureCodingOptionalKey<Value>...,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()

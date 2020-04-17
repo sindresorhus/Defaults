@@ -318,21 +318,15 @@ Type: `class`
 
 Create a NSSecureCoding key with an optional value.
 
-#### `Defaults.reset`
-
-```swift
-Defaults.reset<T: Codable>(_ keys: Defaults.Key<T>..., suite: UserDefaults = .standard)
-Defaults.reset<T: Codable>(_ keys: [Defaults.Key<T>], suite: UserDefaults = .standard)
-
-Defaults.reset<T: Codable>(_ keys: Defaults.NSSecureCodingKey<T>..., suite: UserDefaults = .standard)
-Defaults.reset<T: Codable>(_ keys: [Defaults.NSSecureCodingKey<T>], suite: UserDefaults = .standard)
-Defaults.reset<T: Codable>(_ keys: Defaults.NSSecureCodingOptionalKey<T>..., suite: UserDefaults = .standard)
-Defaults.reset<T: Codable>(_ keys: [Defaults.NSSecureCodingOptionalKey<T>], suite: UserDefaults = .standard)
-```
+#### `Defaults.reset(key, …)`
 
 Type: `func`
 
 Reset the given keys back to their default values.
+
+You can specify up to 10 keys. If you need to specify more, call this method multiple times.
+
+You can also specify string keys, which can be useful if you need to store some keys in a collection, as it's not possible to store `Defaults.Key` in a collection because it's generic.
 
 #### `Defaults.observe`
 
@@ -444,7 +438,7 @@ Defaults.removeAll(suite: UserDefaults = .standard)
 
 Type: `func`
 
-Remove all entries from the `UserDefaults` suite.
+Remove all entries from the given `UserDefaults` suite.
 
 ### `Defaults.Observation`
 

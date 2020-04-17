@@ -1,6 +1,18 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
+public protocol _DefaultsBaseKey: Defaults.Keys {
+	var name: String { get }
+	var suite: UserDefaults { get }
+}
+
+extension _DefaultsBaseKey {
+	/// Reset the item back to its default value.
+	public func reset() {
+		suite.removeObject(forKey: name)
+	}
+}
+
 public enum Defaults {
 	public class Keys {
 		public typealias Key = Defaults.Key
@@ -14,7 +26,7 @@ public enum Defaults {
 		fileprivate init() {}
 	}
 
-	public final class Key<Value: Codable>: Keys {
+	public final class Key<Value: Codable>: Keys, _DefaultsBaseKey {
 		public let name: String
 		public let defaultValue: Value
 		public let suite: UserDefaults
@@ -41,7 +53,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys {
+	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys, _DefaultsBaseKey {
 		public let name: String
 		public let defaultValue: Value
 		public let suite: UserDefaults
@@ -68,7 +80,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys {
+	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys, _DefaultsBaseKey {
 		public let name: String
 		public let suite: UserDefaults
 
@@ -104,108 +116,11 @@ public enum Defaults {
 			key.suite[key] = newValue
 		}
 	}
-	
+}
+
+extension Defaults {
 	/**
-	Reset the given keys back to their default values.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-
-	```
-	extension Defaults.Keys {
-		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
-	}
-
-	Defaults[.isUnicornMode] = true
-	//=> true
-
-	Defaults.reset(.isUnicornMode)
-
-	Defaults[.isUnicornMode]
-	//=> false
-	```
-	*/
-	public static func reset<Value: Codable>(_ keys: Key<Value>..., suite: UserDefaults = .standard) {
-		reset(keys, suite: suite)
-	}
-
-	/**
-	Reset the given keys back to their default values.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-	*/
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<Value: NSSecureCoding>(_ keys: NSSecureCodingKey<Value>..., suite: UserDefaults = .standard) {
-		reset(keys, suite: suite)
-	}
-	
-	/**
-	Reset the given array of keys back to their default values.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-
-	```
-	extension Defaults.Keys {
-		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
-	}
-
-	Defaults[.isUnicornMode] = true
-	//=> true
-
-	Defaults.reset(.isUnicornMode)
-
-	Defaults[.isUnicornMode]
-	//=> false
-	```
-	*/
-	public static func reset<Value: Codable>(_ keys: [Key<Value>], suite: UserDefaults = .standard) {
-		for key in keys {
-			key.suite[key] = key.defaultValue
-		}
-	}
-
-	/**
-	Reset the given array of keys back to their default values.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-	*/
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<Value: NSSecureCoding>(_ keys: [NSSecureCodingKey<Value>], suite: UserDefaults = .standard) {
-		for key in keys {
-			key.suite[key] = key.defaultValue
-		}
-	}
-
-	/**
-	Reset the given optional keys back to `nil`.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-	```
-	*/
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<Value: NSSecureCoding>(_ keys: NSSecureCodingOptionalKey<Value>..., suite: UserDefaults = .standard) {
-		reset(keys, suite: suite)
-	}
-
-	/**
-	Reset the given array of optional keys back to `nil`.
-
-	- Parameter keys: Keys to reset.
-	- Parameter suite: `UserDefaults` suite.
-	*/
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func reset<Value: NSSecureCoding>(_ keys: [NSSecureCodingOptionalKey<Value>], suite: UserDefaults = .standard) {
-		for key in keys {
-			key.suite[key] = nil
-		}
-	}
-
-	/**
-	Remove all entries from the `UserDefaults` suite.
+	Remove all entries from the given `UserDefaults` suite.
 	*/
 	public static func removeAll(suite: UserDefaults = .standard) {
 		for key in suite.dictionaryRepresentation().keys {
@@ -224,138 +139,5 @@ extension Defaults.Key where Value: _DefaultsOptionalType {
 extension Defaults.NSSecureCodingKey where Value: _DefaultsOptionalType {
 	public convenience init(_ key: String, suite: UserDefaults = .standard) {
 		self.init(key, default: nil, suite: suite)
-	}
-}
-
-extension UserDefaults {
-	private func _get<Value: Codable>(_ key: String) -> Value? {
-		if UserDefaults.isNativelySupportedType(Value.self) {
-			return object(forKey: key) as? Value
-		}
-
-		guard
-			let text = string(forKey: key),
-			let data = "[\(text)]".data(using: .utf8)
-		else {
-			return nil
-		}
-
-		do {
-			return (try JSONDecoder().decode([Value].self, from: data)).first
-		} catch {
-			print(error)
-		}
-
-		return nil
-	}
-
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	private func _get<Value: NSSecureCoding>(_ key: String) -> Value? {
-		if UserDefaults.isNativelySupportedType(Value.self) {
-			return object(forKey: key) as? Value
-		}
-
-		guard
-			let data = data(forKey: key)
-		else {
-			return nil
-		}
-
-		do {
-			return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? Value
-		} catch {
-			print(error)
-		}
-
-		return nil
-	}
-
-	fileprivate func _encode<Value: Codable>(_ value: Value) -> String? {
-		do {
-			// Some codable values like URL and enum are encoded as a top-level
-			// string which JSON can't handle, so we need to wrap it in an array
-			// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
-			let data = try JSONEncoder().encode([value])
-			return String(String(data: data, encoding: .utf8)!.dropFirst().dropLast())
-		} catch {
-			print(error)
-			return nil
-		}
-	}
-
-	private func _set<Value: Codable>(_ key: String, to value: Value) {
-		if (value as? _DefaultsOptionalType)?.isNil == true {
-			removeObject(forKey: key)
-			return
-		}
-
-		if UserDefaults.isNativelySupportedType(Value.self) {
-			set(value, forKey: key)
-			return
-		}
-
-		set(_encode(value), forKey: key)
-	}
-
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	private func _set<Value: NSSecureCoding>(_ key: String, to value: Value) {
-		// TODO: Handle nil here too.
-		if UserDefaults.isNativelySupportedType(Value.self) {
-			set(value, forKey: key)
-			return
-		}
-
-		set(try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true), forKey: key)
-	}
-
-	public subscript<Value: Codable>(key: Defaults.Key<Value>) -> Value {
-		get { _get(key.name) ?? key.defaultValue }
-		set {
-			_set(key.name, to: newValue)
-		}
-	}
-
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public subscript<Value: NSSecureCoding>(key: Defaults.NSSecureCodingKey<Value>) -> Value {
-		get { _get(key.name) ?? key.defaultValue }
-		set {
-			_set(key.name, to: newValue)
-		}
-	}
-
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public subscript<Value: NSSecureCoding>(key: Defaults.NSSecureCodingOptionalKey<Value>) -> Value? {
-		get { _get(key.name) }
-		set {
-			guard let value = newValue else {
-				set(nil, forKey: key.name)
-				return
-			}
-
-			_set(key.name, to: value)
-		}
-	}
-
-	fileprivate static func isNativelySupportedType<T>(_ type: T.Type) -> Bool {
-		switch type {
-		case
-			is Bool.Type,
-			is Bool?.Type, // swiftlint:disable:this discouraged_optional_boolean
-			is String.Type,
-			is String?.Type,
-			is Int.Type,
-			is Int?.Type,
-			is Double.Type,
-			is Double?.Type,
-			is Float.Type,
-			is Float?.Type,
-			is Date.Type,
-			is Date?.Type,
-			is Data.Type,
-			is Data?.Type:
-			return true
-		default:
-			return false
-		}
 	}
 }
