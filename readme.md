@@ -2,7 +2,7 @@
 
 > Swifty and modern [UserDefaults](https://developer.apple.com/documentation/foundation/userdefaults)
 
-#### Note: The readme reflects the master branch. [Click here](https://github.com/sindresorhus/Defaults/tree/55ffea9487fb9b559406d909ee31dcd955fe77aa#readme) for docs for the latest version. The code in the master branch cannot be released until Apple fixes [this bug](https://github.com/feedback-assistant/reports/issues/44).
+Store key-value pairs persistently across launches of your app.
 
 It uses `NSUserDefaults` underneath but exposes a type-safe facade with lots of nice conveniences.
 
@@ -16,7 +16,6 @@ It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gi
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Observation:** Observe changes to keys.
 - **Publishers:** Combine publishers built-in.
-- **Lightweight:** It's only some hundred lines of code.
 
 ## Compatibility
 
@@ -27,11 +26,13 @@ It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gi
 
 ## Install
 
-#### SwiftPM
+#### Swift Package Manager
 
 ```swift
 .package(url: "https://github.com/sindresorhus/Defaults", from: "3.1.1")
 ```
+
+You need to set the build setting “Other Linker Flags” to `-weak_framework Combine` to work around [this Xcode bug](https://github.com/feedback-assistant/reports/issues/44).
 
 #### Carthage
 
