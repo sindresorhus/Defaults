@@ -149,27 +149,6 @@ extension Defaults {
 
 		return combinedPublisher
 	}
-
-	/**
-	Convenience `Publisher` for all `UserDefaults` key change events. A wrapper around the `UserDefaults.didChangeNotification`.
-
-	- Parameter initialEvent: Trigger an initial event immediately.
-	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisherAll(initialEvent: Bool = true) -> AnyPublisher<Void, Never> {
-		let publisher =
-			NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
-				.map { _ in () }
-
-		if initialEvent {
-			return publisher
-				.prepend(())
-				.eraseToAnyPublisher()
-		} else {
-			return publisher
-				.eraseToAnyPublisher()
-		}
-	}
 }
 
 #endif

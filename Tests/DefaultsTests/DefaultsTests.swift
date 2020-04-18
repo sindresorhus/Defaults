@@ -286,24 +286,6 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	func testObserveAllCombine() {
-		let key = Defaults.Key<Bool>("observeAllKey", default: false)
-		let expect = expectation(description: "Observation closure being called")
-		let publisher = Defaults.publisherAll().collect(3)
-
-		let cancellable = publisher.sink { actualValues in
-			XCTAssertEqual(3, actualValues.count)
-			expect.fulfill()
-		}
-
-		Defaults[key] = true
-		Defaults[key] = false
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleKeysCombine() {
 		let key1 = Defaults.Key<String>("observeKey1", default: "x")
 		let key2 = Defaults.Key<Bool>("observeKey2", default: true)
