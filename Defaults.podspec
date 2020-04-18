@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 	s.name = 'Defaults'
-	s.version = '3.1.1'
+	s.version = '4.0.0'
 	s.summary = 'Swifty and modern UserDefaults'
 	s.license = 'MIT'
 	s.homepage = 'https://github.com/sindresorhus/Defaults'

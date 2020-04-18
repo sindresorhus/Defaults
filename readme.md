@@ -30,7 +30,7 @@ It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gi
 #### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "3.1.1")
+.package(url: "https://github.com/sindresorhus/Defaults", from: "4.0.0")
 ```
 
 You need to set the build setting “Other Linker Flags” to `-weak_framework Combine` to work around [this Xcode bug](https://github.com/feedback-assistant/reports/issues/44).
