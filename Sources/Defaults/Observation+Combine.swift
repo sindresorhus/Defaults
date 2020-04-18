@@ -132,59 +132,15 @@ extension Defaults {
 	Publisher for multiple `Key<T>` observation, but without specific information about changes.
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: Codable>(
-		keys: Key<Value>...,
+	public static func publisher(
+		keys: _DefaultsBaseKey...,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
 
 		let combinedPublisher =
 			keys.map { key in
-				Defaults.publisher(key, options: options)
-					.map { _ in () }
-					.eraseToAnyPublisher()
-			}.reduce(initial) { (combined, keyPublisher) in
-				combined.merge(with: keyPublisher).eraseToAnyPublisher()
-			}
-
-		return combinedPublisher
-	}
-
-	/**
-	Publisher for multiple `NSSecureCodingKey<T>` observation, but without specific information about changes.
-	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: NSSecureCoding>(
-		keys: NSSecureCodingKey<Value>...,
-		options: ObservationOptions = [.initial]
-	) -> AnyPublisher<Void, Never> {
-		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
-
-		let combinedPublisher =
-			keys.map { key in
-				Defaults.publisher(key, options: options)
-					.map { _ in () }
-					.eraseToAnyPublisher()
-			}.reduce(initial) { (combined, keyPublisher) in
-				combined.merge(with: keyPublisher).eraseToAnyPublisher()
-			}
-
-		return combinedPublisher
-	}
-
-	/**
-	Publisher for multiple `NSSecureCodingOptionalKey<T>` observation, but without specific information about changes.
-	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: NSSecureCoding>(
-		keys: NSSecureCodingOptionalKey<Value>...,
-		options: ObservationOptions = [.initial]
-	) -> AnyPublisher<Void, Never> {
-		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
-
-		let combinedPublisher =
-			keys.map { key in
-				Defaults.publisher(key, options: options)
+				DefaultsPublisher(suite: key.suite, key: key.name, options: options)
 					.map { _ in () }
 					.eraseToAnyPublisher()
 			}.reduce(initial) { (combined, keyPublisher) in

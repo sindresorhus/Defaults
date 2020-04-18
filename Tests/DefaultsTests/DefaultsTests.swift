@@ -305,7 +305,7 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleKeysCombine() {
-		let key1 = Defaults.Key<Bool>("observeKey1", default: false)
+		let key1 = Defaults.Key<String>("observeKey1", default: "x")
 		let key2 = Defaults.Key<Bool>("observeKey2", default: true)
 		let expect = expectation(description: "Observation closure being called")
 
@@ -315,13 +315,12 @@ final class DefaultsTests: XCTestCase {
 			expect.fulfill()
 		}
 
-		Defaults[key1] = true
+		Defaults[key1] = "y"
 		Defaults[key2] = false
 		cancellable.cancel()
 
 		waitForExpectations(timeout: 10)
 	}
-
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleNSSecureKeysCombine() {
@@ -345,7 +344,7 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleOptionalKeysCombine() {
-		let key1 = Defaults.Key<Bool?>("observeOptionalKey1")
+		let key1 = Defaults.Key<String?>("observeOptionalKey1")
 		let key2 = Defaults.Key<Bool?>("observeOptionalKey2")
 		let expect = expectation(description: "Observation closure being called")
 
@@ -355,7 +354,7 @@ final class DefaultsTests: XCTestCase {
 			expect.fulfill()
 		}
 
-		Defaults[key1] = true
+		Defaults[key1] = "x"
 		Defaults[key2] = false
 		cancellable.cancel()
 

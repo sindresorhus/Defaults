@@ -318,7 +318,7 @@ Type: `class`
 
 Create a NSSecureCoding key with an optional value.
 
-#### `Defaults.reset(key, …)`
+#### `Defaults.reset(keys…)`
 
 Type: `func`
 
@@ -360,7 +360,7 @@ Observe changes to a key or an optional key.
 
 By default, it will also trigger an initial event on creation. This can be useful for setting default values on controls. You can override this behavior with the `options` argument.
 
-#### `Defaults.publisher`
+#### `Defaults.publisher(_ key:, options:)`
 
 ```swift
 Defaults.publisher<T: Codable>(
@@ -389,28 +389,7 @@ Observation API using [Publisher](https://developer.apple.com/documentation/comb
 
 Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 
-#### `Defaults.publisher(keys:)`
-
-```swift
-Defaults.publisher<T: Codable>(
-	keys: Defaults.Key<T>...,
-	options: ObservationOptions = [.initial]
-) -> AnyPublisher<Void, Never> {
-```
-
-```swift
-Defaults.publisher<T: NSSecureCoding>(
-	keys: Defaults.NSSecureCodingKey<T>...,
-	options: ObservationOptions = [.initial]
-) -> AnyPublisher<Void, Never> {
-```
-
-```swift
-Defaults.publisher<T: NSSecureCoding>(
-	keys: Defaults.NSSecureCodingOptionalKey<T>...,
-	options: ObservationOptions = [.initial]
-) -> AnyPublisher<Void, Never> {
-```
+#### `Defaults.publisher(keys: keys…, options:)`
 
 Type: `func`
 
