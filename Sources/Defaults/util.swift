@@ -132,3 +132,17 @@ extension Optional: _DefaultsOptionalType {
 func isOptionalType<T>(_ type: T.Type) -> Bool {
 	type is _DefaultsOptionalType.Type
 }
+
+
+extension DispatchQueue {
+	/**
+	Performs the `execute` closure immediately if we're on the main thread or asynchronously puts it on the main thread otherwise.
+	*/
+	static func mainSafeAsync(execute work: @escaping () -> Void) {
+		if Thread.isMainThread {
+			work()
+		} else {
+			main.async(execute: work)
+		}
+	}
+}

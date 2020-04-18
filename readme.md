@@ -13,9 +13,10 @@ It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gi
 - **Strongly typed:** You declare the type and default value upfront.
 - **Codable support:** You can store any [Codable](https://developer.apple.com/documentation/swift/codable) value, like an enum.
 - **NSSecureCoding support:** You can store any [NSSecureCoding](https://developer.apple.com/documentation/foundation/nssecurecoding) value.
-- **Debuggable:** The data is stored as JSON-serialized values.
-- **Observation:** Observe changes to keys.
+- **SwiftUI:** Property wrapper that updates the view when the `UserDefaults` value changes.
 - **Publishers:** Combine publishers built-in.
+- **Observation:** Observe changes to keys.
+- **Debuggable:** The data is stored as JSON-serialized values.
 
 ## Compatibility
 
@@ -140,6 +141,29 @@ let isUnicorn = Defaults.Key<Bool>("isUnicorn", default: true)
 Defaults[isUnicorn]
 //=> true
 ```
+
+### SwiftUI support
+
+You can use the `@Default` property wrapper to get/set a `Defaults` item and also have the view be updated when the value changes. This is similar to `@State`.
+
+```swift
+extension Defaults.Keys {
+	static let hasUnicorn = Key<Bool>("hasUnicorn", default: false)
+}
+
+struct ContentView: View {
+	@Default(.hasUnicorn) var hasUnicorn
+
+	var body: some View {
+		Text("Has Unicorn: \(hasUnicorn)")
+		Toggle("Toggle Unicorn", isOn: $hasUnicorn)
+	}
+}
+```
+
+Note that it's `@Default`, not `@Defaults`.
+
+This is only implemented for `Defaults.Key`. PR welcome for `Defaults.NSSecureCoding` if you need it.
 
 ### Observe changes to a key
 
@@ -448,6 +472,12 @@ Type: `func`
 Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
 
 The effects of any call to `tieToLifetime(of:)` are reversed. Note however that if the tied-to object has already died, then the observation is already invalid and this method has no logical effect.
+
+### `@Default(_ key:)`
+
+Get/set a `Defaults` item and also have the view be updated when the value changes.
+
+This is only implemented for `Defaults.Key`. PR welcome for `Defaults.NSSecureCoding` if you need it.
 
 ## FAQ
 

@@ -29,6 +29,10 @@
 		E339B3B92449F10D00E7A40A /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E339B3B72449F10D00E7A40A /* UserDefaults.swift */; };
 		E339B3BA2449F10D00E7A40A /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E339B3B72449F10D00E7A40A /* UserDefaults.swift */; };
 		E339B3BB2449F10D00E7A40A /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E339B3B72449F10D00E7A40A /* UserDefaults.swift */; };
+		E38C9F27244ADA2F00A6737A /* SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38C9F26244ADA2F00A6737A /* SwiftUI.swift */; };
+		E38C9F28244ADA2F00A6737A /* SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38C9F26244ADA2F00A6737A /* SwiftUI.swift */; };
+		E38C9F29244ADA2F00A6737A /* SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38C9F26244ADA2F00A6737A /* SwiftUI.swift */; };
+		E38C9F2A244ADA2F00A6737A /* SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38C9F26244ADA2F00A6737A /* SwiftUI.swift */; };
 		E3EB3E33216505920033B089 /* util.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E32216505920033B089 /* util.swift */; };
 		E3EB3E35216507AE0033B089 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E34216507AE0033B089 /* Observation.swift */; };
 		E3EB3E36216507B50033B089 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EB3E34216507AE0033B089 /* Observation.swift */; };
@@ -79,6 +83,7 @@
 		E286D0C623B8D51100570D1E /* Observation+Combine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = "Observation+Combine.swift"; sourceTree = "<group>"; usesTabs = 1; };
 		E339B3B22449ED2000E7A40A /* Reset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Reset.swift; sourceTree = "<group>"; usesTabs = 1; };
 		E339B3B72449F10D00E7A40A /* UserDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = UserDefaults.swift; sourceTree = "<group>"; usesTabs = 1; };
+		E38C9F26244ADA2F00A6737A /* SwiftUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SwiftUI.swift; sourceTree = "<group>"; usesTabs = 1; };
 		E3EB3E32216505920033B089 /* util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = util.swift; sourceTree = "<group>"; usesTabs = 1; };
 		E3EB3E34216507AE0033B089 /* Observation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Observation.swift; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
@@ -215,6 +220,7 @@
 				E339B3B22449ED2000E7A40A /* Reset.swift */,
 				E3EB3E34216507AE0033B089 /* Observation.swift */,
 				E286D0C623B8D51100570D1E /* Observation+Combine.swift */,
+				E38C9F26244ADA2F00A6737A /* SwiftUI.swift */,
 				E3EB3E32216505920033B089 /* util.swift */,
 			);
 			path = Defaults;
@@ -502,6 +508,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E286D0C823B8D54C00570D1E /* Observation+Combine.swift in Sources */,
+				E38C9F28244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				8933C7851EB5B820000D00A4 /* Defaults.swift in Sources */,
 				E339B3B92449F10D00E7A40A /* UserDefaults.swift in Sources */,
 				E3EB3E35216507AE0033B089 /* Observation.swift in Sources */,
@@ -523,6 +530,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E286D0CA23B8D54E00570D1E /* Observation+Combine.swift in Sources */,
+				E38C9F2A244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E3A216507C40033B089 /* util.swift in Sources */,
 				E339B3BB2449F10D00E7A40A /* UserDefaults.swift in Sources */,
 				E3EB3E37216507B50033B089 /* Observation.swift in Sources */,
@@ -536,6 +544,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E286D0C923B8D54D00570D1E /* Observation+Combine.swift in Sources */,
+				E38C9F29244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E3B216507C40033B089 /* util.swift in Sources */,
 				E339B3BA2449F10D00E7A40A /* UserDefaults.swift in Sources */,
 				E3EB3E38216507B60033B089 /* Observation.swift in Sources */,
@@ -549,6 +558,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E286D0C723B8D51100570D1E /* Observation+Combine.swift in Sources */,
+				E38C9F27244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E39216507C30033B089 /* util.swift in Sources */,
 				E339B3B82449F10D00E7A40A /* UserDefaults.swift in Sources */,
 				E3EB3E36216507B50033B089 /* Observation.swift in Sources */,
