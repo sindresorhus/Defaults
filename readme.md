@@ -511,7 +511,8 @@ It's inspired by that package and other solutions. The main difference is that t
 
 ## Related
 
-- [Preferences](https://github.com/sindresorhus/Preferences) - Add a preferences window to your macOS app in minutes
+- [Preferences](https://github.com/sindresorhus/Preferences) - Add a preferences window to your macOS app
+- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) - Add user-customizable global keyboard shortcuts to your macOS app
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) - Add "Launch at Login" functionality to your macOS app
 - [DockProgress](https://github.com/sindresorhus/DockProgress) - Show progress in your app's Dock icon
 - [Gifski](https://github.com/sindresorhus/Gifski) - Convert videos to high-quality GIFs on your Mac
