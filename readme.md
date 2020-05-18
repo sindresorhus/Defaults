@@ -29,11 +29,9 @@ It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gi
 
 #### Swift Package Manager
 
-```swift
-.package(url: "https://github.com/sindresorhus/Defaults", from: "4.0.0")
-```
+Add `https://github.com/sindresorhus/Defaults` in the [“Swift Package Manager” tab in Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app).
 
-You need to set the build setting “Other Linker Flags” to `-weak_framework Combine` to work around [this Xcode bug](https://github.com/feedback-assistant/reports/issues/44).
+You also need to set the build setting “Other Linker Flags” to `-weak_framework Combine` to work around [this Xcode bug](https://github.com/feedback-assistant/reports/issues/44).
 
 #### Carthage
 
