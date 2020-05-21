@@ -219,7 +219,7 @@ extension Defaults {
 	}
 	```
 	*/
-	public static func observe<Value: Codable>(
+	public static func observe<Value>(
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial],
 		handler: @escaping (KeyChange<Value>) -> Void
@@ -237,7 +237,7 @@ extension Defaults {
 	Observe a defaults key.
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func observe<Value: NSSecureCoding>(
+	public static func observe<Value>(
 		_ key: NSSecureCodingKey<Value>,
 		options: ObservationOptions = [.initial],
 		handler: @escaping (NSSecureCodingKeyChange<Value>) -> Void
@@ -255,7 +255,7 @@ extension Defaults {
 	Observe an optional defaults key.
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func observe<Value: NSSecureCoding>(
+	public static func observe<Value>(
 		_ key: NSSecureCodingOptionalKey<Value>,
 		options: ObservationOptions = [.initial],
 		handler: @escaping (NSSecureCodingOptionalKeyChange<Value>) -> Void

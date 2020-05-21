@@ -95,7 +95,7 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable
+		Value1
 	>(
 		_ key1: Key<Value1>
 	) {
@@ -124,8 +124,8 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable
+		Value1,
+		Value2
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>
@@ -156,9 +156,9 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable
+		Value1,
+		Value2,
+		Value3
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -191,10 +191,10 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable,
-		Value4: Codable
+		Value1,
+		Value2,
+		Value3,
+		Value4
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -229,11 +229,11 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable,
-		Value4: Codable,
-		Value5: Codable
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -270,12 +270,12 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable,
-		Value4: Codable,
-		Value5: Codable,
-		Value6: Codable
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -314,13 +314,13 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable,
-		Value4: Codable,
-		Value5: Codable,
-		Value6: Codable,
-		Value7: Codable
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -361,14 +361,14 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable,
-		Value4: Codable,
-		Value5: Codable,
-		Value6: Codable,
-		Value7: Codable,
-		Value8: Codable
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -411,15 +411,15 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable,
-		Value4: Codable,
-		Value5: Codable,
-		Value6: Codable,
-		Value7: Codable,
-		Value8: Codable,
-		Value9: Codable
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8,
+		Value9
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -464,16 +464,16 @@ extension Defaults {
 	```
 	*/
 	public static func reset<
-		Value1: Codable,
-		Value2: Codable,
-		Value3: Codable,
-		Value4: Codable,
-		Value5: Codable,
-		Value6: Codable,
-		Value7: Codable,
-		Value8: Codable,
-		Value9: Codable,
-		Value10: Codable
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8,
+		Value9,
+		Value10
 	>(
 		_ key1: Key<Value1>,
 		_ key2: Key<Value2>,
@@ -509,7 +509,7 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding
+		Value1
 	>(
 		_ key1: NSSecureCodingKey<Value1>
 	) {
@@ -525,8 +525,8 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding
+		Value1,
+		Value2
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>
@@ -544,9 +544,9 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding
+		Value1,
+		Value2,
+		Value3
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -566,10 +566,10 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -591,11 +591,11 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -619,12 +619,12 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -650,13 +650,13 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -684,14 +684,14 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding,
-		Value8: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -721,15 +721,15 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding,
-		Value8: NSSecureCoding,
-		Value9: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8,
+		Value9
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -761,16 +761,16 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding,
-		Value8: NSSecureCoding,
-		Value9: NSSecureCoding,
-		Value10: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8,
+		Value9,
+		Value10
 	>(
 		_ key1: NSSecureCodingKey<Value1>,
 		_ key2: NSSecureCodingKey<Value2>,
@@ -806,7 +806,7 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding
+		Value1
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>
 	) {
@@ -822,8 +822,8 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding
+		Value1,
+		Value2
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>
@@ -841,9 +841,9 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding
+		Value1,
+		Value2,
+		Value3
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,
@@ -863,10 +863,10 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,
@@ -888,11 +888,11 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,
@@ -916,12 +916,12 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,
@@ -947,13 +947,13 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,
@@ -981,14 +981,14 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding,
-		Value8: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,
@@ -1018,15 +1018,15 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding,
-		Value8: NSSecureCoding,
-		Value9: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8,
+		Value9
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,
@@ -1058,16 +1058,16 @@ extension Defaults {
 	*/
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public static func reset<
-		Value1: NSSecureCoding,
-		Value2: NSSecureCoding,
-		Value3: NSSecureCoding,
-		Value4: NSSecureCoding,
-		Value5: NSSecureCoding,
-		Value6: NSSecureCoding,
-		Value7: NSSecureCoding,
-		Value8: NSSecureCoding,
-		Value9: NSSecureCoding,
-		Value10: NSSecureCoding
+		Value1,
+		Value2,
+		Value3,
+		Value4,
+		Value5,
+		Value6,
+		Value7,
+		Value8,
+		Value9,
+		Value10
 	>(
 		_ key1: NSSecureCodingOptionalKey<Value1>,
 		_ key2: NSSecureCodingOptionalKey<Value2>,

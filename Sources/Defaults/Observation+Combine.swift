@@ -90,7 +90,7 @@ extension Defaults {
 	```
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: Codable>(
+	public static func publisher<Value>(
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<KeyChange<Value>, Never> {
@@ -104,7 +104,7 @@ extension Defaults {
 	Returns a type-erased `Publisher` that publishes changes related to the given key.
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: NSSecureCoding>(
+	public static func publisher<Value>(
 		_ key: NSSecureCodingKey<Value>,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<NSSecureCodingKeyChange<Value>, Never> {
@@ -118,7 +118,7 @@ extension Defaults {
 	Returns a type-erased `Publisher` that publishes changes related to the given optional key.
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value: NSSecureCoding>(
+	public static func publisher<Value>(
 		_ key: NSSecureCodingOptionalKey<Value>,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<NSSecureCodingOptionalKeyChange<Value>, Never> {

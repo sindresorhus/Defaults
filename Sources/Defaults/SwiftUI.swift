@@ -50,6 +50,8 @@ public struct Default<Value: Codable>: DynamicProperty {
 	/**
 	Get/set a `Defaults` item and also have the view be updated when the value changes. This is similar to `@State`.
 
+	- Important: You cannot use this in an `ObservableObject`. It's meant to be used in a `View`.
+
 	```
 	extension Defaults.Keys {
 		static let hasUnicorn = Key<Bool>("hasUnicorn", default: false)

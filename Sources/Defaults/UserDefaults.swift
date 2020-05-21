@@ -81,7 +81,7 @@ extension UserDefaults {
 		set(try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true), forKey: key)
 	}
 
-	public subscript<Value: Codable>(key: Defaults.Key<Value>) -> Value {
+	public subscript<Value>(key: Defaults.Key<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)
@@ -89,7 +89,7 @@ extension UserDefaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public subscript<Value: NSSecureCoding>(key: Defaults.NSSecureCodingKey<Value>) -> Value {
+	public subscript<Value>(key: Defaults.NSSecureCodingKey<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)
@@ -97,7 +97,7 @@ extension UserDefaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public subscript<Value: NSSecureCoding>(key: Defaults.NSSecureCodingOptionalKey<Value>) -> Value? {
+	public subscript<Value>(key: Defaults.NSSecureCodingOptionalKey<Value>) -> Value? {
 		get { _get(key.name) }
 		set {
 			guard let value = newValue else {
@@ -129,6 +129,19 @@ extension UserDefaults {
 			return true
 		default:
 			return false
+		}
+	}
+}
+
+extension UserDefaults {
+	/**
+	Remove all entries.
+
+	- Note: This only removes user-defined entries. System-defined entries will remain.
+	*/
+	public func removeAll() {
+		for key in dictionaryRepresentation().keys {
+			removeObject(forKey: key)
 		}
 	}
 }

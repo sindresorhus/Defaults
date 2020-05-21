@@ -32,6 +32,7 @@ public enum Defaults {
 		public let suite: UserDefaults
 
 		/// Create a defaults key.
+		/// The `default` parameter can be left out if the `Value` type is an optional.
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
 			self.name = key
 			self.defaultValue = defaultValue
@@ -59,6 +60,7 @@ public enum Defaults {
 		public let suite: UserDefaults
 
 		/// Create a defaults key.
+		/// The `default` parameter can be left out if the `Value` type is an optional.
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
 			self.name = key
 			self.defaultValue = defaultValue
@@ -92,7 +94,7 @@ public enum Defaults {
 	}
 
 	/// Access a defaults value using a `Defaults.Key`.
-	public static subscript<Value: Codable>(key: Key<Value>) -> Value {
+	public static subscript<Value>(key: Key<Value>) -> Value {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -101,7 +103,7 @@ public enum Defaults {
 
 	/// Access a defaults value using a `Defaults.NSSecureCodingKey`.
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static subscript<Value: NSSecureCoding>(key: NSSecureCodingKey<Value>) -> Value {
+	public static subscript<Value>(key: NSSecureCodingKey<Value>) -> Value {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -110,7 +112,7 @@ public enum Defaults {
 
 	/// Access a defaults value using a `Defaults.NSSecureCodingOptionalKey`.
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static subscript<Value: NSSecureCoding>(key: NSSecureCodingOptionalKey<Value>) -> Value? {
+	public static subscript<Value>(key: NSSecureCodingOptionalKey<Value>) -> Value? {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -121,11 +123,11 @@ public enum Defaults {
 extension Defaults {
 	/**
 	Remove all entries from the given `UserDefaults` suite.
+
+	- Note: This only removes user-defined entries. System-defined entries will remain.
 	*/
 	public static func removeAll(suite: UserDefaults = .standard) {
-		for key in suite.dictionaryRepresentation().keys {
-			suite.removeObject(forKey: key)
-		}
+		suite.removeAll()
 	}
 }
 

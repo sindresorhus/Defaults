@@ -8,6 +8,8 @@ It uses `NSUserDefaults` underneath but exposes a type-safe facade with lots of 
 
 It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gifski), [Dato](https://sindresorhus.com/dato), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter).
 
+For a real-world example, see my [Plash app](https://github.com/sindresorhus/Plash/blob/533dbc888d8ba3bd9581e60320af282a22c53f85/Plash/Constants.swift#L9-L18).
+
 ## Highlights
 
 - **Strongly typed:** You declare the type and default value upfront.
@@ -160,6 +162,8 @@ struct ContentView: View {
 ```
 
 Note that it's `@Default`, not `@Defaults`.
+
+You cannot use `@Default` in an `ObservableObject`. It's meant to be used in a `View`.
 
 This is only implemented for `Defaults.Key`. PR welcome for `Defaults.NSSecureCoding` if you need it.
 
