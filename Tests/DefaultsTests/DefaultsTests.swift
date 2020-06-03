@@ -452,6 +452,53 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
+	
+	func testObserveMultipleKeys() {
+		let key1 = Defaults.Key<String>("observeKey1", default: "x")
+		let key2 = Defaults.Key<Bool>("observeKey2", default: true)
+		let expect = expectation(description: "Observation closure being called")
+		
+		var observation: Defaults.Observation!
+		var counter = 0
+		observation = Defaults.observe(keys: key1, key2, options: []) {
+			counter += 1
+			if counter == 2 {
+				expect.fulfill()
+			} else if counter > 2 {
+				XCTFail()
+			}
+		}
+		
+		Defaults[key1] = "y"
+		Defaults[key2] = false
+		observation.invalidate()
+		
+		waitForExpectations(timeout: 10)
+	}
+	
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+	func testObserveMultipleNSSecureKeys() {
+		let key1 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
+		let key2 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
+		let expect = expectation(description: "Observation closure being called")
+		
+		var observation: Defaults.Observation!
+		var counter = 0
+		observation = Defaults.observe(keys: key1, key2, options: []) {
+			counter += 1
+			if counter == 2 {
+				expect.fulfill()
+			} else if counter > 2 {
+				XCTFail()
+			}
+		}
+		
+		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
+		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
+		observation.invalidate()
+
+		waitForExpectations(timeout: 10)
+	}
 
 	func testObserveKeyURL() {
 		let fixtureURL = URL(string: "https://sindresorhus.com")!

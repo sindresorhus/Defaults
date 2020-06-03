@@ -204,6 +204,45 @@ extension Defaults {
 			callback(BaseChange(change: change))
 		}
 	}
+	
+	class CompositeUserDefaultsKeyObservation: NSObject, Observation {
+		private let observations: [UserDefaultsKeyObservation]
+		
+		init(observations: [UserDefaultsKeyObservation]) {
+			self.observations = observations
+			super.init()
+		}
+		
+		deinit {
+			invalidate()
+		}
+		
+		public func start(options: ObservationOptions) {
+			for observation in observations {
+				observation.start(options: options)
+			}
+		}
+		
+		public func invalidate() {
+			for observation in observations {
+				observation.invalidate()
+			}
+		}
+		
+		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+			for observation in observations {
+				_ = observation.tieToLifetime(of: weaklyHeldObject)
+			}
+			
+			return self
+		}
+
+		public func removeLifetimeTie() {
+			for observation in observations {
+				observation.removeLifetimeTie()
+			}
+		}
+	}
 
 	/**
 	Observe a defaults key.
@@ -267,6 +306,22 @@ extension Defaults {
 		}
 		observation.start(options: options)
 		return observation
+	}
+	
+	public static func observe(
+		keys: _DefaultsBaseKey...,
+		options: ObservationOptions = [.initial],
+		handler: @escaping () -> Void
+	) -> Observation {
+		let observations = keys.map { (key) in
+			UserDefaultsKeyObservation(object: key.suite, key: key.name, callback: { _ in
+				handler()
+			})
+		}
+		let compositeObservation = CompositeUserDefaultsKeyObservation(observations: observations)
+		compositeObservation.start(options: options)
+		
+		return compositeObservation
 	}
 }
 
