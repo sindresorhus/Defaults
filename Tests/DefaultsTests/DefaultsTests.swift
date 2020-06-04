@@ -535,6 +535,25 @@ final class DefaultsTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
+	
+//	func testObservePreventPropagation() {
+//		let key1 = Defaults.Key<Bool?>("preventPropagation", default: nil)
+//		let expect = expectation(description: "No infinite recursion")
+//
+//		var observation: Defaults.Observation!
+//		var wasInside = false
+//		observation = Defaults.observe(key1, options: []) { change in
+//			XCTAssertFalse(wasInside)
+//			wasInside = true
+//			Defaults[key1] = true
+//			expect.fulfill()
+//		}
+//
+//		Defaults[key1] = false
+//		observation.invalidate()
+//
+//		waitForExpectations(timeout: 10)
+//	}
 
 	func testResetKey() {
 		let defaultFixture1 = "foo1"

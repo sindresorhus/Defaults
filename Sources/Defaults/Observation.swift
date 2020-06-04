@@ -147,6 +147,8 @@ extension Defaults {
 		private weak var object: UserDefaults?
 		private let key: String
 		private let callback: Callback
+		private var preventPropagation: Bool = false
+		private var updatingValuesFlag: Bool = false
 
 		init(object: UserDefaults, key: String, callback: @escaping Callback) {
 			self.object = object
@@ -158,7 +160,8 @@ extension Defaults {
 			invalidate()
 		}
 
-		func start(options: ObservationOptions) {
+		func start(options: ObservationOptions, preventPropagation: Bool = false) {
+			self.preventPropagation = preventPropagation
 			object?.addObserver(self, forKeyPath: key, options: options.toNSKeyValueObservingOptions, context: nil)
 		}
 
@@ -189,6 +192,10 @@ extension Defaults {
 			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
 			context: UnsafeMutableRawPointer?
 		) {
+			if preventPropagation && updatingValuesFlag {
+				return
+			}
+			
 			guard let selfObject = self.object else {
 				invalidate()
 				return
@@ -200,16 +207,25 @@ extension Defaults {
 			else {
 				return
 			}
-
-			callback(BaseChange(change: change))
+			
+			if !preventPropagation {
+				callback(BaseChange(change: change))
+			} else {
+				updatingValuesFlag = true
+				callback(BaseChange(change: change))
+				updatingValuesFlag = false
+			}
 		}
 	}
 	
 	class CompositeUserDefaultsKeyObservation: NSObject, Observation {
 		private let observations: [UserDefaultsKeyObservation]
+		private var lifetimeAssociation: LifetimeAssociation? = nil
+		private let preventPropagation: Bool
 		
-		init(observations: [UserDefaultsKeyObservation]) {
+		init(observations: [UserDefaultsKeyObservation], preventPropagation: Bool = false) {
 			self.observations = observations
+			self.preventPropagation = preventPropagation
 			super.init()
 		}
 		
@@ -230,17 +246,15 @@ extension Defaults {
 		}
 		
 		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
-			for observation in observations {
-				_ = observation.tieToLifetime(of: weaklyHeldObject)
-			}
+			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
+				self?.invalidate()
+			})
 			
 			return self
 		}
 
 		public func removeLifetimeTie() {
-			for observation in observations {
-				observation.removeLifetimeTie()
-			}
+			lifetimeAssociation?.cancel()
 		}
 	}
 
