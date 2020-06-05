@@ -5,7 +5,7 @@ TODO: When Swift gets support for static key paths, all of this could be simplif
 
 ```
 extension Defaults {
-	public static func reset(_ keys: KeyPath<Keys, _DefaultsBaseKey>...) {
+	public static func reset(_ keys: KeyPath<Keys, DefaultsBaseKey>...) {
 		for key in keys {
 			Keys[keyPath: key].reset()
 		}

@@ -1,12 +1,12 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
-public protocol _DefaultsBaseKey: Defaults.Keys {
+public protocol DefaultsBaseKey: Defaults.Keys {
 	var name: String { get }
 	var suite: UserDefaults { get }
 }
 
-extension _DefaultsBaseKey {
+extension DefaultsBaseKey {
 	/// Reset the item back to its default value.
 	public func reset() {
 		suite.removeObject(forKey: name)
@@ -26,7 +26,7 @@ public enum Defaults {
 		fileprivate init() {}
 	}
 
-	public final class Key<Value: Codable>: Keys, _DefaultsBaseKey {
+	public final class Key<Value: Codable>: Keys, DefaultsBaseKey {
 		public let name: String
 		public let defaultValue: Value
 		public let suite: UserDefaults
@@ -53,7 +53,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys, _DefaultsBaseKey {
+	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys, DefaultsBaseKey {
 		public let name: String
 		public let defaultValue: Value
 		public let suite: UserDefaults
@@ -80,7 +80,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys, _DefaultsBaseKey {
+	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys, DefaultsBaseKey {
 		public let name: String
 		public let suite: UserDefaults
 
