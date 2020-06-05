@@ -147,8 +147,6 @@ extension Defaults {
 		private weak var object: UserDefaults?
 		private let key: String
 		private let callback: Callback
-		private var preventPropagation: Bool = false
-		private var updatingValuesFlag: Bool = false
 
 		init(object: UserDefaults, key: String, callback: @escaping Callback) {
 			self.object = object
@@ -160,8 +158,7 @@ extension Defaults {
 			invalidate()
 		}
 
-		func start(options: ObservationOptions, preventPropagation: Bool = false) {
-			self.preventPropagation = preventPropagation
+		func start(options: ObservationOptions) {
 			object?.addObserver(self, forKeyPath: key, options: options.toNSKeyValueObservingOptions, context: nil)
 		}
 
@@ -192,10 +189,6 @@ extension Defaults {
 			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
 			context: UnsafeMutableRawPointer?
 		) {
-			if preventPropagation && updatingValuesFlag {
-				return
-			}
-			
 			guard let selfObject = self.object else {
 				invalidate()
 				return
@@ -208,24 +201,32 @@ extension Defaults {
 				return
 			}
 			
-			if !preventPropagation {
-				callback(BaseChange(change: change))
-			} else {
-				updatingValuesFlag = true
-				callback(BaseChange(change: change))
-				updatingValuesFlag = false
-			}
+			callback(BaseChange(change: change))
 		}
 	}
 	
 	class CompositeUserDefaultsKeyObservation: NSObject, Observation {
-		private let observations: [UserDefaultsKeyObservation]
+		private static var observationContext = 0
+		
+		class SuiteKeyPair {
+			weak var suite: UserDefaults?
+			let key: String
+			
+			init(suite: UserDefaults, key: String) {
+				self.suite = suite
+				self.key = key
+			}
+		}
+		
+		private var observations: [SuiteKeyPair]
 		private var lifetimeAssociation: LifetimeAssociation? = nil
 		private let preventPropagation: Bool
+		private let callback: UserDefaultsKeyObservation.Callback
 		
-		init(observations: [UserDefaultsKeyObservation], preventPropagation: Bool = false) {
+		init(observations: [SuiteKeyPair], preventPropagation: Bool, callback: @escaping UserDefaultsKeyObservation.Callback) {
 			self.observations = observations
 			self.preventPropagation = preventPropagation
+			self.callback = callback
 			super.init()
 		}
 		
@@ -235,14 +236,19 @@ extension Defaults {
 		
 		public func start(options: ObservationOptions) {
 			for observation in observations {
-				observation.start(options: options)
+				observation.suite?.addObserver(self,
+											   forKeyPath: observation.key,
+											   options: options.toNSKeyValueObservingOptions,
+											   context: &type(of: self).observationContext)
 			}
 		}
 		
 		public func invalidate() {
 			for observation in observations {
-				observation.invalidate()
+				observation.suite?.removeObserver(self, forKeyPath: observation.key, context: &type(of: self).observationContext)
+				observation.suite = nil
 			}
+			lifetimeAssociation?.cancel()
 		}
 		
 		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
@@ -255,6 +261,42 @@ extension Defaults {
 
 		public func removeLifetimeTie() {
 			lifetimeAssociation?.cancel()
+		}
+		
+		// swiftlint:disable:next block_based_kvo
+		override func observeValue(
+			forKeyPath keyPath: String?,
+			of object: Any?,
+			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
+			context: UnsafeMutableRawPointer?
+		) {
+			guard
+				context == &type(of: self).observationContext
+			else {
+				super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+				return
+			}
+			
+			guard
+				object is UserDefaults,
+				let change = change
+			else {
+				return
+			}
+			
+			if preventPropagation {
+				let key = "\(type(of: self))_updatingValuesFlag"
+				let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
+				if updatingValuesFlag {
+					return
+				}
+				
+				Thread.current.threadDictionary[key] = true
+				callback(BaseChange(change: change))
+				Thread.current.threadDictionary[key] = false
+			} else {
+				callback(BaseChange(change: change))
+			}
 		}
 	}
 
@@ -325,14 +367,15 @@ extension Defaults {
 	public static func observe(
 		keys: _DefaultsBaseKey...,
 		options: ObservationOptions = [.initial],
+		preventPropagation: Bool = false,
 		handler: @escaping () -> Void
 	) -> Observation {
-		let observations = keys.map { (key) in
-			UserDefaultsKeyObservation(object: key.suite, key: key.name, callback: { _ in
-				handler()
-			})
+		let pairs = keys.map {
+			CompositeUserDefaultsKeyObservation.SuiteKeyPair(suite: $0.suite, key: $0.name)
 		}
-		let compositeObservation = CompositeUserDefaultsKeyObservation(observations: observations)
+		let compositeObservation = CompositeUserDefaultsKeyObservation(observations: pairs, preventPropagation: preventPropagation) { _ in
+			handler()
+		}
 		compositeObservation.start(options: options)
 		
 		return compositeObservation

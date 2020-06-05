@@ -536,24 +536,52 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 	
-//	func testObservePreventPropagation() {
-//		let key1 = Defaults.Key<Bool?>("preventPropagation", default: nil)
-//		let expect = expectation(description: "No infinite recursion")
-//
-//		var observation: Defaults.Observation!
-//		var wasInside = false
-//		observation = Defaults.observe(key1, options: []) { change in
-//			XCTAssertFalse(wasInside)
-//			wasInside = true
-//			Defaults[key1] = true
-//			expect.fulfill()
-//		}
-//
-//		Defaults[key1] = false
-//		observation.invalidate()
-//
-//		waitForExpectations(timeout: 10)
-//	}
+	func testObservePreventPropagation() {
+		let key1 = Defaults.Key<Bool?>("preventPropagation1", default: nil)
+		let key2 = Defaults.Key<Bool?>("preventPropagation2", default: nil)
+		let expect = expectation(description: "No infinite recursion")
+
+		var observation: Defaults.Observation!
+		var wasInside = false
+		observation = Defaults.observe(keys: key1, key2, options: [], preventPropagation: true) {
+			XCTAssertFalse(wasInside)
+			wasInside = true
+			Defaults[key1] = true
+			expect.fulfill()
+		}
+
+		Defaults[key1] = false
+		observation.invalidate()
+
+		waitForExpectations(timeout: 10)
+	}
+	
+	func testObservePreventPropagationMultiThread() {
+		let key1 = Defaults.Key<Int?>("preventPropagation3", default: nil)
+		let expect = expectation(description: "No infinite recursion")
+		
+		var observation: Defaults.Observation!
+		// This checks if callback is still being called, if value is changed on second thread,
+		// while initial thread is doing some long lasting task.
+		observation = Defaults.observe(keys: key1, options: [], preventPropagation: true) {
+			Defaults[key1]! += 1
+			print("--- Main Thread: \(Thread.isMainThread)")
+			if !Thread.isMainThread {
+				XCTAssert(Defaults[key1]! == 4)
+				expect.fulfill()
+			} else {
+				usleep(100000)
+				print("--- Release: \(Thread.isMainThread)")
+			}
+		}
+		DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
+			Defaults[key1]! += 1
+		}
+		Defaults[key1] = 1
+		observation.invalidate()
+
+		waitForExpectations(timeout: 10)
+	}
 
 	func testResetKey() {
 		let defaultFixture1 = "foo1"
