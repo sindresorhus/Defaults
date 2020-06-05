@@ -218,13 +218,13 @@ extension Defaults {
 			}
 		}
 		
-		private var observations: [SuiteKeyPair]
+		private var observables: [SuiteKeyPair]
 		private var lifetimeAssociation: LifetimeAssociation? = nil
 		private let preventPropagation: Bool
 		private let callback: UserDefaultsKeyObservation.Callback
 		
-		init(observations: [SuiteKeyPair], preventPropagation: Bool, callback: @escaping UserDefaultsKeyObservation.Callback) {
-			self.observations = observations
+		init(observables: [SuiteKeyPair], preventPropagation: Bool, callback: @escaping UserDefaultsKeyObservation.Callback) {
+			self.observables = observables
 			self.preventPropagation = preventPropagation
 			self.callback = callback
 			super.init()
@@ -235,18 +235,18 @@ extension Defaults {
 		}
 		
 		public func start(options: ObservationOptions) {
-			for observation in observations {
-				observation.suite?.addObserver(self,
-											   forKeyPath: observation.key,
+			for observable in observables {
+				observable.suite?.addObserver(self,
+											   forKeyPath: observable.key,
 											   options: options.toNSKeyValueObservingOptions,
 											   context: &type(of: self).observationContext)
 			}
 		}
 		
 		public func invalidate() {
-			for observation in observations {
-				observation.suite?.removeObserver(self, forKeyPath: observation.key, context: &type(of: self).observationContext)
-				observation.suite = nil
+			for observable in observables {
+				observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &type(of: self).observationContext)
+				observable.suite = nil
 			}
 			lifetimeAssociation?.cancel()
 		}
@@ -373,7 +373,7 @@ extension Defaults {
 		let pairs = keys.map {
 			CompositeUserDefaultsKeyObservation.SuiteKeyPair(suite: $0.suite, key: $0.name)
 		}
-		let compositeObservation = CompositeUserDefaultsKeyObservation(observations: pairs, preventPropagation: preventPropagation) { _ in
+		let compositeObservation = CompositeUserDefaultsKeyObservation(observables: pairs, preventPropagation: preventPropagation) { _ in
 			handler()
 		}
 		compositeObservation.start(options: options)
