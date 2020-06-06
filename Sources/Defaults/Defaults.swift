@@ -131,8 +131,8 @@ extension Defaults {
 	}
 }
 
-extension Defaults.Key where Value: _DefaultsOptionalType {
-	public convenience init(_ key: String, suite: UserDefaults = .standard) {
+extension Defaults.Key {
+	public convenience init<T>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
 		self.init(key, default: nil, suite: suite)
 	}
 }

@@ -366,7 +366,7 @@ final class DefaultsTests: XCTestCase {
 	func testReceiveValueBeforeSubscriptionCombine() {
 		let key = Defaults.Key<String>("receiveValueBeforeSubscription", default: "hello")
 		let expect = expectation(description: "Observation closure being called")
-		
+
 		let publisher = Defaults
 			.publisher(key)
 			.compactMap { $0.newValue }
@@ -378,7 +378,7 @@ final class DefaultsTests: XCTestCase {
 			expect.fulfill()
 		}
 
-		Defaults[key] = "world";
+		Defaults[key] = "world"
 		cancellable.cancel()
 		waitForExpectations(timeout: 10)
 	}
@@ -573,7 +573,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "Observation closure being called")
 
 		weak var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
+		observation = Defaults.observe(key, options: []) { _ in
 			observation.invalidate()
 			expect.fulfill()
 		}.tieToLifetime(of: self)

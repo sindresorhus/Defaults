@@ -83,11 +83,11 @@ extension Defaults {
 		let oldValue: Any?
 
 		init(change: [NSKeyValueChangeKey: Any]) {
-			kind = NSKeyValueChange(rawValue: change[.kindKey] as! UInt)!
-			indexes = change[.indexesKey] as? IndexSet
-			isPrior = change[.notificationIsPriorKey] as? Bool ?? false
-			oldValue = change[.oldKey]
-			newValue = change[.newKey]
+			self.kind = NSKeyValueChange(rawValue: change[.kindKey] as! UInt)!
+			self.indexes = change[.indexesKey] as? IndexSet
+			self.isPrior = change[.notificationIsPriorKey] as? Bool ?? false
+			self.oldValue = change[.oldKey]
+			self.newValue = change[.newKey]
 		}
 	}
 
@@ -168,7 +168,7 @@ extension Defaults {
 			lifetimeAssociation?.cancel()
 		}
 
-		private var lifetimeAssociation: LifetimeAssociation? = nil
+		private var lifetimeAssociation: LifetimeAssociation?
 
 		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in

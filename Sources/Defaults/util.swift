@@ -79,12 +79,12 @@ final class LifetimeAssociation {
 	- Parameter owner: The object whose lifetime extends the target object's lifetime.
 	- Parameter deinitHandler: An optional closure to call when either `owner` or the resulting `LifetimeAssociation` is deallocated.
 	*/
-	init(of target: AnyObject, with owner: AnyObject, deinitHandler: @escaping () -> Void = { }) {
+	init(of target: AnyObject, with owner: AnyObject, deinitHandler: @escaping () -> Void = {}) {
 		let wrappedObject = ObjectLifetimeTracker(for: target, deinitHandler: deinitHandler)
-		
+
 		let associatedObjects = LifetimeAssociation.associatedObjects[owner] ?? []
 		LifetimeAssociation.associatedObjects[owner] = associatedObjects + [wrappedObject]
-		
+
 		self.wrappedObject = wrappedObject
 		self.owner = owner
 	}

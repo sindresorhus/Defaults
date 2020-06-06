@@ -143,7 +143,7 @@ extension Defaults {
 				DefaultsPublisher(suite: key.suite, key: key.name, options: options)
 					.map { _ in () }
 					.eraseToAnyPublisher()
-			}.reduce(initial) { (combined, keyPublisher) in
+			}.reduce(initial) { combined, keyPublisher in
 				combined.merge(with: keyPublisher).eraseToAnyPublisher()
 			}
 
