@@ -200,12 +200,12 @@ extension Defaults {
 			else {
 				return
 			}
-			
+
 			callback(BaseChange(change: change))
 		}
 	}
 	
-	class CompositeUserDefaultsKeyObservation: NSObject, Observation {
+	final class CompositeUserDefaultsKeyObservation: NSObject, Observation {
 		private static var observationContext = 0
 		
 		class SuiteKeyPair {
@@ -236,10 +236,12 @@ extension Defaults {
 		
 		public func start(options: ObservationOptions) {
 			for observable in observables {
-				observable.suite?.addObserver(self,
-											   forKeyPath: observable.key,
-											   options: options.toNSKeyValueObservingOptions,
-											   context: &type(of: self).observationContext)
+				observable.suite?.addObserver(
+					self,
+					forKeyPath: observable.key,
+					options: options.toNSKeyValueObservingOptions,
+					context: &type(of: self).observationContext
+				)
 			}
 		}
 		
@@ -248,6 +250,7 @@ extension Defaults {
 				observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &type(of: self).observationContext)
 				observable.suite = nil
 			}
+
 			lifetimeAssociation?.cancel()
 		}
 		
