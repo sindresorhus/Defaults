@@ -208,7 +208,7 @@ extension Defaults {
 	final class CompositeUserDefaultsKeyObservation: NSObject, Observation {
 		private static var observationContext = 0
 		
-		class SuiteKeyPair {
+		final class SuiteKeyPair {
 			weak var suite: UserDefaults?
 			let key: String
 			
