@@ -14,6 +14,8 @@ extension DefaultsBaseKey {
 }
 
 public enum Defaults {
+	public typealias BaseKey = DefaultsBaseKey
+	
 	public class Keys {
 		public typealias Key = Defaults.Key
 
@@ -26,7 +28,7 @@ public enum Defaults {
 		fileprivate init() {}
 	}
 
-	public final class Key<Value: Codable>: Keys, DefaultsBaseKey {
+	public final class Key<Value: Codable>: Keys, BaseKey {
 		public let name: String
 		public let defaultValue: Value
 		public let suite: UserDefaults
@@ -53,7 +55,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys, DefaultsBaseKey {
+	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys, BaseKey {
 		public let name: String
 		public let defaultValue: Value
 		public let suite: UserDefaults
@@ -80,7 +82,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys, DefaultsBaseKey {
+	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys, BaseKey {
 		public let name: String
 		public let suite: UserDefaults
 

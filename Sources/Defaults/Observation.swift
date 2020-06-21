@@ -368,7 +368,7 @@ extension Defaults {
 	}
 	
 	public static func observe(
-		keys: DefaultsBaseKey...,
+		keys: BaseKey...,
 		options: ObservationOptions = [.initial],
 		preventPropagation: Bool = false,
 		handler: @escaping () -> Void
