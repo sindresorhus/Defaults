@@ -223,8 +223,8 @@ extension Defaults {
 		private let preventPropagation: Bool
 		private let callback: UserDefaultsKeyObservation.Callback
 		
-		init(observables: [SuiteKeyPair], preventPropagation: Bool, callback: @escaping UserDefaultsKeyObservation.Callback) {
-			self.observables = observables
+		init(observables: [(suite: UserDefaults, key: String)], preventPropagation: Bool, callback: @escaping UserDefaultsKeyObservation.Callback) {
+			self.observables = observables.map { SuiteKeyPair(suite: $0.suite, key: $0.key) }
 			self.preventPropagation = preventPropagation
 			self.callback = callback
 			super.init()
@@ -374,7 +374,7 @@ extension Defaults {
 		handler: @escaping () -> Void
 	) -> Observation {
 		let pairs = keys.map {
-			CompositeUserDefaultsKeyObservation.SuiteKeyPair(suite: $0.suite, key: $0.name)
+			(suite: $0.suite, key: $0.name)
 		}
 		let compositeObservation = CompositeUserDefaultsKeyObservation(observables: pairs, preventPropagation: preventPropagation) { _ in
 			handler()
