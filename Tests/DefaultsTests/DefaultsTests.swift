@@ -537,6 +537,27 @@ final class DefaultsTests: XCTestCase {
 	}
 	
 	func testObservePreventPropagation() {
+		let key1 = Defaults.Key<Bool?>("preventPropagation0", default: nil)
+		let expect = expectation(description: "No infinite recursion")
+
+		var observation: Defaults.Observation!
+		var wasInside = false
+		observation = Defaults.observe(key1, options: []) { _ in
+			XCTAssertFalse(wasInside)
+			wasInside = true
+			Defaults.withoutPropagation {
+				Defaults[key1] = true
+			}
+			expect.fulfill()
+		}
+
+		Defaults[key1] = false
+		observation.invalidate()
+
+		waitForExpectations(timeout: 10)
+	}
+	
+	func testObservePreventPropagationMultipleKeys() {
 		let key1 = Defaults.Key<Bool?>("preventPropagation1", default: nil)
 		let key2 = Defaults.Key<Bool?>("preventPropagation2", default: nil)
 		let expect = expectation(description: "No infinite recursion")
@@ -558,14 +579,16 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 	
-	func testObservePreventPropagationMultiThread() {
+	/**
+	This checks if callback is still being called, if value is changed on second thread,
+	while initial thread is doing some long lasting task.
+	*/
+	func testObservePreventPropagationMultipleThreads() {
 		let key1 = Defaults.Key<Int?>("preventPropagation3", default: nil)
 		let expect = expectation(description: "No infinite recursion")
 		
 		var observation: Defaults.Observation!
-		// This checks if callback is still being called, if value is changed on second thread,
-		// while initial thread is doing some long lasting task.
-		observation = Defaults.observe(keys: key1, options: []) {
+		observation = Defaults.observe(key1, options: []) { _ in
 			Defaults.withoutPropagation {
 				Defaults[key1]! += 1
 			}
@@ -584,6 +607,101 @@ final class DefaultsTests: XCTestCase {
 		Defaults[key1] = 1
 		observation.invalidate()
 
+		waitForExpectations(timeout: 10)
+	}
+	
+	/**
+	Check if propagation prevention works across multiple observations
+	*/
+	func testObservePreventPropagationMultipleObservations() {
+		let key1 = Defaults.Key<Bool?>("preventPropagation4", default: nil)
+		let key2 = Defaults.Key<Bool?>("preventPropagation5", default: nil)
+		let expect = expectation(description: "No infinite recursion")
+
+		let observation1 = Defaults.observe(key2, options: []) { _ in
+			XCTFail()
+		}
+		let observation2 = Defaults.observe(keys: key1, key2, options: []) {
+			Defaults.withoutPropagation {
+				Defaults[key2] = true
+			}
+			expect.fulfill()
+		}
+		
+		Defaults[key1] = false
+		observation1.invalidate()
+		observation2.invalidate()
+		
+		waitForExpectations(timeout: 10)
+	}
+	
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObservePreventPropagationCombine() {
+		let key1 = Defaults.Key<Bool?>("preventPropagation6", default: nil)
+		let expect = expectation(description: "No infinite recursion")
+
+		var wasInside = false
+		let cancellable = Defaults.publisher(key1, options: []).sink { _ in
+			XCTAssertFalse(wasInside)
+			wasInside = true
+			Defaults.withoutPropagation {
+				Defaults[key1] = true
+			}
+			expect.fulfill()
+		}
+		
+		Defaults[key1] = false
+		cancellable.cancel()
+		
+		waitForExpectations(timeout: 10)
+	}
+	
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObservePreventPropagationMultipleKeysCombine() {
+		let key1 = Defaults.Key<Bool?>("preventPropagation7", default: nil)
+		let key2 = Defaults.Key<Bool?>("preventPropagation8", default: nil)
+		let expect = expectation(description: "No infinite recursion")
+
+		var wasInside = false
+		let cancellable = Defaults.publisher(keys: key1, key2, options: []).sink { _ in
+			XCTAssertFalse(wasInside)
+			wasInside = true
+			Defaults.withoutPropagation {
+				Defaults[key1] = true
+			}
+			expect.fulfill()
+		}
+		
+		Defaults[key2] = false
+		cancellable.cancel()
+		
+		waitForExpectations(timeout: 10)
+	}
+	
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObservePreventPropagationModifiersCombine() {
+		let key1 = Defaults.Key<Bool?>("preventPropagation9", default: nil)
+		let expect = expectation(description: "No infinite recursion")
+		
+		var wasInside = false
+		let cancellable = Defaults.publisher(key1, options: [])
+			.subscribe(on: RunLoop.main)
+			.receive(on: DispatchQueue.global(qos: .userInitiated))
+			//.delay(for: 0.5, scheduler: DispatchQueue.global(qos: .background))
+			.sink { _ in
+				XCTAssertFalse(wasInside)
+				wasInside = true
+				print("--=-= HEHE")
+				Defaults.withoutPropagation {
+					Defaults[key1] = true
+				}
+				print("--=-= HHHH")
+				expect.fulfill()
+			}
+		
+		Defaults[key1] = false
+		//cancellable.cancel()
+		
 		waitForExpectations(timeout: 10)
 	}
 
