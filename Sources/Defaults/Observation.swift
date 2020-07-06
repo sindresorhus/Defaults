@@ -140,6 +140,17 @@ extension Defaults {
 			self.newValue = deserialize(change.newValue, to: Value.self)
 		}
 	}
+	
+	static var preventPropagationThreadDictKey: String {
+		return "\(type(of: Observation.self))_threadUpdatingValuesFlag"
+	}
+	
+	public static func withoutPropagation(block: () -> Void) {
+		let key = Defaults.preventPropagationThreadDictKey
+		Thread.current.threadDictionary[key] = true
+		block()
+		Thread.current.threadDictionary[key] = false
+	}
 
 	final class UserDefaultsKeyObservation: NSObject, Observation {
 		typealias Callback = (BaseChange) -> Void
@@ -200,6 +211,13 @@ extension Defaults {
 			else {
 				return
 			}
+			
+			
+			let key = preventPropagationThreadDictKey
+			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
+			if updatingValuesFlag {
+				return
+			}
 
 			callback(BaseChange(change: change))
 		}
@@ -220,12 +238,10 @@ extension Defaults {
 		
 		private var observables: [SuiteKeyPair]
 		private var lifetimeAssociation: LifetimeAssociation? = nil
-		private let preventPropagation: Bool
 		private let callback: UserDefaultsKeyObservation.Callback
 		
-		init(observables: [(suite: UserDefaults, key: String)], preventPropagation: Bool, callback: @escaping UserDefaultsKeyObservation.Callback) {
+		init(observables: [(suite: UserDefaults, key: String)], callback: @escaping UserDefaultsKeyObservation.Callback) {
 			self.observables = observables.map { SuiteKeyPair(suite: $0.suite, key: $0.key) }
-			self.preventPropagation = preventPropagation
 			self.callback = callback
 			super.init()
 		}
@@ -287,22 +303,16 @@ extension Defaults {
 				return
 			}
 			
-			if preventPropagation {
-				let key = "\(type(of: self))_updatingValuesFlag"
-				let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
-				if updatingValuesFlag {
-					return
-				}
-				
-				Thread.current.threadDictionary[key] = true
-				callback(BaseChange(change: change))
-				Thread.current.threadDictionary[key] = false
-			} else {
-				callback(BaseChange(change: change))
+			let key = preventPropagationThreadDictKey
+			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
+			if updatingValuesFlag {
+				return
 			}
+				
+			callback(BaseChange(change: change))
 		}
 	}
-
+	
 	/**
 	Observe a defaults key.
 
@@ -370,13 +380,12 @@ extension Defaults {
 	public static func observe(
 		keys: BaseKey...,
 		options: ObservationOptions = [.initial],
-		preventPropagation: Bool = false,
 		handler: @escaping () -> Void
 	) -> Observation {
 		let pairs = keys.map {
 			(suite: $0.suite, key: $0.name)
 		}
-		let compositeObservation = CompositeUserDefaultsKeyObservation(observables: pairs, preventPropagation: preventPropagation) { _ in
+		let compositeObservation = CompositeUserDefaultsKeyObservation(observables: pairs) { _ in
 			handler()
 		}
 		compositeObservation.start(options: options)

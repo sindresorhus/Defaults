@@ -543,10 +543,12 @@ final class DefaultsTests: XCTestCase {
 
 		var observation: Defaults.Observation!
 		var wasInside = false
-		observation = Defaults.observe(keys: key1, key2, options: [], preventPropagation: true) {
+		observation = Defaults.observe(keys: key1, key2, options: []) {
 			XCTAssertFalse(wasInside)
 			wasInside = true
-			Defaults[key1] = true
+			Defaults.withoutPropagation {
+				Defaults[key1] = true
+			}
 			expect.fulfill()
 		}
 
@@ -563,8 +565,10 @@ final class DefaultsTests: XCTestCase {
 		var observation: Defaults.Observation!
 		// This checks if callback is still being called, if value is changed on second thread,
 		// while initial thread is doing some long lasting task.
-		observation = Defaults.observe(keys: key1, options: [], preventPropagation: true) {
-			Defaults[key1]! += 1
+		observation = Defaults.observe(keys: key1, options: []) {
+			Defaults.withoutPropagation {
+				Defaults[key1]! += 1
+			}
 			print("--- Main Thread: \(Thread.isMainThread)")
 			if !Thread.isMainThread {
 				XCTAssert(Defaults[key1]! == 4)
