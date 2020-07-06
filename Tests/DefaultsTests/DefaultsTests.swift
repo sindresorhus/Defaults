@@ -684,23 +684,21 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "No infinite recursion")
 		
 		var wasInside = false
-		let cancellable = Defaults.publisher(key1, options: [])
-			.subscribe(on: RunLoop.main)
-			.receive(on: DispatchQueue.global(qos: .userInitiated))
-			//.delay(for: 0.5, scheduler: DispatchQueue.global(qos: .background))
+		var cancellable: AnyCancellable!
+		cancellable = Defaults.publisher(key1, options: [])
+			.receive(on: DispatchQueue.global())
+			.delay(for: 0.5, scheduler: DispatchQueue.global())
 			.sink { _ in
 				XCTAssertFalse(wasInside)
 				wasInside = true
-				print("--=-= HEHE")
 				Defaults.withoutPropagation {
 					Defaults[key1] = true
 				}
-				print("--=-= HHHH")
 				expect.fulfill()
+				cancellable.cancel()
 			}
 		
 		Defaults[key1] = false
-		//cancellable.cancel()
 		
 		waitForExpectations(timeout: 10)
 	}
