@@ -686,7 +686,7 @@ final class DefaultsTests: XCTestCase {
 		var wasInside = false
 		var cancellable: AnyCancellable!
 		cancellable = Defaults.publisher(key1, options: [])
-			.receive(on: DispatchQueue.global())
+			.receive(on: DispatchQueue.main)
 			.delay(for: 0.5, scheduler: DispatchQueue.global())
 			.sink { _ in
 				XCTAssertFalse(wasInside)
