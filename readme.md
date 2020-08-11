@@ -235,6 +235,23 @@ Defaults[.isUnicornMode] = true
 
 The observation will be valid until `self` is deinitialized.
 
+### Control propagation of change events
+
+```swift
+let observer = Defaults.observe(keys: .key1, .key2) {
+	// …
+	Defaults.withoutPropagation {
+		// update some value at .key1
+		// this will not be propagated
+		Defaults[.key1] = 11
+	}
+	// this will be propagated
+	Defaults[.someKey] = true
+}
+```
+
+Changes made within `Defaults.withoutPropagation` block, will not be propagated to observation callbacks, and therefore will prevent infinite recursion.
+
 ### Reset keys to their default values
 
 ```swift
@@ -383,6 +400,14 @@ Observe changes to a key or an optional key.
 
 By default, it will also trigger an initial event on creation. This can be useful for setting default values on controls. You can override this behavior with the `options` argument.
 
+#### `Defaults.observe(keys: keys..., options:)`
+
+Type: `func`
+
+Observe changes to multiple keys of any type, but without specific information about changes.
+
+Options same as in  `observe` for a single key. 
+
 #### `Defaults.publisher(_ key:, options:)`
 
 ```swift
@@ -470,6 +495,12 @@ Type: `func`
 Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
 
 The effects of any call to `tieToLifetime(of:)` are reversed. Note however that if the tied-to object has already died, then the observation is already invalid and this method has no logical effect.
+
+#### `Defaults.withoutPropagation(_ block:)`
+
+Execute block without emitting events of changes made at defaults keys. 
+
+Changes made within the block will not be propagated to observation callbacks. This only works with defaults `observe` or `publisher`. User made KVO will not be affected.
 
 ### `@Default(_ key:)`
 

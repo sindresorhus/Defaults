@@ -150,9 +150,9 @@ extension Defaults {
 	
 	Example:
 	```
-	Defaults.observeAll(.key1, .key2) {
+	let observer = Defaults.observe(keys: .key1, .key2) {
 		// …
-		withoutPropagation {
+		Defaults.withoutPropagation {
 			// update some value at .key1
 			// this will not be propagated
 			Defaults[.key1] = 11
