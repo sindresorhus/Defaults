@@ -145,7 +145,31 @@ extension Defaults {
 		"\(type(of: Observation.self))_threadUpdatingValuesFlag"
 	}
 	
+	/**
+	Execute block without triggering events of changes made at defaults keys.
+	
+	Example:
+	```
+	Defaults.observeAll(.key1, .key2) {
+		// …
+		withoutPropagation {
+			// update some value at .key1
+			// this will not be propagated
+			Defaults[.key1] = 11
+		}
+		// this will be propagated
+		Defaults[.someKey] = true
+	}
+	```
+	
+	This only works with defaults `observe` or `publisher`. User made KVO will not be affected.
+	*/
 	public static func withoutPropagation(block: () -> Void) {
+		// How does it work?
+		// KVO observation callbacks are executed right after change is made,
+		// and run on the same thread as the caller. So it works by storing a flag in current
+		// thread's dictionary, which is then evaluated in `observeValue` callback
+		
 		let key = preventPropagationThreadDictKey
 		Thread.current.threadDictionary[key] = true
 		block()
@@ -377,7 +401,18 @@ extension Defaults {
 	}
 	
 	/**
+	Observe multiple keys of any type, but without specific information about changes.
 	
+	```
+	extension Defaults.Keys {
+		static let setting1 = Key<Bool>("setting1", default: false)
+		static let setting2 = Key<Bool>("setting2", default: true)
+	}
+
+	let observer = Defaults.observe(keys: .setting1, .setting2) {
+		//...
+	}
+	```
 	*/
 	public static func observe(
 		keys: Keys...,
