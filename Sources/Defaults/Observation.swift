@@ -152,7 +152,7 @@ extension Defaults {
 		Thread.current.threadDictionary[key] = false
 	}
 
-	private final class UserDefaultsKeyObservation: NSObject, Observation {
+	final class UserDefaultsKeyObservation: NSObject, Observation {
 		typealias Callback = (BaseChange) -> Void
 
 		private weak var object: UserDefaults?
@@ -380,7 +380,7 @@ extension Defaults {
 	
 	*/
 	public static func observe(
-		keys: BaseKey...,
+		keys: Keys...,
 		options: ObservationOptions = [.initial],
 		handler: @escaping () -> Void
 	) -> Observation {
