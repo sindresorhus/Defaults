@@ -141,18 +141,18 @@ extension Defaults {
 		}
 	}
 	
-	static var preventPropagationThreadDictKey: String {
-		return "\(type(of: Observation.self))_threadUpdatingValuesFlag"
+	private static var preventPropagationThreadDictKey: String {
+		"\(type(of: Observation.self))_threadUpdatingValuesFlag"
 	}
 	
 	public static func withoutPropagation(block: () -> Void) {
-		let key = Defaults.preventPropagationThreadDictKey
+		let key = preventPropagationThreadDictKey
 		Thread.current.threadDictionary[key] = true
 		block()
 		Thread.current.threadDictionary[key] = false
 	}
 
-	final class UserDefaultsKeyObservation: NSObject, Observation {
+	private final class UserDefaultsKeyObservation: NSObject, Observation {
 		typealias Callback = (BaseChange) -> Void
 
 		private weak var object: UserDefaults?
@@ -212,10 +212,9 @@ extension Defaults {
 				return
 			}
 			
-			
 			let key = preventPropagationThreadDictKey
 			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
-			if updatingValuesFlag {
+			guard !updatingValuesFlag else {
 				return
 			}
 
@@ -223,10 +222,10 @@ extension Defaults {
 		}
 	}
 	
-	final class CompositeUserDefaultsKeyObservation: NSObject, Observation {
+	private final class CompositeUserDefaultsKeyObservation: NSObject, Observation {
 		private static var observationContext = 0
 		
-		final class SuiteKeyPair {
+		private final class SuiteKeyPair {
 			weak var suite: UserDefaults?
 			let key: String
 			
@@ -377,6 +376,9 @@ extension Defaults {
 		return observation
 	}
 	
+	/**
+	
+	*/
 	public static func observe(
 		keys: BaseKey...,
 		options: ObservationOptions = [.initial],
