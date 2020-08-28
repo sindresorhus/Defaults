@@ -543,6 +543,11 @@ Defaults[.magic]["boolean"] = true
 
 It's inspired by that package and other solutions. The main difference is that this module doesn't hardcode the default values and comes with Codable support.
 
+## Maintainers
+
+- [Sindre Sorhus](https://github.com/sindresorhus)
+- [Kacper Rączy](https://github.com/fredyshox)
+
 ## Related
 
 - [Preferences](https://github.com/sindresorhus/Preferences) - Add a preferences window to your macOS app
