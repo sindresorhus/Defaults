@@ -1,7 +1,7 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
-public protocol DefaultsBaseKey: Defaults.Keys {
+public protocol DefaultsBaseKey: Defaults.AnyKey {
 	var name: String { get }
 	var suite: UserDefaults { get }
 }
@@ -15,7 +15,8 @@ extension DefaultsBaseKey {
 
 public enum Defaults {
 	public typealias BaseKey = DefaultsBaseKey
-	
+	public typealias AnyKey = Keys
+
 	public class Keys: BaseKey {
 		public typealias Key = Defaults.Key
 
@@ -34,7 +35,7 @@ public enum Defaults {
 		}
 	}
 
-	public final class Key<Value: Codable>: Keys {
+	public final class Key<Value: Codable>: AnyKey {
 		public let defaultValue: Value
 
 		/// Create a defaults key.
@@ -58,7 +59,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys {
+	public final class NSSecureCodingKey<Value: NSSecureCoding>: AnyKey {
 		public let defaultValue: Value
 
 		/// Create a defaults key.
@@ -82,7 +83,7 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys {
+	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: AnyKey {
 		/// Create an optional defaults key.
 		public init(_ key: String, suite: UserDefaults = .standard) {
 			super.init(name: key, suite: suite)

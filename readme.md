@@ -239,23 +239,6 @@ Defaults[.isUnicornMode] = true
 
 The observation will be valid until `self` is deinitialized.
 
-### Control propagation of change events
-
-```swift
-let observer = Defaults.observe(keys: .key1, .key2) {
-	// …
-	Defaults.withoutPropagation {
-		// update some value at .key1
-		// this will not be propagated
-		Defaults[.key1] = 11
-	}
-	// this will be propagated
-	Defaults[.someKey] = true
-}
-```
-
-Changes made within `Defaults.withoutPropagation` block, will not be propagated to observation callbacks, and therefore will prevent infinite recursion.
-
 ### Reset keys to their default values
 
 ```swift
@@ -273,6 +256,24 @@ Defaults[.isUnicornMode]
 ```
 
 This works for a `Key` with an optional too, which will be reset back to `nil`.
+
+### Control propagation of change events
+
+Changes made within the `Defaults.withoutPropagation` closure will not be propagated to observation callbacks (`Defaults.observe()` or `Defaults.publisher()`), and therefore could prevent infinite recursion.
+
+```swift
+let observer = Defaults.observe(keys: .key1, .key2) {
+		// …
+
+		Defaults.withoutPropagation {
+			// Update `.key1` without propagating the change to listeners.
+			Defaults[.key1] = 11
+		}
+
+		// This will be propagated.
+		Defaults[.someKey] = true
+	}
+```
 
 ### It's just `UserDefaults` with sugar
 
@@ -408,9 +409,9 @@ By default, it will also trigger an initial event on creation. This can be usefu
 
 Type: `func`
 
-Observe changes to multiple keys of any type, but without specific information about changes.
+Observe multiple keys of any type, but without any information about the changes.
 
-Options same as in  `observe` for a single key. 
+Options are the same as in `.observe(…)` for a single key.
 
 #### `Defaults.publisher(_ key:, options:)`
 
@@ -500,11 +501,11 @@ Break the lifetime tie created by `tieToLifetime(of:)`, if one exists.
 
 The effects of any call to `tieToLifetime(of:)` are reversed. Note however that if the tied-to object has already died, then the observation is already invalid and this method has no logical effect.
 
-#### `Defaults.withoutPropagation(_ block:)`
+#### `Defaults.withoutPropagation(_ closure:)`
 
-Execute block without emitting events of changes made at defaults keys. 
+Execute the closure without triggering change events.
 
-Changes made within the block will not be propagated to observation callbacks. This only works with defaults `observe` or `publisher`. User made KVO will not be affected.
+Any `Defaults` key changes made within the closure will not propagate to `Defaults` event listeners (`Defaults.observe()` and `Defaults.publisher()`). This can be useful to prevent infinite recursion when you want to change a key in the callback listening to changes for the same key.
 
 ### `@Default(_ key:)`
 

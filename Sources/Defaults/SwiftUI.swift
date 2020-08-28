@@ -1,5 +1,4 @@
 #if canImport(Combine)
-
 import SwiftUI
 import Combine
 
@@ -111,5 +110,4 @@ public struct Default<Value: Codable>: DynamicProperty {
 		key.reset()
 	}
 }
-
 #endif

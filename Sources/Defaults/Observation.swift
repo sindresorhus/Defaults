@@ -140,39 +140,39 @@ extension Defaults {
 			self.newValue = deserialize(change.newValue, to: Value.self)
 		}
 	}
-	
-	private static var preventPropagationThreadDictKey: String {
+
+	private static var preventPropagationThreadDictionaryKey: String {
 		"\(type(of: Observation.self))_threadUpdatingValuesFlag"
 	}
-	
+
 	/**
-	Execute block without triggering events of changes made at defaults keys.
-	
-	Example:
+	Execute the closure without triggering change events.
+
+	Any `Defaults` key changes made within the closure will not propagate to `Defaults` event listeners (`Defaults.observe()` and `Defaults.publisher()`). This can be useful to prevent infinite recursion when you want to change a key in the callback listening to changes for the same key.
+
+	- Note: This only works with `Defaults.observe()` and `Defaults.publisher()`. User-made KVO will not be affected.
+
 	```
 	let observer = Defaults.observe(keys: .key1, .key2) {
 		// …
+
 		Defaults.withoutPropagation {
-			// update some value at .key1
-			// this will not be propagated
+			// Update `.key1` without propagating the change to listeners.
 			Defaults[.key1] = 11
 		}
-		// this will be propagated
+
+		// This will be propagated.
 		Defaults[.someKey] = true
 	}
 	```
-	
-	This only works with defaults `observe` or `publisher`. User made KVO will not be affected.
 	*/
-	public static func withoutPropagation(block: () -> Void) {
+	public static func withoutPropagation(_ closure: () -> Void) {
 		// How does it work?
-		// KVO observation callbacks are executed right after change is made,
-		// and run on the same thread as the caller. So it works by storing a flag in current
-		// thread's dictionary, which is then evaluated in `observeValue` callback
-		
-		let key = preventPropagationThreadDictKey
+		// KVO observation callbacks are executed right after a change is made, and run on the same thread as the caller. So it works by storing a flag in the current thread's dictionary, which is then evaluated in the callback.
+
+		let key = preventPropagationThreadDictionaryKey
 		Thread.current.threadDictionary[key] = true
-		block()
+		closure()
 		Thread.current.threadDictionary[key] = false
 	}
 
@@ -235,8 +235,8 @@ extension Defaults {
 			else {
 				return
 			}
-			
-			let key = preventPropagationThreadDictKey
+
+			let key = preventPropagationThreadDictionaryKey
 			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
 			guard !updatingValuesFlag else {
 				return
@@ -245,66 +245,66 @@ extension Defaults {
 			callback(BaseChange(change: change))
 		}
 	}
-	
+
 	private final class CompositeUserDefaultsKeyObservation: NSObject, Observation {
 		private static var observationContext = 0
-		
+
 		private final class SuiteKeyPair {
 			weak var suite: UserDefaults?
 			let key: String
-			
+
 			init(suite: UserDefaults, key: String) {
 				self.suite = suite
 				self.key = key
 			}
 		}
-		
+
 		private var observables: [SuiteKeyPair]
-		private var lifetimeAssociation: LifetimeAssociation? = nil
+		private var lifetimeAssociation: LifetimeAssociation?
 		private let callback: UserDefaultsKeyObservation.Callback
-		
+
 		init(observables: [(suite: UserDefaults, key: String)], callback: @escaping UserDefaultsKeyObservation.Callback) {
 			self.observables = observables.map { SuiteKeyPair(suite: $0.suite, key: $0.key) }
 			self.callback = callback
 			super.init()
 		}
-		
+
 		deinit {
 			invalidate()
 		}
-		
+
 		public func start(options: ObservationOptions) {
 			for observable in observables {
 				observable.suite?.addObserver(
 					self,
 					forKeyPath: observable.key,
 					options: options.toNSKeyValueObservingOptions,
-					context: &type(of: self).observationContext
+					context: &Self.observationContext
 				)
 			}
 		}
-		
+
 		public func invalidate() {
 			for observable in observables {
-				observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &type(of: self).observationContext)
+				observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &Self.observationContext)
 				observable.suite = nil
 			}
 
 			lifetimeAssociation?.cancel()
 		}
-		
+
 		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
 				self?.invalidate()
 			})
-			
+
 			return self
 		}
 
 		public func removeLifetimeTie() {
 			lifetimeAssociation?.cancel()
 		}
-		
+
 		// swiftlint:disable:next block_based_kvo
 		override func observeValue(
 			forKeyPath keyPath: String?,
@@ -313,29 +313,29 @@ extension Defaults {
 			context: UnsafeMutableRawPointer?
 		) {
 			guard
-				context == &type(of: self).observationContext
+				context == &Self.observationContext
 			else {
 				super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
 				return
 			}
-			
+
 			guard
 				object is UserDefaults,
 				let change = change
 			else {
 				return
 			}
-			
-			let key = preventPropagationThreadDictKey
+
+			let key = preventPropagationThreadDictionaryKey
 			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
 			if updatingValuesFlag {
 				return
 			}
-				
+
 			callback(BaseChange(change: change))
 		}
 	}
-	
+
 	/**
 	Observe a defaults key.
 
@@ -399,10 +399,10 @@ extension Defaults {
 		observation.start(options: options)
 		return observation
 	}
-	
+
 	/**
-	Observe multiple keys of any type, but without specific information about changes.
-	
+	Observe multiple keys of any type, but without any information about the changes.
+
 	```
 	extension Defaults.Keys {
 		static let setting1 = Key<Bool>("setting1", default: false)
@@ -410,12 +410,12 @@ extension Defaults {
 	}
 
 	let observer = Defaults.observe(keys: .setting1, .setting2) {
-		//...
+		// …
 	}
 	```
 	*/
 	public static func observe(
-		keys: Keys...,
+		keys: AnyKey...,
 		options: ObservationOptions = [.initial],
 		handler: @escaping () -> Void
 	) -> Observation {
@@ -426,7 +426,7 @@ extension Defaults {
 			handler()
 		}
 		compositeObservation.start(options: options)
-		
+
 		return compositeObservation
 	}
 }
