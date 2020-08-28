@@ -27,6 +27,7 @@ public enum Defaults {
 
 		public let name: String
 		public let suite: UserDefaults
+
 		fileprivate init(name: String, suite: UserDefaults) {
 			self.name = name
 			self.suite = suite
