@@ -140,6 +140,41 @@ extension Defaults {
 			self.newValue = deserialize(change.newValue, to: Value.self)
 		}
 	}
+	
+	private static var preventPropagationThreadDictKey: String {
+		"\(type(of: Observation.self))_threadUpdatingValuesFlag"
+	}
+	
+	/**
+	Execute block without triggering events of changes made at defaults keys.
+	
+	Example:
+	```
+	let observer = Defaults.observe(keys: .key1, .key2) {
+		// …
+		Defaults.withoutPropagation {
+			// update some value at .key1
+			// this will not be propagated
+			Defaults[.key1] = 11
+		}
+		// this will be propagated
+		Defaults[.someKey] = true
+	}
+	```
+	
+	This only works with defaults `observe` or `publisher`. User made KVO will not be affected.
+	*/
+	public static func withoutPropagation(block: () -> Void) {
+		// How does it work?
+		// KVO observation callbacks are executed right after change is made,
+		// and run on the same thread as the caller. So it works by storing a flag in current
+		// thread's dictionary, which is then evaluated in `observeValue` callback
+		
+		let key = preventPropagationThreadDictKey
+		Thread.current.threadDictionary[key] = true
+		block()
+		Thread.current.threadDictionary[key] = false
+	}
 
 	final class UserDefaultsKeyObservation: NSObject, Observation {
 		typealias Callback = (BaseChange) -> Void
@@ -200,11 +235,107 @@ extension Defaults {
 			else {
 				return
 			}
+			
+			let key = preventPropagationThreadDictKey
+			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
+			guard !updatingValuesFlag else {
+				return
+			}
 
 			callback(BaseChange(change: change))
 		}
 	}
+	
+	private final class CompositeUserDefaultsKeyObservation: NSObject, Observation {
+		private static var observationContext = 0
+		
+		private final class SuiteKeyPair {
+			weak var suite: UserDefaults?
+			let key: String
+			
+			init(suite: UserDefaults, key: String) {
+				self.suite = suite
+				self.key = key
+			}
+		}
+		
+		private var observables: [SuiteKeyPair]
+		private var lifetimeAssociation: LifetimeAssociation? = nil
+		private let callback: UserDefaultsKeyObservation.Callback
+		
+		init(observables: [(suite: UserDefaults, key: String)], callback: @escaping UserDefaultsKeyObservation.Callback) {
+			self.observables = observables.map { SuiteKeyPair(suite: $0.suite, key: $0.key) }
+			self.callback = callback
+			super.init()
+		}
+		
+		deinit {
+			invalidate()
+		}
+		
+		public func start(options: ObservationOptions) {
+			for observable in observables {
+				observable.suite?.addObserver(
+					self,
+					forKeyPath: observable.key,
+					options: options.toNSKeyValueObservingOptions,
+					context: &type(of: self).observationContext
+				)
+			}
+		}
+		
+		public func invalidate() {
+			for observable in observables {
+				observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &type(of: self).observationContext)
+				observable.suite = nil
+			}
 
+			lifetimeAssociation?.cancel()
+		}
+		
+		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
+				self?.invalidate()
+			})
+			
+			return self
+		}
+
+		public func removeLifetimeTie() {
+			lifetimeAssociation?.cancel()
+		}
+		
+		// swiftlint:disable:next block_based_kvo
+		override func observeValue(
+			forKeyPath keyPath: String?,
+			of object: Any?,
+			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
+			context: UnsafeMutableRawPointer?
+		) {
+			guard
+				context == &type(of: self).observationContext
+			else {
+				super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+				return
+			}
+			
+			guard
+				object is UserDefaults,
+				let change = change
+			else {
+				return
+			}
+			
+			let key = preventPropagationThreadDictKey
+			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
+			if updatingValuesFlag {
+				return
+			}
+				
+			callback(BaseChange(change: change))
+		}
+	}
+	
 	/**
 	Observe a defaults key.
 
@@ -267,6 +398,36 @@ extension Defaults {
 		}
 		observation.start(options: options)
 		return observation
+	}
+	
+	/**
+	Observe multiple keys of any type, but without specific information about changes.
+	
+	```
+	extension Defaults.Keys {
+		static let setting1 = Key<Bool>("setting1", default: false)
+		static let setting2 = Key<Bool>("setting2", default: true)
+	}
+
+	let observer = Defaults.observe(keys: .setting1, .setting2) {
+		//...
+	}
+	```
+	*/
+	public static func observe(
+		keys: Keys...,
+		options: ObservationOptions = [.initial],
+		handler: @escaping () -> Void
+	) -> Observation {
+		let pairs = keys.map {
+			(suite: $0.suite, key: $0.name)
+		}
+		let compositeObservation = CompositeUserDefaultsKeyObservation(observables: pairs) { _ in
+			handler()
+		}
+		compositeObservation.start(options: options)
+		
+		return compositeObservation
 	}
 }
 

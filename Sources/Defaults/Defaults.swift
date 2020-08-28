@@ -1,12 +1,12 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
-public protocol _DefaultsBaseKey: Defaults.Keys {
+public protocol DefaultsBaseKey: Defaults.Keys {
 	var name: String { get }
 	var suite: UserDefaults { get }
 }
 
-extension _DefaultsBaseKey {
+extension DefaultsBaseKey {
 	/// Reset the item back to its default value.
 	public func reset() {
 		suite.removeObject(forKey: name)
@@ -14,7 +14,9 @@ extension _DefaultsBaseKey {
 }
 
 public enum Defaults {
-	public class Keys {
+	public typealias BaseKey = DefaultsBaseKey
+	
+	public class Keys: BaseKey {
 		public typealias Key = Defaults.Key
 
 		@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
@@ -23,22 +25,24 @@ public enum Defaults {
 		@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 		public typealias NSSecureCodingOptionalKey = Defaults.NSSecureCodingOptionalKey
 
-		fileprivate init() {}
+		public let name: String
+		public let suite: UserDefaults
+
+		fileprivate init(name: String, suite: UserDefaults) {
+			self.name = name
+			self.suite = suite
+		}
 	}
 
-	public final class Key<Value: Codable>: Keys, _DefaultsBaseKey {
-		public let name: String
+	public final class Key<Value: Codable>: Keys {
 		public let defaultValue: Value
-		public let suite: UserDefaults
 
 		/// Create a defaults key.
 		/// The `default` parameter can be left out if the `Value` type is an optional.
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
-			self.name = key
 			self.defaultValue = defaultValue
-			self.suite = suite
 
-			super.init()
+			super.init(name: key, suite: suite)
 
 			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
 				return
@@ -54,19 +58,15 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys, _DefaultsBaseKey {
-		public let name: String
+	public final class NSSecureCodingKey<Value: NSSecureCoding>: Keys {
 		public let defaultValue: Value
-		public let suite: UserDefaults
 
 		/// Create a defaults key.
 		/// The `default` parameter can be left out if the `Value` type is an optional.
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
-			self.name = key
 			self.defaultValue = defaultValue
-			self.suite = suite
 
-			super.init()
+			super.init(name: key, suite: suite)
 
 			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
 				return
@@ -82,14 +82,10 @@ public enum Defaults {
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys, _DefaultsBaseKey {
-		public let name: String
-		public let suite: UserDefaults
-
+	public final class NSSecureCodingOptionalKey<Value: NSSecureCoding>: Keys {
 		/// Create an optional defaults key.
 		public init(_ key: String, suite: UserDefaults = .standard) {
-			self.name = key
-			self.suite = suite
+			super.init(name: key, suite: suite)
 		}
 	}
 
