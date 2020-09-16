@@ -100,7 +100,7 @@ public struct Default<Value: Codable>: DynamicProperty {
 
 		var body: some View {
 			Button("Reset") {
-				self._opacity.reset()
+				_opacity.reset()
 			}
 		}
 	}
