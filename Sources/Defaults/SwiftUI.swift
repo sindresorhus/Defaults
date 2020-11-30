@@ -110,4 +110,67 @@ public struct Default<Value: Codable>: DynamicProperty {
 		key.reset()
 	}
 }
+
+@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
+extension AppStorage {
+	public init(_ key: Defaults.Key<Value>) where Value == Bool {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == Int {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == Double {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == String {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == URL {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == Data {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value: RawRepresentable, Value.RawValue == Int {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value: RawRepresentable, Value.RawValue == String {
+		self.init(wrappedValue: key.defaultValue, key.name, store: key.suite)
+	}
+}
+
+@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
+extension AppStorage where Value: ExpressibleByNilLiteral {
+	// swiftlint:disable:next discouraged_optional_boolean
+	public init(_ key: Defaults.Key<Value>) where Value == Bool? {
+		self.init(key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == Int? {
+		self.init(key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == Double? {
+		self.init(key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == String? {
+		self.init(key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == URL? {
+		self.init(key.name, store: key.suite)
+	}
+
+	public init(_ key: Defaults.Key<Value>) where Value == Data? {
+		self.init(key.name, store: key.suite)
+	}
+}
 #endif
