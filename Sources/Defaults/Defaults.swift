@@ -35,7 +35,7 @@ public enum Defaults {
 		}
 	}
 
-	public final class Key<Value: Codable>: AnyKey {
+	public final class Key<Value: DefaultsSerializable>: AnyKey {
 		public let defaultValue: Value
 
 		/// Create a defaults key.
@@ -49,10 +49,9 @@ public enum Defaults {
 				return
 			}
 
-			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
 			if UserDefaults.isNativelySupportedType(Value.self) {
 				suite.register(defaults: [key: defaultValue])
-			} else if let value = suite._encode(defaultValue) {
+			} else if let value = Value.bridge.serialize(defaultValue as? Value.Value) {
 				suite.register(defaults: [key: value])
 			}
 		}

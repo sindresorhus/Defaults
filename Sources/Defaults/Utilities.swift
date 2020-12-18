@@ -146,3 +146,87 @@ extension DispatchQueue {
 		}
 	}
 }
+
+
+public protocol DefaultsSerializable {
+	typealias Value = Bridge.Value
+	associatedtype Bridge: DefaultsBridge
+	static var bridge: Bridge { get }
+	static var isString: Bool { get }
+	static var isURL: Bool { get }
+	static var isArray: Bool { get }
+	static var isDictionary: Bool { get }
+}
+
+public protocol DefaultsBridge {
+	// The type of Value of Key<Value>
+	associatedtype Value
+
+	// This type should be one of the NativelySupportedType
+	associatedtype Serializable
+
+	// Customize set behavior in UserDefaults
+	func set(_ value: Value?)
+
+	// Serialize Value to Serializable before we store it in UserDefaults
+	func serialize(_ value: Value?) -> Serializable?
+
+	// Deserialize to Value to let user used it
+	func deserialize(_ object: Any) -> Value?
+}
+
+extension DefaultsSerializable {
+	public static var isString: Bool { false }
+	public static var isURL: Bool { false }
+	public static var isArray: Bool { false }
+	public static var isDictionary: Bool { false }
+}
+
+extension DefaultsBridge {
+	public func set(_ value: Value?) {
+		return
+	}
+}
+
+extension Optional: DefaultsSerializable where Wrapped: DefaultsSerializable {
+	public static var isString: Bool { Wrapped.isString }
+
+	public static var isURL: Bool { Wrapped.isURL }
+
+	public static var isArray: Bool { Wrapped.isArray }
+
+	public static var isDictionary: Bool { Wrapped.isDictionary }
+
+	public static var bridge: DefaultsOptionalBridge<Wrapped.Bridge> { return DefaultsOptionalBridge(bridge: Wrapped.bridge) }
+}
+
+extension DefaultsSerializable where Self: Codable {
+	public static var bridge: DefaultsCodableBridge<Self> { return DefaultsCodableBridge<Self>() }
+}
+
+extension DefaultsSerializable where Self: RawRepresentable {
+	public static var bridge: DefaultsRawRepresentableBridge<Self> { return DefaultsRawRepresentableBridge() }
+}
+
+extension Data: DefaultsSerializable {}
+extension String: DefaultsSerializable {
+	public static var isString: Bool { true }
+}
+extension Date: DefaultsSerializable {}
+extension Bool: DefaultsSerializable {}
+extension Int: DefaultsSerializable {}
+extension Double: DefaultsSerializable {}
+extension Float: DefaultsSerializable {}
+extension URL: DefaultsSerializable {
+	public static var isURL: Bool { true }
+}
+
+extension Array: DefaultsSerializable where Element: DefaultsSerializable {
+	public static var bridge: DefaultsArrayBridge<Element> { return DefaultsArrayBridge() }
+	public static var isArray: Bool { true }
+}
+
+extension Dictionary: DefaultsSerializable where Key == String, Value: DefaultsSerializable {
+	public static var bridge: DefaultsObjectBridge<Value> { return DefaultsObjectBridge() }
+	public static var isDictionary: Bool { true }
+}

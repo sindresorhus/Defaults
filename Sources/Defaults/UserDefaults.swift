@@ -1,6 +1,35 @@
 import Foundation
 
 extension UserDefaults {
+	private func _get<Value: DefaultsSerializable>(_ key: String) -> Value? {
+		if Value.isString {
+			return string(forKey: key) as? Value
+		}
+
+		if Value.isURL {
+			return url(forKey: key) as? Value
+		}
+
+		if Value.isArray {
+			return array(forKey: key) as? Value
+		}
+
+		if Value.isDictionary {
+			return dictionary(forKey: key) as? Value
+		}
+		
+		if let any_object = object(forKey: key) {
+			if UserDefaults.isNativelySupportedType(Value.self) {
+				return any_object as? Value
+			}
+			if let value = Value.bridge.deserialize(any_object) {
+				return value as? Value
+			}
+		}
+
+		return nil
+	}
+
 	private func _get<Value: Codable>(_ key: String) -> Value? {
 		if UserDefaults.isNativelySupportedType(Value.self) {
 			return object(forKey: key) as? Value
@@ -56,18 +85,22 @@ extension UserDefaults {
 		}
 	}
 
-	private func _set<Value: Codable>(_ key: String, to value: Value) {
+	private func _set<Value: DefaultsSerializable>(_ key: String, to value: Value) {
 		if (value as? _DefaultsOptionalType)?.isNil == true {
 			removeObject(forKey: key)
 			return
 		}
 
 		if UserDefaults.isNativelySupportedType(Value.self) {
+			if Value.isURL {
+				set(value as? URL, forKey: key)
+				return
+			}
 			set(value, forKey: key)
 			return
 		}
 
-		set(_encode(value), forKey: key)
+		set(Value.bridge.serialize(value as? Value.Value), forKey: key)
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
@@ -81,7 +114,7 @@ extension UserDefaults {
 		set(try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true), forKey: key)
 	}
 
-	public subscript<Value>(key: Defaults.Key<Value>) -> Value {
+	public subscript<Value: DefaultsSerializable>(key: Defaults.Key<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)
@@ -125,7 +158,38 @@ extension UserDefaults {
 			is Date.Type,
 			is Date?.Type,
 			is Data.Type,
-			is Data?.Type:
+			is Data?.Type,
+			is URL.Type,
+			is URL?.Type:
+			return true
+		default:
+			return false
+		}
+	}
+
+	static func isNativelySupportedType<T: DefaultsSerializable>(_ type: T.Type) -> Bool {
+		switch type {
+		case
+			is Bool.Type,
+			is Bool?.Type, // swiftlint:disable:this discouraged_optional_boolean
+			is String.Type,
+			is String?.Type,
+			is Int.Type,
+			is Int?.Type,
+			is Double.Type,
+			is Double?.Type,
+			is Float.Type,
+			is Float?.Type,
+			is Date.Type,
+			is Date?.Type,
+			is Data.Type,
+			is Data?.Type,
+			is URL.Type,
+			is URL?.Type,
+			is [String: T.Value].Type,
+			is [String: T.Value]?.Type,
+			is [T.Value].Type,
+			is [T.Value]?.Type:
 			return true
 		default:
 			return false

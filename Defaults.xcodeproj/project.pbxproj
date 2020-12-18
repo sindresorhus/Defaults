@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		52D6D9871BEFF229002C0205 /* Defaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* Defaults.framework */; };
+		719F5E20258AFB2F004540F6 /* DefaultsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* DefaultsBridge.swift */; };
+		719F5E21258AFB2F004540F6 /* DefaultsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* DefaultsBridge.swift */; };
+		719F5E22258AFB2F004540F6 /* DefaultsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* DefaultsBridge.swift */; };
+		719F5E23258AFB2F004540F6 /* DefaultsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* DefaultsBridge.swift */; };
 		8933C7851EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
 		8933C7861EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
 		8933C7871EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
@@ -74,6 +78,7 @@
 		52D6D9F01BEFFFBE002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6DA0F1BF000BD002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6614F6E222FC6E1C00B0C9CE /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = readme.md; sourceTree = "<group>"; usesTabs = 1; };
+		719F5E1F258AFB2F004540F6 /* DefaultsBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsBridge.swift; sourceTree = "<group>"; };
 		8933C7841EB5B820000D00A4 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Defaults.swift; sourceTree = "<group>"; usesTabs = 1; };
 		8933C7891EB5B82A000D00A4 /* DefaultsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DefaultsTests.swift; sourceTree = "<group>"; usesTabs = 1; };
 		AD2FAA261CD0B6D800659CF4 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
@@ -222,6 +227,7 @@
 				E286D0C623B8D51100570D1E /* Observation+Combine.swift */,
 				E38C9F26244ADA2F00A6737A /* SwiftUI.swift */,
 				E3EB3E32216505920033B089 /* Utilities.swift */,
+				719F5E1F258AFB2F004540F6 /* DefaultsBridge.swift */,
 			);
 			path = Defaults;
 			sourceTree = "<group>";
@@ -511,6 +517,7 @@
 				E38C9F28244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				8933C7851EB5B820000D00A4 /* Defaults.swift in Sources */,
 				E339B3B92449F10D00E7A40A /* UserDefaults.swift in Sources */,
+				719F5E21258AFB2F004540F6 /* DefaultsBridge.swift in Sources */,
 				E3EB3E35216507AE0033B089 /* Observation.swift in Sources */,
 				E3EB3E33216505920033B089 /* Utilities.swift in Sources */,
 				E339B3B42449ED2000E7A40A /* Reset.swift in Sources */,
@@ -533,6 +540,7 @@
 				E38C9F2A244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E3A216507C40033B089 /* Utilities.swift in Sources */,
 				E339B3BB2449F10D00E7A40A /* UserDefaults.swift in Sources */,
+				719F5E23258AFB2F004540F6 /* DefaultsBridge.swift in Sources */,
 				E3EB3E37216507B50033B089 /* Observation.swift in Sources */,
 				8933C7871EB5B820000D00A4 /* Defaults.swift in Sources */,
 				E339B3B62449ED2000E7A40A /* Reset.swift in Sources */,
@@ -547,6 +555,7 @@
 				E38C9F29244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E3B216507C40033B089 /* Utilities.swift in Sources */,
 				E339B3BA2449F10D00E7A40A /* UserDefaults.swift in Sources */,
+				719F5E22258AFB2F004540F6 /* DefaultsBridge.swift in Sources */,
 				E3EB3E38216507B60033B089 /* Observation.swift in Sources */,
 				8933C7881EB5B820000D00A4 /* Defaults.swift in Sources */,
 				E339B3B52449ED2000E7A40A /* Reset.swift in Sources */,
@@ -561,6 +570,7 @@
 				E38C9F27244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E39216507C30033B089 /* Utilities.swift in Sources */,
 				E339B3B82449F10D00E7A40A /* UserDefaults.swift in Sources */,
+				719F5E20258AFB2F004540F6 /* DefaultsBridge.swift in Sources */,
 				E3EB3E36216507B50033B089 /* Observation.swift in Sources */,
 				8933C7861EB5B820000D00A4 /* Defaults.swift in Sources */,
 				E339B3B32449ED2000E7A40A /* Reset.swift in Sources */,

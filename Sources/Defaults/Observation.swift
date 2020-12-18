@@ -37,7 +37,7 @@ extension Defaults {
 
 	public typealias ObservationOptions = Set<ObservationOption>
 
-	private static func deserialize<Value: Decodable>(_ value: Any?, to type: Value.Type) -> Value? {
+	private static func deserialize<Value: DefaultsSerializable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
 			!(value is NSNull)
@@ -50,8 +50,23 @@ extension Defaults {
 			return value
 		}
 
-		// Using the array trick as done below in `UserDefaults#_set()`
-		return [Value].init(jsonString: "\([value])")?.first
+		// URL in UserDefaults is store as NSKeyedArchiver, so need to unarchived here
+		if Value.isURL {
+			if let value = value as? Data {
+				if #available(macOS 10.13, *) {
+					return try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSURL.self, from: value)?.absoluteURL as? Value
+				} else {
+					return NSKeyedUnarchiver.unarchiveObject(with: value) as? Value
+				}
+			}
+		}
+
+		// handles custom deserialize
+		if let value = Value.bridge.deserialize(value) as? Value {
+			return value
+		}
+
+		return nil
 	}
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
@@ -91,14 +106,14 @@ extension Defaults {
 		}
 	}
 
-	public struct KeyChange<Value: Codable> {
+	public struct KeyChange<Value: DefaultsSerializable> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
 		public let newValue: Value
 		public let oldValue: Value
 
-		init(change: BaseChange, defaultValue: Value) {
+		init(change: BaseChange, defaultValue: Value, to type: Value.Type = Value.self) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
@@ -106,6 +121,7 @@ extension Defaults {
 			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
 		}
 	}
+	
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	public struct NSSecureCodingKeyChange<Value: NSSecureCoding> {

@@ -7,10 +7,16 @@ import Defaults
 let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureURL2 = URL(string: "https://example.com")!
 
-enum FixtureEnum: String, Codable {
+enum FixtureEnum: String, DefaultsSerializable {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
+}
+
+enum FixtureIntEnum: Int, DefaultsSerializable {
+	case tenMinutes = 10
+	case halfHour = 30
+	case oneHour = 60
 }
 
 let fixtureDate = Date()
@@ -36,12 +42,41 @@ final class ExamplePersistentHistory: NSPersistentHistoryToken {
 	override class var supportsSecureCoding: Bool { true }
 }
 
+final class User: DefaultsSerializable {
+	var username: String
+	var password: String
+
+	init(username: String, password: String) {
+		self.username = username
+		self.password = password
+	}
+
+	public static var bridge: DefaultsUserBridge { return DefaultsUserBridge() }
+}
+
+final class DefaultsUserBridge: DefaultsBridge {
+	public func serialize(_ value: User?) -> [String: String]? {
+		return ["username": value?.username ?? "", "password": value?.password ?? ""]
+	}
+
+	public func deserialize(_ object: Any) -> User? {
+		if let object = object as? [String: String] {
+			return User(username: object["username"] ?? "", password: object["password"] ?? "")
+		}
+		return nil
+	}
+}
+
 extension Defaults.Keys {
 	static let key = Key<Bool>("key", default: false)
 	static let url = Key<URL>("url", default: fixtureURL)
 	static let `enum` = Key<FixtureEnum>("enum", default: .oneHour)
+	static let `int_enum` = Key<FixtureIntEnum>("int_enum", default: .oneHour)
 	static let data = Key<Data>("data", default: Data([]))
+	static let array = Key<[String]>("array", default: ["Hank", "Chen"])
+	static let dictionary = Key<[String: String]>("dictionary", default: ["Hank": "Chen"])
 	static let date = Key<Date>("date", default: fixtureDate)
+	static let user = Key<User> ("user", default: User(username: "hank121314", password: "123456"))
 
 	// NSSecureCoding
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
@@ -70,13 +105,37 @@ final class DefaultsTests: XCTestCase {
 
 	func testOptionalKey() {
 		let key = Defaults.Key<Bool?>("independentOptionalKey")
+		let url = Defaults.Key<URL?>("independentOptionalURLKey")
 		XCTAssertNil(Defaults[key])
+		XCTAssertNil(Defaults[url])
 		Defaults[key] = true
+		Defaults[url] = fixtureURL
 		XCTAssertTrue(Defaults[key]!)
+		XCTAssertEqual(Defaults[url], fixtureURL)
 		Defaults[key] = nil
+		Defaults[url] = nil
 		XCTAssertNil(Defaults[key])
+		XCTAssertNil(Defaults[url])
 		Defaults[key] = false
+		Defaults[url] = fixtureURL2
 		XCTAssertFalse(Defaults[key]!)
+		XCTAssertEqual(Defaults[url], fixtureURL2)
+	}
+
+	func testCustomBridgeKey() {
+		let key = Defaults.Key<User>("independentOptionalCustomBridgeKey", default: User(username: "hank121314", password: "123456"))
+		XCTAssertEqual(Defaults[key].password, "123456")
+		let newPassword = "7891011"
+		Defaults[key] = User(username: "hank121314", password: newPassword)
+ 		XCTAssertEqual(Defaults[key].password, newPassword)
+	}
+
+	func testNestedDictionaryKey() {
+		let key = Defaults.Key<[String: [String: String]]>("independentOptionalCustomBridgeKey", default: ["0": ["Hank": "Chen"]])
+		XCTAssertEqual(Defaults[key]["0"]?["Hank"], "Chen")
+		let newName = "121314"
+		Defaults[key]["0"]?["Hank"] = newName
+		XCTAssertEqual(Defaults[key]["0"]?["Hank"], newName)
 	}
 
 	func testKeyRegistersDefault() {
@@ -99,6 +158,10 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testKeys() {
+		Defaults[.dictionary]["Hank"] = "121314"
+		Defaults[.array][0] = "Hank121314"
+		XCTAssertEqual(Defaults[.dictionary]["Hank"], "121314")
+		XCTAssertEqual(Defaults[.array][0], "Hank121314")
 		XCTAssertFalse(Defaults[.key])
 		Defaults[.key] = true
 		XCTAssertTrue(Defaults[.key])
@@ -532,6 +595,40 @@ final class DefaultsTests: XCTestCase {
 		}
 
 		Defaults[key] = .tenMinutes
+
+		waitForExpectations(timeout: 10)
+	}
+
+	func testObserveKeyIntEnum() {
+		let key = Defaults.Key<FixtureIntEnum>("observeKeyIntEnum", default: .oneHour)
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: Defaults.Observation!
+		observation = Defaults.observe(key, options: []) { change in
+			XCTAssertEqual(change.oldValue, .oneHour)
+			XCTAssertEqual(change.newValue, .tenMinutes)
+			observation.invalidate()
+			expect.fulfill()
+		}
+
+		Defaults[key] = .tenMinutes
+
+		waitForExpectations(timeout: 10)
+	}
+
+	func testObserveKeyOptionalIntEnum() {
+		let key = Defaults.Key<FixtureIntEnum?>("observeKeyOptionalIntEnum")
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: Defaults.Observation!
+		observation = Defaults.observe(key, options: []) { change in
+			XCTAssertEqual(change.oldValue, nil)
+			XCTAssertEqual(change.newValue, .halfHour)
+			observation.invalidate()
+			expect.fulfill()
+		}
+
+		Defaults[key] = .halfHour
 
 		waitForExpectations(timeout: 10)
 	}
