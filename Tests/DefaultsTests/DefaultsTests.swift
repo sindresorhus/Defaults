@@ -5,6 +5,7 @@ import XCTest
 import Defaults
 
 let fixtureURL = URL(string: "https://sindresorhus.com")!
+let fixtureFileURL = URL(string: "file://~/icon.png")!
 let fixtureURL2 = URL(string: "https://example.com")!
 
 enum FixtureEnum: String, DefaultsSerializable {
@@ -83,6 +84,7 @@ let fixtureCodable = Unicorn(isUnicorn: true)
 extension Defaults.Keys {
 	static let key = Key<Bool>("key", default: false)
 	static let url = Key<URL>("url", default: fixtureURL)
+	static let file = Key<URL>("fileURL", default: fixtureFileURL)
 	static let `enum` = Key<FixtureEnum>("enum", default: .oneHour)
 	static let `int_enum` = Key<FixtureIntEnum>("int_enum", default: .oneHour)
 	static let data = Key<Data>("data", default: Data([]))
@@ -266,6 +268,10 @@ final class DefaultsTests: XCTestCase {
 		let newUser = "Hank121314"
 		Defaults[.array][0] = newUser
 		XCTAssertEqual(Defaults[.array][0], newUser)
+	}
+
+	func testFileURLType() {
+		XCTAssertEqual(Defaults[.file], fixtureFileURL)
 	}
 
 	func testRemoveAll() {

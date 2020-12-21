@@ -20,19 +20,36 @@ public struct DefaultsURLBridge: DefaultsBridge {
 			if #available(macOS 10.13, watchOS 4.0, macOSApplicationExtension 10.13, watchOSApplicationExtension 4.0, *) {
 				let data = try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: false)
 				return data
-			} else {
-				return value.path
+			}
+
+			// If system is not support NSKeyedArchiver, we encode url to store in userDefaults
+			do {
+				// Some codable values like URL and enum are encoded as a top-level
+				// string which JSON can't handle, so we need to wrap it in an array
+				// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
+				let data = try JSONEncoder().encode([value])
+				return String(String(data: data, encoding: .utf8)!.dropFirst().dropLast())
+			} catch {
+				print(error)
+				return nil
 			}
 		}
+
 		return nil
 	}
 
 	public func deserialize(_ object: Any?) -> URL? {
 		if let object = object as? URL {
-				return object
-		} else if let object = object as? NSString {
-				let urlPath = object.expandingTildeInPath
-				return URL(fileURLWithPath: urlPath)
+			return object
+		} else if let object = object as? String {
+			guard let data = "[\(object)]".data(using: .utf8) else {
+				return nil
+			}
+			do {
+				return (try JSONDecoder().decode([Value].self, from: data)).first
+			} catch {
+				print(error)
+			}
 		} else if let object = object as? Data {
 			if #available(macOS 10.13, watchOS 4.0, macOSApplicationExtension 10.13, watchOSApplicationExtension 4.0, *) {
 				return try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSURL.self, from: object) as URL?
@@ -40,6 +57,7 @@ public struct DefaultsURLBridge: DefaultsBridge {
 				return NSKeyedUnarchiver.unarchiveObject(with: object) as? URL
 			}
 		}
+
 		return nil
 	}
 }
