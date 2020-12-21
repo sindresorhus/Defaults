@@ -50,19 +50,8 @@ extension Defaults {
 			return value
 		}
 
-		// URL in UserDefaults is store as NSKeyedArchiver, so need to unarchived here
-		if Value.isURL {
-			if let value = value as? Data {
-				if #available(macOS 10.13, *) {
-					return try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSURL.self, from: value)?.absoluteURL as? Value
-				} else {
-					return NSKeyedUnarchiver.unarchiveObject(with: value) as? Value
-				}
-			}
-		}
-
 		// handles custom deserialize
-		if let value = Value.bridge.deserialize(value) as? Value {
+		if let value = Value.bridge.deserialize(value as? Value.Serializable) as? Value {
 			return value
 		}
 
@@ -113,7 +102,7 @@ extension Defaults {
 		public let newValue: Value
 		public let oldValue: Value
 
-		init(change: BaseChange, defaultValue: Value, to type: Value.Type = Value.self) {
+		init(change: BaseChange, defaultValue: Value) {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior

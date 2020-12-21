@@ -49,7 +49,7 @@ public enum Defaults {
 				return
 			}
 
-			if UserDefaults.isNativelySupportedType(Value.self) {
+			if UserDefaults.isNativelySupportedType(Value.Property.self) {
 				suite.register(defaults: [key: defaultValue])
 			} else if let value = Value.bridge.serialize(defaultValue as? Value.Value) {
 				suite.register(defaults: [key: value])

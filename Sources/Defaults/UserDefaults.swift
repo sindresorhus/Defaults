@@ -2,50 +2,12 @@ import Foundation
 
 extension UserDefaults {
 	private func _get<Value: DefaultsSerializable>(_ key: String) -> Value? {
-		if Value.isString {
-			return string(forKey: key) as? Value
-		}
-
-		if Value.isURL {
-			return url(forKey: key) as? Value
-		}
-
-		if Value.isArray {
-			return array(forKey: key) as? Value
-		}
-
-		if Value.isDictionary {
-			return dictionary(forKey: key) as? Value
-		}
-		
 		if let any_object = object(forKey: key) {
-			if UserDefaults.isNativelySupportedType(Value.self) {
+			if UserDefaults.isNativelySupportedType(Value.Property.self) {
 				return any_object as? Value
-			}
-			if let value = Value.bridge.deserialize(any_object) {
+			} else if let value = Value.bridge.deserialize(any_object as? Value.Serializable) {
 				return value as? Value
 			}
-		}
-
-		return nil
-	}
-
-	private func _get<Value: Codable>(_ key: String) -> Value? {
-		if UserDefaults.isNativelySupportedType(Value.self) {
-			return object(forKey: key) as? Value
-		}
-
-		guard
-			let text = string(forKey: key),
-			let data = "[\(text)]".data(using: .utf8)
-		else {
-			return nil
-		}
-
-		do {
-			return (try JSONDecoder().decode([Value].self, from: data)).first
-		} catch {
-			print(error)
 		}
 
 		return nil
@@ -72,34 +34,17 @@ extension UserDefaults {
 		return nil
 	}
 
-	func _encode<Value: Codable>(_ value: Value) -> String? {
-		do {
-			// Some codable values like URL and enum are encoded as a top-level
-			// string which JSON can't handle, so we need to wrap it in an array
-			// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
-			let data = try JSONEncoder().encode([value])
-			return String(String(data: data, encoding: .utf8)!.dropFirst().dropLast())
-		} catch {
-			print(error)
-			return nil
-		}
-	}
-
 	private func _set<Value: DefaultsSerializable>(_ key: String, to value: Value) {
 		if (value as? _DefaultsOptionalType)?.isNil == true {
 			removeObject(forKey: key)
 			return
 		}
 
-		if UserDefaults.isNativelySupportedType(Value.self) {
-			if Value.isURL {
-				set(value as? URL, forKey: key)
-				return
-			}
+		if UserDefaults.isNativelySupportedType(Value.Property.self) {
 			set(value, forKey: key)
 			return
 		}
-
+		
 		set(Value.bridge.serialize(value as? Value.Value), forKey: key)
 	}
 
@@ -167,7 +112,7 @@ extension UserDefaults {
 		}
 	}
 
-	static func isNativelySupportedType<T: DefaultsSerializable>(_ type: T.Type) -> Bool {
+	static func isNativelySupportedType<T: NativelySupportedType>(_ type: T.Type) -> Bool {
 		switch type {
 		case
 			is Bool.Type,
@@ -183,14 +128,14 @@ extension UserDefaults {
 			is Date.Type,
 			is Date?.Type,
 			is Data.Type,
-			is Data?.Type,
-			is URL.Type,
-			is URL?.Type,
-			is [String: T.Value].Type,
-			is [String: T.Value]?.Type,
-			is [T.Value].Type,
-			is [T.Value]?.Type:
+			is Data?.Type:
 			return true
+		case
+			is [String: T.Property].Type,
+			is [String: T.Property]?.Type,
+			is [T.Property].Type,
+			is [T.Property]?.Type:
+			return isNativelySupportedType(T.Property.self)
 		default:
 			return false
 		}

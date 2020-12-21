@@ -5,7 +5,6 @@ extension Decodable {
 		guard let value = try? JSONDecoder().decode(Self.self, from: jsonData) else {
 			return nil
 		}
-
 		self = value
 	}
 
@@ -13,7 +12,6 @@ extension Decodable {
 		guard let data = jsonString.data(using: .utf8) else {
 			return nil
 		}
-
 		self.init(jsonData: data)
 	}
 }
@@ -147,56 +145,38 @@ extension DispatchQueue {
 	}
 }
 
+public protocol NativelySupportedType {
+	associatedtype Property: NativelySupportedType = Self
+}
 
-public protocol DefaultsSerializable {
+extension Optional: NativelySupportedType where Wrapped: NativelySupportedType {
+	public typealias Property = Wrapped
+}
+
+extension Array: NativelySupportedType where Element: NativelySupportedType {
+	public typealias Property = Element
+}
+
+extension Dictionary: NativelySupportedType where Key == String, Value: DefaultsSerializable {
+	public typealias Property = Value
+}
+
+public protocol DefaultsSerializable: NativelySupportedType {
 	typealias Value = Bridge.Value
+	typealias Serializable = Bridge.Serializable
 	associatedtype Bridge: DefaultsBridge
 	static var bridge: Bridge { get }
-	static var isString: Bool { get }
-	static var isURL: Bool { get }
-	static var isArray: Bool { get }
-	static var isDictionary: Bool { get }
 }
 
-public protocol DefaultsBridge {
-	// The type of Value of Key<Value>
-	associatedtype Value
-
-	// This type should be one of the NativelySupportedType
-	associatedtype Serializable
-
-	// Customize set behavior in UserDefaults
-	func set(_ value: Value?)
-
-	// Serialize Value to Serializable before we store it in UserDefaults
-	func serialize(_ value: Value?) -> Serializable?
-
-	// Deserialize to Value to let user used it
-	func deserialize(_ object: Any) -> Value?
-}
-
-extension DefaultsSerializable {
-	public static var isString: Bool { false }
-	public static var isURL: Bool { false }
-	public static var isArray: Bool { false }
-	public static var isDictionary: Bool { false }
-}
-
-extension DefaultsBridge {
-	public func set(_ value: Value?) {
-		return
-	}
-}
+extension Data: DefaultsSerializable {}
+extension Date: DefaultsSerializable {}
+extension Bool: DefaultsSerializable {}
+extension Int: DefaultsSerializable {}
+extension Double: DefaultsSerializable {}
+extension Float: DefaultsSerializable {}
+extension String: DefaultsSerializable {}
 
 extension Optional: DefaultsSerializable where Wrapped: DefaultsSerializable {
-	public static var isString: Bool { Wrapped.isString }
-
-	public static var isURL: Bool { Wrapped.isURL }
-
-	public static var isArray: Bool { Wrapped.isArray }
-
-	public static var isDictionary: Bool { Wrapped.isDictionary }
-
 	public static var bridge: DefaultsOptionalBridge<Wrapped.Bridge> { return DefaultsOptionalBridge(bridge: Wrapped.bridge) }
 }
 
@@ -208,25 +188,14 @@ extension DefaultsSerializable where Self: RawRepresentable {
 	public static var bridge: DefaultsRawRepresentableBridge<Self> { return DefaultsRawRepresentableBridge() }
 }
 
-extension Data: DefaultsSerializable {}
-extension String: DefaultsSerializable {
-	public static var isString: Bool { true }
-}
-extension Date: DefaultsSerializable {}
-extension Bool: DefaultsSerializable {}
-extension Int: DefaultsSerializable {}
-extension Double: DefaultsSerializable {}
-extension Float: DefaultsSerializable {}
 extension URL: DefaultsSerializable {
-	public static var isURL: Bool { true }
+	public static var bridge: DefaultsURLBridge { return DefaultsURLBridge() }
 }
 
 extension Array: DefaultsSerializable where Element: DefaultsSerializable {
-	public static var bridge: DefaultsArrayBridge<Element> { return DefaultsArrayBridge() }
-	public static var isArray: Bool { true }
+	public static var bridge: DefaultsCollectionBridge<Self, Element.Bridge> { return DefaultsCollectionBridge(bridge: Element.bridge) }
 }
 
 extension Dictionary: DefaultsSerializable where Key == String, Value: DefaultsSerializable {
-	public static var bridge: DefaultsObjectBridge<Value> { return DefaultsObjectBridge() }
-	public static var isDictionary: Bool { true }
+	public static var bridge: DefaultsDictionaryBridge<Self, Value.Bridge> { return DefaultsDictionaryBridge(bridge: Value.bridge) }
 }
