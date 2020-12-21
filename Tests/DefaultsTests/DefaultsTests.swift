@@ -141,7 +141,7 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testCustomBridgeKey() {
-		let key = Defaults.Key<User>("independentOptionalCustomBridgeKey", default: User(username: "hank121314", password: "123456"))
+		let key = Defaults.Key<User>("independentCustomBridgeKey", default: User(username: "hank121314", password: "123456"))
 		XCTAssertEqual(Defaults[key].password, "123456")
 		let newPassword = "7891011"
 		Defaults[key] = User(username: "hank121314", password: newPassword)
@@ -149,7 +149,7 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testNestedDictionaryKey() {
-		let key = Defaults.Key<[String: [String: String]]>("independentOptionalNestedDictionaryKey", default: ["0": fixtureDictionary])
+		let key = Defaults.Key<[String: [String: String]]>("independentNestedDictionaryKey", default: ["0": fixtureDictionary])
 		XCTAssertEqual(Defaults[key]["0"]?["Hank"], "Chen")
 		let newName = "121314"
 		Defaults[key]["0"]?["Hank"] = newName
@@ -157,7 +157,7 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testCustomBridgeDictionaryKey() {
-		let key = Defaults.Key<[String: User]>("independentOptionalNestedDictionaryKey", default: ["0": fixtureCustomBridge])
+		let key = Defaults.Key<[String: User]>("independentCustomBridgeDictionaryKey", default: ["0": fixtureCustomBridge])
 		XCTAssertEqual(Defaults[key]["0"]?.username, fixtureCustomBridge.username)
 		let newUserName = "121314"
 		let newPassword = "7891011"
@@ -167,7 +167,7 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[User]]>("independentOptionalNestedArrayKey", default: [[fixtureCustomBridge]])
+		let key = Defaults.Key<[[User]]>("independentNestedArrayKey", default: [[fixtureCustomBridge]])
 		XCTAssertEqual(Defaults[key][0][0].username, fixtureCustomBridge.username)
 		let newUsername = "nestedArray"
 		let newPassword = "7891011"

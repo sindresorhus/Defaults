@@ -22,7 +22,7 @@ public struct DefaultsURLBridge: DefaultsBridge {
 				return data
 			}
 
-			// If system is not support NSKeyedArchiver, we encode url to store in userDefaults
+			// If system does not support NSKeyedArchiver, encode url to store in userDefaults
 			do {
 				// Some codable values like URL and enum are encoded as a top-level
 				// string which JSON can't handle, so we need to wrap it in an array
