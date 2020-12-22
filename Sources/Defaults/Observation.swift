@@ -37,7 +37,7 @@ extension Defaults {
 
 	public typealias ObservationOptions = Set<ObservationOption>
 
-	private static func deserialize<Value: DefaultsSerializable>(_ value: Any?, to type: Value.Type) -> Value? {
+	private static func deserialize<Value: Serializable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
 			!(value is NSNull)
@@ -74,7 +74,7 @@ extension Defaults {
 		}
 	}
 
-	public struct KeyChange<Value: DefaultsSerializable> {
+	public struct KeyChange<Value: Serializable> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool

@@ -35,15 +35,16 @@ extension DefaultsCodableBridge {
 }
 
 extension Defaults {
-	public struct TopLevelCodableBridge<Value: Codable>: Defaults.CodableBridge {}
+	public struct TopLevelCodableBridge<Value: Codable>: CodableBridge {}
 
-	public struct RawRepresentableCodableBridge<Value>: CodableBridge where Value: RawRepresentable, Value: Codable {}
+	// RawRepresentableCodableBridge is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable` the compiler will confuse between RawRepresentableBridge and TopLevelCodableBridge
+	public struct RawRepresentableCodableBridge<Value>: CodableBridge where Value: RawRepresentable & Codable {}
 
 	public struct URLBridge: CodableBridge {
 		public typealias Value = URL
 	}
 
-	public struct RawRepresentableBridge<Value: RawRepresentable>: Defaults.Bridge {
+	public struct RawRepresentableBridge<Value: RawRepresentable>: Bridge {
 		public func serialize(_ value: Value?) -> Value.RawValue? {
 			return value?.rawValue
 		}
@@ -122,7 +123,6 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-
 			return object?.reduce([:]) { (memo: [String: Value.Property], tuple: (key: String, value: Bridge.Serializable)) in
 				var result = memo
 				result[tuple.key] = bridge.deserialize(tuple.value) as? Value.Property
@@ -145,11 +145,11 @@ extension Defaults {
 				return nil
 			}
 
-			return array.map({ bridge.serialize($0 as? Bridge.Value) }).compactMap { $0 }
+			return array.map { bridge.serialize($0 as? Bridge.Value) } .compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			object?.map({ bridge.deserialize($0) }).compactMap { $0 } as? Value
+			object?.map { bridge.deserialize($0) } .compact() as? Value
 		}
 	}
 }

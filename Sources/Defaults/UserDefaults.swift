@@ -52,7 +52,25 @@ extension UserDefaults {
 			is Date.Type,
 			is Date?.Type,
 			is Data.Type,
-			is Data?.Type:
+			is Data?.Type,
+			is CGFloat.Type,
+			is CGFloat?.Type,
+			is Int8.Type,
+			is Int8?.Type,
+			is UInt8.Type,
+			is UInt8?.Type,
+			is Int16.Type,
+			is Int16?.Type,
+			is UInt16.Type,
+			is UInt16?.Type,
+			is Int32.Type,
+			is Int32?.Type,
+			is UInt32.Type,
+			is UInt32?.Type,
+			is Int64.Type,
+			is Int64?.Type,
+			is UInt64.Type,
+			is UInt64?.Type:
 			return true
 		case
 			is [String: T.Property].Type,

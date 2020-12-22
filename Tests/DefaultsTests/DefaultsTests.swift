@@ -51,7 +51,7 @@ struct Unicorn: Codable, Defaults.Serializable {
 	var isUnicorn: Bool
 }
 
-final class User: Defaults.Serializable {
+final class User {
 	var username: String
 	var password: String
 
@@ -60,6 +60,9 @@ final class User: Defaults.Serializable {
 		self.password = password
 	}
 
+}
+
+extension User: Defaults.Serializable {
 	public static var bridge: DefaultsUserBridge { return DefaultsUserBridge() }
 }
 

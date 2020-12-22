@@ -7,6 +7,15 @@ extension Int: Defaults.Serializable {}
 extension Double: Defaults.Serializable {}
 extension Float: Defaults.Serializable {}
 extension String: Defaults.Serializable {}
+extension CGFloat: Defaults.Serializable{}
+extension Int8: Defaults.Serializable {}
+extension UInt8: Defaults.Serializable {}
+extension Int16: Defaults.Serializable {}
+extension UInt16: Defaults.Serializable {}
+extension Int32: Defaults.Serializable {}
+extension UInt32: Defaults.Serializable {}
+extension Int64: Defaults.Serializable {}
+extension UInt64: Defaults.Serializable {}
 
 extension URL: Defaults.Serializable {
 	public static let bridge = Defaults.URLBridge()
@@ -20,7 +29,7 @@ extension Defaults.Serializable where Self: RawRepresentable {
 	public static var bridge: Defaults.RawRepresentableBridge<Self> { return Defaults.RawRepresentableBridge() }
 }
 
-extension Defaults.Serializable where Self: RawRepresentable, Self: Codable {
+extension Defaults.Serializable where Self: RawRepresentable & Codable {
 	public static var bridge: Defaults.RawRepresentableCodableBridge<Self> { return Defaults.RawRepresentableCodableBridge() }
 }
 
