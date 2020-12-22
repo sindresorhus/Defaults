@@ -8,13 +8,13 @@ let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureFileURL = URL(string: "file://~/icon.png")!
 let fixtureURL2 = URL(string: "https://example.com")!
 
-enum FixtureEnum: String, DefaultsSerializable {
+enum FixtureEnum: String, Codable, Defaults.Serializable {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
 }
 
-enum FixtureIntEnum: Int, DefaultsSerializable {
+enum FixtureIntEnum: Int, Defaults.Serializable {
 	case tenMinutes = 10
 	case halfHour = 30
 	case oneHour = 60
@@ -27,7 +27,7 @@ let fixtureArray = ["Hank", "Chen"]
 let fixtureDictionary = ["Hank": "Chen"]
 
 @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-final class ExamplePersistentHistory: NSPersistentHistoryToken {
+final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults.Serializable {
 	let value: String
 
 	init(value: String) {
@@ -47,11 +47,11 @@ final class ExamplePersistentHistory: NSPersistentHistoryToken {
 	override class var supportsSecureCoding: Bool { true }
 }
 
-struct Unicorn: Codable, DefaultsSerializable {
+struct Unicorn: Codable, Defaults.Serializable {
 	var isUnicorn: Bool
 }
 
-final class User: DefaultsSerializable {
+final class User: Defaults.Serializable {
 	var username: String
 	var password: String
 
@@ -63,13 +63,12 @@ final class User: DefaultsSerializable {
 	public static var bridge: DefaultsUserBridge { return DefaultsUserBridge() }
 }
 
-final class DefaultsUserBridge: DefaultsBridge {
-	public typealias Serializable = [String: String]
-	public func serialize(_ value: User?) -> Serializable? {
+final class DefaultsUserBridge: Defaults.Bridge {
+	public func serialize(_ value: User?) -> [String: String]? {
 		return ["username": value?.username ?? "", "password": value?.password ?? ""]
 	}
 
-	public func deserialize(_ object: Serializable?) -> User? {
+	public func deserialize(_ object: [String: String]?) -> User? {
 		if let object = object {
 			return User(username: object["username"] ?? "", password: object["password"] ?? "")
 		}
@@ -100,7 +99,7 @@ extension Defaults.Keys {
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	static let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	static let persistentHistory = NSSecureCodingKey<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
+	static let persistentHistory = Key<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
 }
 
 final class DefaultsTests: XCTestCase {
@@ -351,7 +350,7 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveNSSecureCodingKeyCombine() {
-		let key = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
+		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -413,7 +412,7 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveNSSecureCodingOptionalKeyCombine() {
-		let key = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingOptionalKey")
+		let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -466,8 +465,8 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleNSSecureKeysCombine() {
-		let key1 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
-		let key2 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
+		let key1 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
+		let key2 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
@@ -505,8 +504,8 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleNSSecureOptionalKeysCombine() {
-		let key1 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingKey1")
-		let key2 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingKey2")
+		let key1 = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingKey1")
+		let key2 = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingKey2")
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
@@ -562,7 +561,7 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	func testObserveNSSecureCodingKey() {
-		let key = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
+		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -597,7 +596,7 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	func testObserveNSSecureCodingOptionalKey() {
-		let key = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("observeNSSecureCodingOptionalKey")
+		let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -638,8 +637,8 @@ final class DefaultsTests: XCTestCase {
 
 	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	func testObserveMultipleNSSecureKeys() {
-		let key1 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
-		let key2 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
+		let key1 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
+		let key2 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -923,7 +922,7 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key2], newFixture2)
 
 		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
-			let key3 = Defaults.NSSecureCodingKey<ExamplePersistentHistory>("key3", default: ExamplePersistentHistory(value: defaultFixture3))
+			let key3 = Defaults.Key<ExamplePersistentHistory>("key3", default: ExamplePersistentHistory(value: defaultFixture3))
 			Defaults[key3] = ExamplePersistentHistory(value: newFixture3)
 			Defaults.reset(key3)
 
@@ -963,7 +962,7 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key2], newString2)
 
 		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
-			let key3 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("optionalKey3")
+			let key3 = Defaults.Key<ExamplePersistentHistory?>("optionalKey3")
 			Defaults[key3] = ExamplePersistentHistory(value: newString3)
 			Defaults.reset(key3)
 			XCTAssertEqual(Defaults[key3], nil)
