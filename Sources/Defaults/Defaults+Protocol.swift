@@ -1,10 +1,8 @@
 import Foundation
 
-public protocol DefaultsNativelySupportedType {
-	associatedtype Property: DefaultsNativelySupportedType = Self
-}
+public protocol DefaultsNativelySupportedType {}
 
-public protocol DefaultsSerializable: DefaultsNativelySupportedType {
+public protocol DefaultsSerializable {
 	typealias Value = Bridge.Value
 	typealias Serializable = Bridge.Serializable
 	associatedtype Bridge: DefaultsBridge

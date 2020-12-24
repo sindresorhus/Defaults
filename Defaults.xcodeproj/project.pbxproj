@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		52D6D9871BEFF229002C0205 /* Defaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* Defaults.framework */; };
+		7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
+		7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
+		7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
 		718B783325917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783425917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783525917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
@@ -89,6 +92,7 @@
 		52D6D9F01BEFFFBE002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6DA0F1BF000BD002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6614F6E222FC6E1C00B0C9CE /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = readme.md; sourceTree = "<group>"; usesTabs = 1; };
+		7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsSwiftUITests.swift; sourceTree = "<group>"; };
 		718B783225917CCA004FF90D /* Defaults+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Protocol.swift"; sourceTree = "<group>"; };
 		718B783E25917D09004FF90D /* Defaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Extensions.swift"; sourceTree = "<group>"; };
 		7191AD862591977700AD472F /* DefaultsArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsArrayTests.swift; sourceTree = "<group>"; };
@@ -211,6 +215,7 @@
 			children = (
 				8933C7891EB5B82A000D00A4 /* DefaultsTests.swift */,
 				7191AD862591977700AD472F /* DefaultsArrayTests.swift */,
+				7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */,
 			);
 			name = Tests;
 			path = Tests/DefaultsTests;
@@ -387,6 +392,8 @@
 				DD7502811C68FCFC006590AF /* PBXTargetDependency */,
 			);
 			name = "Defaults-macOS Tests";
+			packageProductDependencies = (
+			);
 			productName = "Defaults-OS Tests";
 			productReference = DD75027A1C68FCFC006590AF /* Defaults-macOS Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -458,6 +465,8 @@
 				Base,
 			);
 			mainGroup = 52D6D9721BEFF229002C0205;
+			packageReferences = (
+			);
 			productRefGroup = 52D6D97D1BEFF229002C0205 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -547,6 +556,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				8933C7901EB5B82D000D00A4 /* DefaultsTests.swift in Sources */,
 				7191AD872591977700AD472F /* DefaultsArrayTests.swift in Sources */,
 			);
@@ -607,6 +617,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				8933C78F1EB5B82C000D00A4 /* DefaultsTests.swift in Sources */,
 				7191AD882591977700AD472F /* DefaultsArrayTests.swift in Sources */,
 			);
@@ -616,6 +627,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				8933C78E1EB5B82C000D00A4 /* DefaultsTests.swift in Sources */,
 				7191AD892591977700AD472F /* DefaultsArrayTests.swift in Sources */,
 			);

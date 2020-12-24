@@ -89,7 +89,18 @@ extension Defaults {
 	```
 	*/
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	public static func publisher<Value>(
+	public static func publisher<Value: NativelySupportedType>(
+		_ key: Key<Value>,
+		options: ObservationOptions = [.initial]
+	) -> AnyPublisher<KeyChange<Value>, Never> {
+		let publisher = DefaultsPublisher(suite: key.suite, key: key.name, options: options)
+			.map { KeyChange<Value>(change: $0, defaultValue: key.defaultValue) }
+
+		return AnyPublisher(publisher)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	public static func publisher<Value: Serializable>(
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<KeyChange<Value>, Never> {

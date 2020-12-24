@@ -102,7 +102,7 @@ extension Defaults {
 	}
 
 	public struct DictionaryBridge<Value: Defaults.Serializable, Bridge: Defaults.Bridge>: Defaults.Bridge {
-		public typealias Serializable = [String :Bridge.Serializable]
+		public typealias Serializable = [String: Bridge.Serializable]
 
 		private let bridge: Bridge
 
@@ -111,21 +111,21 @@ extension Defaults {
 		}
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let dictionary = value as? [String: Value.Property] else {
+			guard let dictionary = value as? [String: Bridge.Value] else {
 				return nil
 			}
 
-			return dictionary.reduce([:]) { (memo: Serializable, tuple: (key: String, value: Value.Property)) in
+			return dictionary.reduce([:]) { (memo: Serializable, tuple: (key: String, value: Bridge.Value)) in
 				var result = memo
-				result[tuple.key] = bridge.serialize(tuple.value as? Bridge.Value)
+				result[tuple.key] = bridge.serialize(tuple.value)
 				return result
 			}
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			return object?.reduce([:]) { (memo: [String: Value.Property], tuple: (key: String, value: Bridge.Serializable)) in
+			return object?.reduce([:]) { (memo: [String: Bridge.Value], tuple: (key: String, value: Bridge.Serializable)) in
 				var result = memo
-				result[tuple.key] = bridge.deserialize(tuple.value) as? Value.Property
+				result[tuple.key] = bridge.deserialize(tuple.value)
 				return result
 			} as? Value
 		}
@@ -141,11 +141,11 @@ extension Defaults {
 		}
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let array = value as? [Value.Property] else {
+			guard let array = value as? [Bridge.Value] else {
 				return nil
 			}
 
-			return array.map { bridge.serialize($0 as? Bridge.Value) } .compact()
+			return array.map { bridge.serialize($0) } .compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {

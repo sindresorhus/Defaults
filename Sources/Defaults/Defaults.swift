@@ -33,12 +33,12 @@ public enum Defaults {
 		}
 	}
 
-	public final class Key<Value: Serializable>: AnyKey {
+	public final class Key<Value>: AnyKey {
 		public let defaultValue: Value
 
 		/// Create a defaults key.
 		/// The `default` parameter can be left out if the `Value` type is an optional.
-		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) where Value: NativelySupportedType {
 			self.defaultValue = defaultValue
 
 			super.init(name: key, suite: suite)
@@ -47,16 +47,35 @@ public enum Defaults {
 				return
 			}
 
-			if UserDefaults.isNativelySupportedType(Value.Property.self) {
-				suite.register(defaults: [key: defaultValue])
-			} else if let value = Value.bridge.serialize(defaultValue as? Value.Value) {
-				suite.register(defaults: [key: value])
+			suite.register(defaults: [key: defaultValue])
+		}
+
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) where Value: DefaultsSerializable {
+			self.defaultValue = defaultValue
+
+			super.init(name: key, suite: suite)
+
+			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
+				return
 			}
+
+			guard let value = Value.bridge.serialize(defaultValue as? Value.Value) else {
+				return
+			}
+
+			suite.register(defaults: [key: value])
 		}
 	}
 
 	/// Access a defaults value using a `Defaults.Key`.
-	public static subscript<Value>(key: Key<Value>) -> Value {
+	public static subscript<Value: NativelySupportedType>(key: Key<Value>) -> Value {
+		get { key.suite[key] }
+		set {
+			key.suite[key] = newValue
+		}
+	}
+
+	public static subscript<Value: Serializable>(key: Key<Value>) -> Value {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -76,7 +95,11 @@ extension Defaults {
 }
 
 extension Defaults.Key {
-	public convenience init<T>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
+	public convenience init<T: Defaults.NativelySupportedType>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
+		self.init(key, default: nil, suite: suite)
+	}
+
+	public convenience init<T: Defaults.Serializable>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
 		self.init(key, default: nil, suite: suite)
 	}
 }

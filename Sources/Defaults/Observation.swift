@@ -37,7 +37,7 @@ extension Defaults {
 
 	public typealias ObservationOptions = Set<ObservationOption>
 
-	private static func deserialize<Value: Serializable>(_ value: Any?, to type: Value.Type) -> Value? {
+	private static func deserialize<Value: NativelySupportedType>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
 			!(value is NSNull)
@@ -48,6 +48,17 @@ extension Defaults {
 		// This handles the case where the value was a plist value using `isNativelySupportedType`
 		if let value = value as? Value {
 			return value
+		}
+
+		return nil
+	}
+
+	private static func deserialize<Value: Serializable>(_ value: Any?, to type: Value.Type) -> Value? {
+		guard
+			let value = value,
+			!(value is NSNull)
+		else {
+			return nil
 		}
 
 		// handles custom deserialize
@@ -74,14 +85,22 @@ extension Defaults {
 		}
 	}
 
-	public struct KeyChange<Value: Serializable> {
+	public struct KeyChange<Value> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
 		public let newValue: Value
 		public let oldValue: Value
 
-		init(change: BaseChange, defaultValue: Value) {
+		init(change: BaseChange, defaultValue: Value) where Value: NativelySupportedType {
+			self.kind = change.kind
+			self.indexes = change.indexes
+			self.isPrior = change.isPrior
+			self.oldValue = deserialize(change.oldValue, to: Value.self) ?? defaultValue
+			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
+		}
+
+		init(change: BaseChange, defaultValue: Value) where Value: Serializable {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
@@ -299,7 +318,7 @@ extension Defaults {
 	}
 	```
 	*/
-	public static func observe<Value>(
+	public static func observe<Value: NativelySupportedType>(
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial],
 		handler: @escaping (KeyChange<Value>) -> Void
@@ -312,6 +331,21 @@ extension Defaults {
 		observation.start(options: options)
 		return observation
 	}
+
+	public static func observe<Value: Serializable>(
+		_ key: Key<Value>,
+		options: ObservationOptions = [.initial],
+		handler: @escaping (KeyChange<Value>) -> Void
+	) -> Observation {
+		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
+			handler(
+				KeyChange(change: change, defaultValue: key.defaultValue)
+			)
+		}
+		observation.start(options: options)
+		return observation
+	}
+
 
 	/**
 	Observe multiple keys of any type, but without any information about the changes.
