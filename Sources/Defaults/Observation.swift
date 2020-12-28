@@ -209,7 +209,6 @@ extension Defaults {
 			guard !updatingValuesFlag else {
 				return
 			}
-			
 			callback(BaseChange(change: change))
 		}
 	}

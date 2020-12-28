@@ -12,7 +12,6 @@ extension Defaults.Keys {
 	static let `codable_enum` = Key<FixtureCodableEnum>("codable_enum", default: .oneHour)
 }
 
-
 final class DefaultsCodableEnumTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
@@ -58,23 +57,5 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		Defaults[key][0].append(.oneHour)
 		XCTAssertEqual(Defaults[key][1][0], .halfHour)
 		XCTAssertEqual(Defaults[key][0][1], .oneHour)
-	}
-
-	func testCodableToNonCodable() {
-		let codableKeyName = "independentCodableToNonCodableKey1"
-		let codableKey = Defaults.Key<FixtureCodableEnum>(codableKeyName, default: .tenMinutes)
-		guard let json_string = UserDefaults.standard.object(forKey: codableKeyName) as? String else {
-			XCTFail()
-			return
-		}
-		// Drop double quotes which wrapping the json_string
-		let serializable = String(String(json_string.dropFirst()).dropLast())
-		guard let fixtureEnum = FixtureEnum.bridge.deserialize(serializable) else {
-			XCTFail()
-			return
-		}
-		let keyName = "independentCodableToNonCodableKey2"
-		let key = Defaults.Key<FixtureEnum>(keyName, default: fixtureEnum)
-		XCTAssertEqual(Defaults[codableKey].rawValue, Defaults[key].rawValue)
 	}
 }

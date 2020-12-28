@@ -2,7 +2,17 @@ import Foundation
 
 extension UserDefaults {
 	private func _get<Value: Defaults.NativelySupportedType>(_ key: String) -> Value? {
-		return object(forKey: key) as? Value
+		guard let anyObject = object(forKey: key) else {
+			return nil
+		}
+
+		// Return directly if anyObject can cast to Value
+		if let value = anyObject as? Value {
+			return value
+		}
+
+		// Auto migration old codable value to native supported type.
+		return _migration(key, text: anyObject as? String)
 	}
 
 	private func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {
@@ -29,6 +39,16 @@ extension UserDefaults {
 		}
 
 		set(Value.bridge.serialize(value as? Value.Value), forKey: key)
+	}
+
+	private func _migration<Value: Defaults.NativelySupportedType>(_ key: String, text: String?) -> Value? {
+		guard let value = [Value].init(jsonString: text)?.first else {
+			return nil
+		}
+
+		_set(key, to: value)
+
+		return value
 	}
 
 	public subscript<Value: Defaults.NativelySupportedType>(key: Defaults.Key<Value>) -> Value {

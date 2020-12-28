@@ -7,7 +7,6 @@ extension Int: Defaults.NativelySupportedType {}
 extension Double: Defaults.NativelySupportedType {}
 extension Float: Defaults.NativelySupportedType {}
 extension String: Defaults.NativelySupportedType {}
-extension CGFloat: Defaults.NativelySupportedType{}
 extension Int8: Defaults.NativelySupportedType {}
 extension UInt8: Defaults.NativelySupportedType {}
 extension Int16: Defaults.NativelySupportedType {}
@@ -16,6 +15,10 @@ extension Int32: Defaults.NativelySupportedType {}
 extension UInt32: Defaults.NativelySupportedType {}
 extension Int64: Defaults.NativelySupportedType {}
 extension UInt64: Defaults.NativelySupportedType {}
+
+#if os(macOS)
+extension CGFloat: Defaults.NativelySupportedType{}
+#endif
 
 extension Optional: Defaults.NativelySupportedType where Wrapped: Defaults.NativelySupportedType {}
 extension Array: Defaults.NativelySupportedType where Element: Defaults.NativelySupportedType {}

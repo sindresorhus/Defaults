@@ -179,4 +179,12 @@ final class DefaultsDictionaryTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
+
+	func testCodableDictionaryToNativelyDictionary() {
+		let text = "{\"Hank\":\"Chen\"}"
+		let keyName = "codableDictionaryToNativelyDictionary"
+		UserDefaults.standard.set(text, forKey: keyName)
+		let key = Defaults.Key<[String: String]?>(keyName)
+		XCTAssertEqual(Defaults[key]?["Hank"], "Chen")
+	}
 }

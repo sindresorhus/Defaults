@@ -19,18 +19,11 @@ extension DefaultsCodableBridge {
 	}
 
 	public func deserialize(_ object: Serializable?) -> Value? {
-		guard let text = object,
-					let data = "[\(text)]".data(using: .utf8)
-		else {
+		guard let value = [Value].init(jsonString: object)?.first else {
 			return nil
 		}
 
-		do {
-			return (try JSONDecoder().decode([Value].self, from: data)).first
-		} catch {
-			print(error)
-			return nil
-		}
+		return value
 	}
 }
 

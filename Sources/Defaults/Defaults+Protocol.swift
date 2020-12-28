@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol DefaultsNativelySupportedType {}
+public protocol DefaultsNativelySupportedType: Codable {}
 
 public protocol DefaultsSerializable {
 	typealias Value = Bridge.Value
