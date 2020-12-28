@@ -2,6 +2,12 @@ import Foundation
 import Defaults
 import XCTest
 
+let fixtureArray = ["Hank", "Chen"]
+
+extension Defaults.Keys {
+	static let array = Key<[String]>("array", default: fixtureArray)
+}
+
 final class DefaultsArrayTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
@@ -33,38 +39,28 @@ final class DefaultsArrayTests: XCTestCase {
 		XCTAssertEqual(Defaults[key]?[0], newValue[0])
 	}
 
-	func testCustomBridgeKey() {
-		let username = "hank121314"
-		let password = "123456"
-		let key = Defaults.Key<[User]>("independentArrayCustomBridgeKey", default: [User(username: username , password: password)])
-		XCTAssertEqual(Defaults[key][0].password, password)
-		let newPassword = "7891011"
-		Defaults[key][0] = User(username: username, password: newPassword)
-		XCTAssertEqual(Defaults[key][0].password, newPassword)
-	}
-
 	func testNestedKey() {
-		let key = Defaults.Key<[[User]]>("independentArrayNestedKey", default: [[fixtureCustomBridge], [fixtureCustomBridge]])
-		XCTAssertEqual(Defaults[key][0][0].username, fixtureCustomBridge.username)
-		let newUsername = "John"
-		let newPassword = "7891011"
-		Defaults[key][0][0] = User(username: newUsername, password: newPassword)
-		XCTAssertEqual(Defaults[key][0][0].username, newUsername)
-		XCTAssertEqual(Defaults[key][0][0].password, newPassword)
-		XCTAssertEqual(Defaults[key][1][0].username, fixtureCustomBridge.username)
-		XCTAssertEqual(Defaults[key][1][0].password, fixtureCustomBridge.password)
+		let defaultValue = ["Hank", "Chen"]
+		let key = Defaults.Key<[[String]]>("independentArrayNestedKey", default: [defaultValue])
+		XCTAssertEqual(Defaults[key][0][0], "Hank")
+		let newValue = ["Sindre", "Sorhus"]
+		Defaults[key][0] = newValue
+		Defaults[key].append(defaultValue)
+		XCTAssertEqual(Defaults[key][0][0], newValue[0])
+		XCTAssertEqual(Defaults[key][0][1], newValue[1])
+		XCTAssertEqual(Defaults[key][1][0], defaultValue[0])
+		XCTAssertEqual(Defaults[key][1][1], defaultValue[1])
 	}
 
 	func testDictionaryKey() {
-		let key = Defaults.Key<[[String: User]]>("independentArrayDictionaryKey", default: [["0": fixtureCustomBridge], ["0": fixtureCustomBridge]])
-		XCTAssertEqual(Defaults[key][0]["0"]?.username, fixtureCustomBridge.username)
-		let newUsername = "John"
-		let newPassword = "7891011"
-		Defaults[key][0]["0"] = User(username: newUsername, password: newPassword)
-		XCTAssertEqual(Defaults[key][0]["0"]?.username, newUsername)
-		XCTAssertEqual(Defaults[key][0]["0"]?.password, newPassword)
-		XCTAssertEqual(Defaults[key][1]["0"]?.username, fixtureCustomBridge.username)
-		XCTAssertEqual(Defaults[key][1]["0"]?.password, fixtureCustomBridge.password)
+		let defaultValue = ["0": "HankChen"]
+		let key = Defaults.Key<[[String: String]]>("independentArrayDictionaryKey", default: [defaultValue])
+		XCTAssertEqual(Defaults[key][0]["0"], defaultValue["0"])
+		let newValue = ["0": "SindreSorhus"]
+		Defaults[key][0] = newValue
+		Defaults[key].append(defaultValue)
+		XCTAssertEqual(Defaults[key][0]["0"], newValue["0"])
+		XCTAssertEqual(Defaults[key][1]["0"], defaultValue["0"])
 	}
 
 	func testType() {
@@ -74,12 +70,11 @@ final class DefaultsArrayTests: XCTestCase {
 		XCTAssertEqual(Defaults[.array][0], newName)
 	}
 
-
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<[String]>("observeArrayKeyCombine", default: fixtureArray)
+		let newName = "Chen"
 		let expect = expectation(description: "Observation closure being called")
-		let newName = "John"
 
 		let publisher = Defaults
 			.publisher(key, options: [])
@@ -105,8 +100,9 @@ final class DefaultsArrayTests: XCTestCase {
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
 		let key = Defaults.Key<[String]?>("observeArrayOptionalKeyCombine")
+		let newName = ["Chen"]
 		let expect = expectation(description: "Observation closure being called")
-		let newName = ["John"]
+
 		let publisher = Defaults
 			.publisher(key, options: [])
 			.map { ($0.oldValue, $0.newValue) }
@@ -131,10 +127,36 @@ final class DefaultsArrayTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveEnumKeyCombine() {
+		let key = Defaults.Key<[FixtureEnum]>("observeArrayEnumKeyCombine", default: [.tenMinutes])
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [])
+			.map { ($0.oldValue, $0.newValue) }
+			.collect(2)
+
+		let cancellable = publisher.sink { tuples in
+			for (i, expected) in [([FixtureEnum.tenMinutes], [FixtureEnum.halfHour]), ([FixtureEnum.halfHour], [FixtureEnum.halfHour, FixtureEnum.oneHour])].enumerated() {
+				XCTAssertEqual(expected.0, tuples[i].0)
+				XCTAssertEqual(expected.1, tuples[i].1)
+			}
+
+			expect.fulfill()
+		}
+
+		Defaults[key][0] = .halfHour
+		Defaults[key].append(.oneHour)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
 	func testObserveKey() {
 		let key = Defaults.Key<[String]>("observeArrayKey", default: fixtureArray)
-		let expect = expectation(description: "Observation closure being called")
 		let newName = "John"
+		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: []) { change in

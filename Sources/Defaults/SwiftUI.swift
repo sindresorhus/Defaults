@@ -9,7 +9,7 @@ extension Defaults {
 		private var observation: DefaultsObservation?
 		private let key: Defaults.Key<Value>
 
-		init(_ key: Key<Value>) where Value: NativelySupportedType{
+		init(_ key: Key<Value>) where Value: NativelySupportedType {
 			self.key = key
 
 			self.observation = Defaults.observe(key, options: [.prior]) { [weak self] change in
@@ -23,7 +23,7 @@ extension Defaults {
 			}
 		}
 
-		init(_ key: Key<Value>) where Value: Serializable{
+		init(_ key: Key<Value>) where Value: Serializable {
 			self.key = key
 
 			self.observation = Defaults.observe(key, options: [.prior]) { [weak self] change in

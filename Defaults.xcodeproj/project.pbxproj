@@ -11,6 +11,9 @@
 		7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
 		7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
 		7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
+		7108EAF425949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
+		7108EAF525949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
+		7108EAF625949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
 		718B783325917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783425917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783525917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
@@ -26,6 +29,18 @@
 		719F5E21258AFB2F004540F6 /* Defaults+Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */; };
 		719F5E22258AFB2F004540F6 /* Defaults+Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */; };
 		719F5E23258AFB2F004540F6 /* Defaults+Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */; };
+		71F002F925959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
+		71F002FA25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
+		71F002FB25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
+		71F003042595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F003032595B460001A1864 /* DefaultsCustomBridgeTests.swift */; };
+		71F003052595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F003032595B460001A1864 /* DefaultsCustomBridgeTests.swift */; };
+		71F003062595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F003032595B460001A1864 /* DefaultsCustomBridgeTests.swift */; };
+		71F0030F2595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */; };
+		71F003102595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */; };
+		71F003112595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */; };
+		71F0031A2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F003192595E15B001A1864 /* DefaultsCodableEnumTests.swift */; };
+		71F0031B2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F003192595E15B001A1864 /* DefaultsCodableEnumTests.swift */; };
+		71F0031C2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F003192595E15B001A1864 /* DefaultsCodableEnumTests.swift */; };
 		8933C7851EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
 		8933C7861EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
 		8933C7871EB5B820000D00A4 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7841EB5B820000D00A4 /* Defaults.swift */; };
@@ -93,10 +108,15 @@
 		52D6DA0F1BF000BD002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6614F6E222FC6E1C00B0C9CE /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = readme.md; sourceTree = "<group>"; usesTabs = 1; };
 		7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsSwiftUITests.swift; sourceTree = "<group>"; };
+		7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsDictionaryTests.swift; sourceTree = "<group>"; };
 		718B783225917CCA004FF90D /* Defaults+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Protocol.swift"; sourceTree = "<group>"; };
 		718B783E25917D09004FF90D /* Defaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Extensions.swift"; sourceTree = "<group>"; };
 		7191AD862591977700AD472F /* DefaultsArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsArrayTests.swift; sourceTree = "<group>"; };
 		719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Bridge.swift"; sourceTree = "<group>"; };
+		71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsNSSecureCodingTests.swift; sourceTree = "<group>"; };
+		71F003032595B460001A1864 /* DefaultsCustomBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCustomBridgeTests.swift; sourceTree = "<group>"; };
+		71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsEnumTests.swift; sourceTree = "<group>"; };
+		71F003192595E15B001A1864 /* DefaultsCodableEnumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCodableEnumTests.swift; sourceTree = "<group>"; };
 		8933C7841EB5B820000D00A4 /* Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Defaults.swift; sourceTree = "<group>"; usesTabs = 1; };
 		8933C7891EB5B82A000D00A4 /* DefaultsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DefaultsTests.swift; sourceTree = "<group>"; usesTabs = 1; };
 		AD2FAA261CD0B6D800659CF4 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
@@ -216,6 +236,11 @@
 				8933C7891EB5B82A000D00A4 /* DefaultsTests.swift */,
 				7191AD862591977700AD472F /* DefaultsArrayTests.swift */,
 				7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */,
+				7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */,
+				71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */,
+				71F003032595B460001A1864 /* DefaultsCustomBridgeTests.swift */,
+				71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */,
+				71F003192595E15B001A1864 /* DefaultsCodableEnumTests.swift */,
 			);
 			name = Tests;
 			path = Tests/DefaultsTests;
@@ -556,8 +581,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71F002F925959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
+				71F0031A2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
+				7108EAF425949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
+				71F003042595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C7901EB5B82D000D00A4 /* DefaultsTests.swift in Sources */,
+				71F0030F2595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */,
 				7191AD872591977700AD472F /* DefaultsArrayTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -617,8 +647,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71F002FA25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
+				71F0031B2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
+				7108EAF525949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
+				71F003052595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C78F1EB5B82C000D00A4 /* DefaultsTests.swift in Sources */,
+				71F003102595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */,
 				7191AD882591977700AD472F /* DefaultsArrayTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -627,8 +662,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71F002FB25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
+				71F0031C2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
+				7108EAF625949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
+				71F003062595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C78E1EB5B82C000D00A4 /* DefaultsTests.swift in Sources */,
+				71F003112595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */,
 				7191AD892591977700AD472F /* DefaultsArrayTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
