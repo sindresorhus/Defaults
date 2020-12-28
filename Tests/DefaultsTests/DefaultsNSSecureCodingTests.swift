@@ -274,6 +274,44 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveMultipleNSSecureKeysCombine() {
+		let key1 = Defaults.Key<ExamplePersistentHistory>("observeMultipleNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
+		let key2 = Defaults.Key<ExamplePersistentHistory>("observeMultipleNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
+
+		let cancellable = publisher.sink { _ in
+			expect.fulfill()
+		}
+
+		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
+		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveMultipleNSSecureOptionalKeysCombine() {
+		let key1 = Defaults.Key<ExamplePersistentHistory?>("observeMultipleNSSecureCodingOptionalKey1")
+		let key2 = Defaults.Key<ExamplePersistentHistory?>("observeMultipleNSSecureCodingOptionalKeyKey2")
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
+
+		let cancellable = publisher.sink { _ in
+			expect.fulfill()
+		}
+
+		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
+		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
 	func testObserveKey() {
 		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: persistentHistoryValue)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
@@ -288,6 +326,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		}
 
 		Defaults[key] = newPersistentHistory
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -305,6 +344,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		}
 
 		Defaults[key] = persistentHistoryValue
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -323,6 +363,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		}
 
 		Defaults[key].append(newPersistentHistory)
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -343,6 +384,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		}
 
 		Defaults[key]["1"] = newPersistentHistory
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}

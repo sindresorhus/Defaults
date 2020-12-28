@@ -159,6 +159,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 		}
 
 		Defaults[key]["1"] = newName
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -176,6 +177,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 		}
 
 		Defaults[key] = fixtureDictionary
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}

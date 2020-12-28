@@ -247,6 +247,7 @@ final class DefaultsEnumTests: XCTestCase {
 		}
 
 		Defaults[key] = .halfHour
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -264,6 +265,7 @@ final class DefaultsEnumTests: XCTestCase {
 		}
 
 		Defaults[key] = .tenMinutes
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -281,6 +283,7 @@ final class DefaultsEnumTests: XCTestCase {
 		}
 
 		Defaults[key].append(.halfHour)
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -298,6 +301,7 @@ final class DefaultsEnumTests: XCTestCase {
 		}
 
 		Defaults[key]["1"] = .halfHour
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}

@@ -167,6 +167,7 @@ final class DefaultsArrayTests: XCTestCase {
 		}
 
 		Defaults[key][1] = newName
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -184,6 +185,7 @@ final class DefaultsArrayTests: XCTestCase {
 		}
 
 		Defaults[key] = fixtureArray
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}

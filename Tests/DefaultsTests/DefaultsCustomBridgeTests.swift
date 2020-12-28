@@ -280,8 +280,10 @@ final class DefaultsCustomBridge: XCTestCase {
 			observation.invalidate()
 			expect.fulfill()
 		}
-		Defaults[key] = newUser
 
+		Defaults[key] = newUser
+		observation.invalidate()
+		
 		waitForExpectations(timeout: 10)
 	}
 
@@ -298,6 +300,7 @@ final class DefaultsCustomBridge: XCTestCase {
 		}
 
 		Defaults[key] = fixtureCustomBridge
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -316,6 +319,7 @@ final class DefaultsCustomBridge: XCTestCase {
 		}
 
 		Defaults[key][0] = newUser
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
@@ -334,6 +338,7 @@ final class DefaultsCustomBridge: XCTestCase {
 		}
 
 		Defaults[key]["0"] = newUser
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
