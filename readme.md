@@ -315,7 +315,7 @@ extension Defaults.Keys {
 	static let isUnicornMode = Key<Bool>("isUnicornMode", default: true)
 }
 
-print(UserDefaults.standard.bool(forKey: isUnicornMode.name))
+print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 //=> true
 ```
 
