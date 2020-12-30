@@ -5,7 +5,7 @@ import AppKit
 import UIKit
 #endif
 
-extension DefaultsCodableBridge {
+extension Defaults.CodableBridge {
 	public func serialize(_ value: Value?) -> Serializable? {
 		guard let value = value else {
 			return nil
@@ -88,74 +88,97 @@ extension Defaults {
 		}
 	}
 
-	public struct OptionalBridge<Bridge: Defaults.Bridge>: Defaults.Bridge {
-		public typealias Value = Bridge.Value
-		public typealias Serializable = Bridge.Serializable
-
-		private let bridge: Bridge
-
-		init(bridge: Bridge) {
-			self.bridge = bridge
-		}
+	public struct OptionalBridge<Wrapped: Defaults.Serializable>: Defaults.Bridge {
+		public typealias Value = Wrapped.Value
+		public typealias Serializable = Wrapped.Serializable
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			bridge.serialize(value)
+			Wrapped.bridge.serialize(value)
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			bridge.deserialize(object)
+			Wrapped.bridge.deserialize(object)
 		}
 	}
 
-	public struct DictionaryBridge<Value: Defaults.Serializable, Bridge: Defaults.Bridge>: Defaults.Bridge {
-		public typealias Serializable = [String: Bridge.Serializable]
-
-		private let bridge: Bridge
-
-		init(bridge: Bridge) {
-			self.bridge = bridge
-		}
-
+	public struct DictionaryBridge<Element: Defaults.Serializable>: Defaults.Bridge {
+		public typealias Value = [String: Element]
+		public typealias Serializable = [String: Element.Serializable]
+		
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let dictionary = value as? [String: Bridge.Value] else {
+			guard let dictionary = value as? [String: Element.Value] else {
 				return nil
 			}
 
-			return dictionary.reduce([:]) { (memo: Serializable, tuple: (key: String, value: Bridge.Value)) in
+			return dictionary.reduce([:]) { (memo: Serializable, tuple: (key: String, value: Element.Value)) in
 				var result = memo
-				result[tuple.key] = bridge.serialize(tuple.value)
+				result[tuple.key] = Element.bridge.serialize(tuple.value)
 				return result
 			}
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			return object?.reduce([:]) { (memo: [String: Bridge.Value], tuple: (key: String, value: Bridge.Serializable)) in
+			return object?.reduce([:]) { (memo: [String: Element.Value], tuple: (key: String, value: Element.Serializable)) in
 				var result = memo
-				result[tuple.key] = bridge.deserialize(tuple.value)
+				result[tuple.key] = Element.bridge.deserialize(tuple.value)
 				return result
 			} as? Value
 		}
 	}
 
-	public struct ArrayBridge<Value: Defaults.Serializable, Bridge: Defaults.Bridge>: Defaults.Bridge {
-		public typealias Serializable = [Bridge.Serializable]
-
-		private let bridge: Bridge
-
-		init(bridge: Bridge) {
-			self.bridge = bridge
-		}
-
-		public func serialize(_ value: Value?) -> Serializable? {
-			guard let array = value as? [Bridge.Value] else {
+	public struct SetNativeBridge<Element: Defaults.NativelySupportedType & Hashable>: Defaults.Bridge {
+		public func serialize(_ value: Set<Element>?) -> [Element]? {
+			guard let value = value else {
 				return nil
 			}
 
-			return array.map { bridge.serialize($0) } .compact()
+			return Array(value)
+		}
+
+		public func deserialize(_ object: [Element]?) -> Set<Element>? {
+			guard let object = object else {
+				return nil
+			}
+
+			return Set(object)
+		}
+	}
+
+	public struct SetBridge<Element: Defaults.Serializable & Hashable>: Defaults.Bridge {
+		public typealias Value = Set<Element>
+		public typealias Serializable = [Element.Bridge.Serializable]
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let set = value else {
+				return nil
+			}
+
+			return set.map { Element.bridge.serialize($0 as? Element.Value) } .compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			object?.map { bridge.deserialize($0) } .compact() as? Value
+			guard let array = object?.map({ Element.bridge.deserialize($0) }) .compact() as? [Element] else {
+				return nil
+			}
+
+			return Set(array)
+		}
+	}
+
+	public struct ArrayBridge<Element: Defaults.Serializable>: Defaults.Bridge {
+		public typealias Value = [Element]
+		public typealias Serializable = [Element.Serializable]
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let array = value as? [Element.Value] else {
+				return nil
+			}
+			let object = array.map { Element.bridge.serialize($0) } .compact()
+			return object
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			return object?.map { Element.bridge.deserialize($0) } .compact() as? Value
 		}
 	}
 }

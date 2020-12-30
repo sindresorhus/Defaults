@@ -29,7 +29,7 @@ extension UserDefaults {
 			return
 		}
 
-		set(value, forKey: key)
+ 		set(value, forKey: key)
 	}
 
 	private func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
@@ -57,7 +57,7 @@ extension UserDefaults {
 			_set(key.name, to: newValue)
 		}
 	}
-
+	
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {

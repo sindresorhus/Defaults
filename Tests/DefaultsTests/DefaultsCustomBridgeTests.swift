@@ -2,13 +2,18 @@ import Foundation
 import Defaults
 import XCTest
 
-final class User: Defaults.Serializable, Equatable {
+final class User: Defaults.Serializable, Hashable, Equatable {
 	var username: String
 	var password: String
 
 	init(username: String, password: String) {
 		self.username = username
 		self.password = password
+	}
+
+	func hash(into hasher: inout Hasher) {
+			hasher.combine(username)
+			hasher.combine(password)
 	}
 
 	static func == (lhs: User, rhs: User) -> Bool {
@@ -107,6 +112,13 @@ final class DefaultsCustomBridge: XCTestCase {
 		XCTAssertEqual(Defaults[key][0]["0"]?.password, newPassword)
 		XCTAssertEqual(Defaults[key][1]["0"]?.username, fixtureCustomBridge.username)
 		XCTAssertEqual(Defaults[key][1]["0"]?.password, fixtureCustomBridge.password)
+	}
+
+	func testSetKey() {
+		let key = Defaults.Key<Set<User>>("independentCustomBridgeSetKey", default: [fixtureCustomBridge])
+		XCTAssertEqual(Defaults[key].first, fixtureCustomBridge)
+		Defaults[key].insert(fixtureCustomBridge)
+		XCTAssertEqual(Defaults[key].count, 1)
 	}
 
 	func testDictionaryKey() {

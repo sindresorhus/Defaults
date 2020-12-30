@@ -35,6 +35,9 @@
 		71C55FF6259C13190053CCB3 /* DefaultsNSColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C55FF4259C13190053CCB3 /* DefaultsNSColorTests.swift */; };
 		71C56007259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */; };
 		71C56009259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */; };
+		71C5602E259C2A950053CCB3 /* DefaultsSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C5602D259C2A950053CCB3 /* DefaultsSetTests.swift */; };
+		71C5602F259C2A950053CCB3 /* DefaultsSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C5602D259C2A950053CCB3 /* DefaultsSetTests.swift */; };
+		71C56030259C2A950053CCB3 /* DefaultsSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C5602D259C2A950053CCB3 /* DefaultsSetTests.swift */; };
 		71F002F925959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
 		71F002FA25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
 		71F002FB25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
@@ -122,6 +125,7 @@
 		71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCodableTests.swift; sourceTree = "<group>"; };
 		71C55FF4259C13190053CCB3 /* DefaultsNSColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsNSColorTests.swift; sourceTree = "<group>"; };
 		71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsUIColorTests.swift; sourceTree = "<group>"; };
+		71C5602D259C2A950053CCB3 /* DefaultsSetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsSetTests.swift; sourceTree = "<group>"; };
 		71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsNSSecureCodingTests.swift; sourceTree = "<group>"; };
 		71F003032595B460001A1864 /* DefaultsCustomBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCustomBridgeTests.swift; sourceTree = "<group>"; };
 		71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsEnumTests.swift; sourceTree = "<group>"; };
@@ -253,6 +257,7 @@
 				71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */,
 				71C55FF4259C13190053CCB3 /* DefaultsNSColorTests.swift */,
 				71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */,
+				71C5602D259C2A950053CCB3 /* DefaultsSetTests.swift */,
 			);
 			name = Tests;
 			path = Tests/DefaultsTests;
@@ -597,6 +602,7 @@
 				7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031A2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
 				71C56007259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */,
+				71C5602E259C2A950053CCB3 /* DefaultsSetTests.swift in Sources */,
 				7108EAF425949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
 				71F003042595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C7901EB5B82D000D00A4 /* DefaultsTests.swift in Sources */,
@@ -665,6 +671,7 @@
 				71F002FA25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031B2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
+				71C5602F259C2A950053CCB3 /* DefaultsSetTests.swift in Sources */,
 				7108EAF525949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
 				71F003052595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C78F1EB5B82C000D00A4 /* DefaultsTests.swift in Sources */,
@@ -682,6 +689,7 @@
 				7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031C2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
 				71C56009259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */,
+				71C56030259C2A950053CCB3 /* DefaultsSetTests.swift in Sources */,
 				7108EAF625949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
 				71F003062595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C78E1EB5B82C000D00A4 /* DefaultsTests.swift in Sources */,

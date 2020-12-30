@@ -17,9 +17,9 @@ public enum Defaults {
 	public typealias BaseKey = DefaultsBaseKey
 	public typealias AnyKey = Keys
 	public typealias Serializable = DefaultsSerializable
+	public typealias NativelySupportedType = DefaultsNativelySupportedType
 	public typealias Bridge = DefaultsBridge
 	public typealias CodableBridge = DefaultsCodableBridge
-	public typealias NativelySupportedType = DefaultsNativelySupportedType
 
 	public class Keys: BaseKey {
 		public typealias Key = Defaults.Key
@@ -74,7 +74,7 @@ public enum Defaults {
 			key.suite[key] = newValue
 		}
 	}
-
+	
 	public static subscript<Value: Serializable>(key: Key<Value>) -> Value {
 		get { key.suite[key] }
 		set {

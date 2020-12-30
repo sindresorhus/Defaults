@@ -5,7 +5,6 @@ import AppKit
 #else
 import UIKit
 #endif
-
 extension Data: Defaults.NativelySupportedType {}
 extension Date: Defaults.NativelySupportedType {}
 extension Bool: Defaults.NativelySupportedType {}
@@ -24,6 +23,7 @@ extension Int64: Defaults.NativelySupportedType {}
 extension UInt64: Defaults.NativelySupportedType {}
 
 extension Optional: Defaults.NativelySupportedType where Wrapped: Defaults.NativelySupportedType {}
+extension Set: Defaults.NativelySupportedType where Element: Defaults.NativelySupportedType {}
 extension Array: Defaults.NativelySupportedType where Element: Defaults.NativelySupportedType {}
 extension Dictionary: Defaults.NativelySupportedType where Key == String, Value: Defaults.NativelySupportedType {}
 
@@ -44,15 +44,19 @@ extension Defaults.Serializable where Self: RawRepresentable & Codable {
 }
 
 extension Optional: Defaults.Serializable where Wrapped: Defaults.Serializable {
-	public static var bridge: Defaults.OptionalBridge<Wrapped.Bridge> { return Defaults.OptionalBridge(bridge: Wrapped.bridge) }
+	public static var bridge: Defaults.OptionalBridge<Wrapped> { return Defaults.OptionalBridge() }
+}
+
+extension Set: Defaults.Serializable where Element: Defaults.Serializable {
+	public static var bridge: Defaults.SetBridge<Element> { return Defaults.SetBridge() }
 }
 
 extension Array: Defaults.Serializable where Element: Defaults.Serializable {
-	public static var bridge: Defaults.ArrayBridge<Self, Element.Bridge> { return Defaults.ArrayBridge(bridge: Element.bridge) }
+	public static var bridge: Defaults.ArrayBridge<Element> { return Defaults.ArrayBridge() }
 }
 
 extension Dictionary: Defaults.Serializable where Key == String, Value: Defaults.Serializable {
-	public static var bridge: Defaults.DictionaryBridge<Self, Value.Bridge> { return Defaults.DictionaryBridge(bridge: Value.bridge) }
+	public static var bridge: Defaults.DictionaryBridge<Value> { return Defaults.DictionaryBridge() }
 }
 
 extension Defaults.Serializable where Self: NSSecureCoding {

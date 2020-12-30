@@ -9,7 +9,6 @@ public protocol DefaultsSerializable {
 	static var bridge: Bridge { get }
 }
 
-
 public protocol DefaultsBridge {
 	// The type of Value of `Key<Value>`
 	associatedtype Value

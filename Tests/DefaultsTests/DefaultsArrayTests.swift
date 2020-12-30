@@ -127,32 +127,6 @@ final class DefaultsArrayTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	func testObserveEnumKeyCombine() {
-		let key = Defaults.Key<[FixtureEnum]>("observeArrayEnumKeyCombine", default: [.tenMinutes])
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [([FixtureEnum.tenMinutes], [FixtureEnum.halfHour]), ([FixtureEnum.halfHour], [FixtureEnum.halfHour, FixtureEnum.oneHour])].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key][0] = .halfHour
-		Defaults[key].append(.oneHour)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
 	func testObserveKey() {
 		let key = Defaults.Key<[String]>("observeArrayKey", default: fixtureArray)
 		let newName = "John"
