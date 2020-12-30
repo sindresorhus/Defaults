@@ -50,7 +50,7 @@ public enum Defaults {
 			suite.register(defaults: [key: defaultValue])
 		}
 
-		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) where Value: DefaultsSerializable {
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) where Value: Serializable {
 			self.defaultValue = defaultValue
 
 			super.init(name: key, suite: suite)

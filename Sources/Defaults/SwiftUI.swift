@@ -146,6 +146,21 @@ public struct Default<Value>: DynamicProperty {
 	}
 }
 
+/**
+The extensions below is a tricky way to avoid SR-12504.
+Thus @propertyWrapper wrappedValue won't constrain extension, we cannot extend wrappedValue.
+After SR-12504 is resolved, we can extend wrappedValue like this:
+```
+extension Default where Value: Defaults.NativelySupportedType {
+	public var wrappedValue: Value {
+		get { observable.value }
+		nonmutating set {
+			observable.value = newValue
+		}
+	}
+}
+```
+*/
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Default where Value: Defaults.NativelySupportedType {
 	public init(_ key: Defaults.Key<Value>) {

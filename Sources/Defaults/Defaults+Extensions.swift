@@ -1,5 +1,10 @@
 import Foundation
 import CoreGraphics
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 extension Data: Defaults.NativelySupportedType {}
 extension Date: Defaults.NativelySupportedType {}
@@ -50,8 +55,13 @@ extension Dictionary: Defaults.Serializable where Key == String, Value: Defaults
 	public static var bridge: Defaults.DictionaryBridge<Self, Value.Bridge> { return Defaults.DictionaryBridge(bridge: Value.bridge) }
 }
 
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 extension Defaults.Serializable where Self: NSSecureCoding {
 	public static var bridge: Defaults.NSSecureCodingBridge<Self> { return Defaults.NSSecureCodingBridge() }
 }
 
+
+#if os(macOS)
+extension NSColor: Defaults.Serializable {}
+#else
+extension UIColor: Defaults.Serializable {}
+#endif
