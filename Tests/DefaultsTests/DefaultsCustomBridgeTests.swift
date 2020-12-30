@@ -35,8 +35,8 @@ private let fixtureCustomBridge = User(username: "hank121314", password: "123456
 
 extension Defaults.Keys {
 	static let customBridge = Key<User>("customBridge", default: fixtureCustomBridge)
-	static let array_customBridge = Key<[User]>("array_customBridge", default: [fixtureCustomBridge])
-	static let dictionary_customBridge = Key<[String: User]>("dictionary_customBridge", default: ["0": fixtureCustomBridge])
+	static let customBridgeArray = Key<[User]>("array_customBridge", default: [fixtureCustomBridge])
+	static let customBridgeDictionary = Key<[String: User]>("dictionary_customBridge", default: ["0": fixtureCustomBridge])
 }
 
 
@@ -144,17 +144,17 @@ final class DefaultsCustomBridge: XCTestCase {
 	}
 
 	func testArrayType() {
-		XCTAssertEqual(Defaults[.array_customBridge][0], fixtureCustomBridge)
+		XCTAssertEqual(Defaults[.customBridgeArray][0], fixtureCustomBridge)
 		let newUser = User(username: "sindresorhus", password: "123456789")
-		Defaults[.array_customBridge][0] = newUser
-		XCTAssertEqual(Defaults[.array_customBridge][0], newUser)
+		Defaults[.customBridgeArray][0] = newUser
+		XCTAssertEqual(Defaults[.customBridgeArray][0], newUser)
 	}
 
 	func testDictionaryType() {
-		XCTAssertEqual(Defaults[.dictionary_customBridge]["0"], fixtureCustomBridge)
+		XCTAssertEqual(Defaults[.customBridgeDictionary]["0"], fixtureCustomBridge)
 		let newUser = User(username: "sindresorhus", password: "123456789")
-		Defaults[.dictionary_customBridge]["0"] = newUser
-		XCTAssertEqual(Defaults[.dictionary_customBridge]["0"], newUser)
+		Defaults[.customBridgeDictionary]["0"] = newUser
+		XCTAssertEqual(Defaults[.customBridgeDictionary]["0"], newUser)
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)

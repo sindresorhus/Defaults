@@ -32,6 +32,9 @@
 		71B96F1E259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
 		71B96F1F259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
 		71B96F20259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
+		71C55FF6259C13190053CCB3 /* DefaultsNSColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C55FF4259C13190053CCB3 /* DefaultsNSColorTests.swift */; };
+		71C56007259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */; };
+		71C56009259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */; };
 		71F002F925959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
 		71F002FA25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
 		71F002FB25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */; };
@@ -117,6 +120,8 @@
 		7191AD862591977700AD472F /* DefaultsArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsArrayTests.swift; sourceTree = "<group>"; };
 		719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Bridge.swift"; sourceTree = "<group>"; };
 		71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCodableTests.swift; sourceTree = "<group>"; };
+		71C55FF4259C13190053CCB3 /* DefaultsNSColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsNSColorTests.swift; sourceTree = "<group>"; };
+		71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsUIColorTests.swift; sourceTree = "<group>"; };
 		71F002F825959000001A1864 /* DefaultsNSSecureCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsNSSecureCodingTests.swift; sourceTree = "<group>"; };
 		71F003032595B460001A1864 /* DefaultsCustomBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCustomBridgeTests.swift; sourceTree = "<group>"; };
 		71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsEnumTests.swift; sourceTree = "<group>"; };
@@ -246,6 +251,8 @@
 				71F0030E2595C7B8001A1864 /* DefaultsEnumTests.swift */,
 				71F003192595E15B001A1864 /* DefaultsCodableEnumTests.swift */,
 				71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */,
+				71C55FF4259C13190053CCB3 /* DefaultsNSColorTests.swift */,
+				71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */,
 			);
 			name = Tests;
 			path = Tests/DefaultsTests;
@@ -589,6 +596,7 @@
 				71F002F925959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031A2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
+				71C56007259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */,
 				7108EAF425949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
 				71F003042595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C7901EB5B82D000D00A4 /* DefaultsTests.swift in Sources */,
@@ -653,6 +661,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71C55FF6259C13190053CCB3 /* DefaultsNSColorTests.swift in Sources */,
 				71F002FA25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031B2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
@@ -672,6 +681,7 @@
 				71F002FB25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031C2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
+				71C56009259C25080053CCB3 /* DefaultsUIColorTests.swift in Sources */,
 				7108EAF625949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */,
 				71F003062595B460001A1864 /* DefaultsCustomBridgeTests.swift in Sources */,
 				8933C78E1EB5B82C000D00A4 /* DefaultsTests.swift in Sources */,

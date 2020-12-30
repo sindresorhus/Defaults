@@ -59,7 +59,6 @@ extension Defaults.Serializable where Self: NSSecureCoding {
 	public static var bridge: Defaults.NSSecureCodingBridge<Self> { return Defaults.NSSecureCodingBridge() }
 }
 
-
 #if os(macOS)
 extension NSColor: Defaults.Serializable {}
 #else

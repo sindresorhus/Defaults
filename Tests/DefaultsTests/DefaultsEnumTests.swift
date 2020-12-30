@@ -10,8 +10,8 @@ enum FixtureEnum: String, Defaults.Serializable {
 
 extension Defaults.Keys {
 	static let `enum` = Key<FixtureEnum>("enum", default: .tenMinutes)
-	static let `array_enum` = Key<[FixtureEnum]>("array_enum", default: [.tenMinutes])
-	static let `dictionary_enum` = Key<[String: FixtureEnum]>("dictionary_enum", default: ["0": .tenMinutes])
+	static let enumArray = Key<[FixtureEnum]>("array_enum", default: [.tenMinutes])
+	static let enumDictionary = Key<[String: FixtureEnum]>("dictionary_enum", default: ["0": .tenMinutes])
 }
 
 final class DefaultsEnumTests: XCTestCase {
@@ -105,15 +105,15 @@ final class DefaultsEnumTests: XCTestCase {
 	}
 
 	func testArrayType() {
-		XCTAssertEqual(Defaults[.array_enum][0], .tenMinutes)
-		Defaults[.array_enum][0] = .oneHour
-		XCTAssertEqual(Defaults[.array_enum][0], .oneHour)
+		XCTAssertEqual(Defaults[.enumArray][0], .tenMinutes)
+		Defaults[.enumArray][0] = .oneHour
+		XCTAssertEqual(Defaults[.enumArray][0], .oneHour)
 	}
 
 	func testDictionaryType() {
-		XCTAssertEqual(Defaults[.dictionary_enum]["0"], .tenMinutes)
-		Defaults[.dictionary_enum]["0"] = .halfHour
-		XCTAssertEqual(Defaults[.dictionary_enum]["0"], .halfHour)
+		XCTAssertEqual(Defaults[.enumDictionary]["0"], .tenMinutes)
+		Defaults[.enumDictionary]["0"] = .halfHour
+		XCTAssertEqual(Defaults[.enumDictionary]["0"], .halfHour)
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)

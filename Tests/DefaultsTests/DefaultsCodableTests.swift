@@ -11,8 +11,8 @@ let fixtureCodable = Unicorn(isUnicorn: true)
 
 extension Defaults.Keys {
 	static let codable = Key<Unicorn>("codable", default: fixtureCodable)
-	static let array_codable = Key<[Unicorn]>("codable", default: [fixtureCodable])
-	static let dictionary_codable = Key<[String: Unicorn]>("codable", default: ["0": fixtureCodable])
+	static let codableArray = Key<[Unicorn]>("codable", default: [fixtureCodable])
+	static let codableDictionary = Key<[String: Unicorn]>("codable", default: ["0": fixtureCodable])
 }
 
 final class DefaultsCodableTests: XCTestCase {
@@ -110,15 +110,15 @@ final class DefaultsCodableTests: XCTestCase {
 	}
 
 	func testArrayType() {
-		XCTAssertTrue(Defaults[.array_codable][0].isUnicorn)
-		Defaults[.array_codable][0] = Unicorn(isUnicorn: false)
-		XCTAssertFalse(Defaults[.array_codable][0].isUnicorn)
+		XCTAssertTrue(Defaults[.codableArray][0].isUnicorn)
+		Defaults[.codableArray][0] = Unicorn(isUnicorn: false)
+		XCTAssertFalse(Defaults[.codableArray][0].isUnicorn)
 	}
 
 	func testDictionaryType() {
-		XCTAssertTrue(Defaults[.dictionary_codable]["0"]?.isUnicorn ?? false)
-		Defaults[.dictionary_codable]["0"] = Unicorn(isUnicorn: false)
-		XCTAssertFalse(Defaults[.dictionary_codable]["0"]?.isUnicorn ?? true)
+		XCTAssertTrue(Defaults[.codableDictionary]["0"]?.isUnicorn ?? false)
+		Defaults[.codableDictionary]["0"] = Unicorn(isUnicorn: false)
+		XCTAssertFalse(Defaults[.codableDictionary]["0"]?.isUnicorn ?? true)
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)

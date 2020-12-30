@@ -9,9 +9,9 @@ enum FixtureCodableEnum: String, Codable, Defaults.Serializable {
 }
 
 extension Defaults.Keys {
-	static let `codable_enum` = Key<FixtureCodableEnum>("codable_enum", default: .oneHour)
-	static let `array_codable_enum` = Key<[FixtureCodableEnum]>("codable_enum", default: [.oneHour])
-	static let `dictionary_codable_enum` = Key<[String: FixtureCodableEnum]>("codable_enum", default: ["0": .oneHour])
+	static let codableEnum = Key<FixtureCodableEnum>("codable_enum", default: .oneHour)
+	static let codableEnumArray = Key<[FixtureCodableEnum]>("codable_enum", default: [.oneHour])
+	static let codableEnumDictionary = Key<[String: FixtureCodableEnum]>("codable_enum", default: ["0": .oneHour])
 }
 
 final class DefaultsCodableEnumTests: XCTestCase {
@@ -61,6 +61,15 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		XCTAssertEqual(Defaults[key][0][1], .oneHour)
 	}
 
+	func testArrayDictionaryKey() {
+		let key = Defaults.Key<[[String: FixtureCodableEnum]]>("independentCodableEnumArrayDictionaryKey", default: [["0": .tenMinutes]])
+		XCTAssertEqual(Defaults[key][0]["0"], .tenMinutes)
+		Defaults[key][0]["1"] = .halfHour
+		Defaults[key].append(["0": .oneHour])
+		XCTAssertEqual(Defaults[key][0]["1"], .halfHour)
+		XCTAssertEqual(Defaults[key][1]["0"], .oneHour)
+	}
+
 	func testDictionaryKey() {
 		let key = Defaults.Key<[String: FixtureCodableEnum]>("independentCodableEnumDictionaryKey", default: ["0": .tenMinutes])
 		XCTAssertEqual(Defaults[key]["0"], .tenMinutes)
@@ -90,23 +99,23 @@ final class DefaultsCodableEnumTests: XCTestCase {
 	}
 
 	func testType() {
-		XCTAssertEqual(Defaults[.codable_enum], .oneHour)
-		Defaults[.codable_enum] = .tenMinutes
-		XCTAssertEqual(Defaults[.codable_enum], .tenMinutes)
+		XCTAssertEqual(Defaults[.codableEnum], .oneHour)
+		Defaults[.codableEnum] = .tenMinutes
+		XCTAssertEqual(Defaults[.codableEnum], .tenMinutes)
 	}
 
 	func testArrayType() {
-		XCTAssertEqual(Defaults[.array_codable_enum][0], .oneHour)
-		Defaults[.array_codable_enum].append(.halfHour)
-		XCTAssertEqual(Defaults[.array_codable_enum][0], .oneHour)
-		XCTAssertEqual(Defaults[.array_codable_enum][1], .halfHour)
+		XCTAssertEqual(Defaults[.codableEnumArray][0], .oneHour)
+		Defaults[.codableEnumArray].append(.halfHour)
+		XCTAssertEqual(Defaults[.codableEnumArray][0], .oneHour)
+		XCTAssertEqual(Defaults[.codableEnumArray][1], .halfHour)
 	}
 
 	func testDictionaryType() {
-		XCTAssertEqual(Defaults[.dictionary_codable_enum]["0"], .oneHour)
-		Defaults[.dictionary_codable_enum]["1"] = .halfHour
-		XCTAssertEqual(Defaults[.dictionary_codable_enum]["0"], .oneHour)
-		XCTAssertEqual(Defaults[.dictionary_codable_enum]["1"], .halfHour)
+		XCTAssertEqual(Defaults[.codableEnumDictionary]["0"], .oneHour)
+		Defaults[.codableEnumDictionary]["1"] = .halfHour
+		XCTAssertEqual(Defaults[.codableEnumDictionary]["0"], .oneHour)
+		XCTAssertEqual(Defaults[.codableEnumDictionary]["1"], .halfHour)
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)

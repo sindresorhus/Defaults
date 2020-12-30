@@ -63,7 +63,7 @@ extension Defaults {
 			}
 
 			// Version below macOS 10.13 and iOS 11.0 does not support `archivedData(withRootObject:requiringSecureCoding:)`.
-			// We need to set `requiresSecureCoding` by ourself
+			// We need to set `requiresSecureCoding` by ourself.
 			if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
 				return try? NSKeyedArchiver.archivedData(withRootObject: object, requiringSecureCoding: true)
 			} else {
