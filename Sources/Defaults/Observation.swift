@@ -53,6 +53,22 @@ extension Defaults {
 		return nil
 	}
 
+	private static func deserialize<Value: GenericCollectionType>(_ value: Any?, to type: Value.Type) -> Value? {
+		guard
+			let value = value,
+			!(value is NSNull)
+		else {
+			return nil
+		}
+
+		// handles generic collection deserialize
+		if let value = Value.bridge.deserialize(value as? Value.Serializable) as? Value {
+			return value
+		}
+
+		return nil
+	}
+
 	private static func deserialize<Value: Serializable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
@@ -93,6 +109,14 @@ extension Defaults {
 		public let oldValue: Value
 
 		init(change: BaseChange, defaultValue: Value) where Value: NativelySupportedType {
+			self.kind = change.kind
+			self.indexes = change.indexes
+			self.isPrior = change.isPrior
+			self.oldValue = deserialize(change.oldValue, to: Value.self) ?? defaultValue
+			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
+		}
+
+		init(change: BaseChange, defaultValue: Value) where Value: GenericCollectionType {
 			self.kind = change.kind
 			self.indexes = change.indexes
 			self.isPrior = change.isPrior
@@ -318,6 +342,20 @@ extension Defaults {
 	```
 	*/
 	public static func observe<Value: NativelySupportedType>(
+		_ key: Key<Value>,
+		options: ObservationOptions = [.initial],
+		handler: @escaping (KeyChange<Value>) -> Void
+	) -> Observation {
+		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
+			handler(
+				KeyChange(change: change, defaultValue: key.defaultValue)
+			)
+		}
+		observation.start(options: options)
+		return observation
+	}
+
+	public static func observe<Value: GenericCollectionType>(
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial],
 		handler: @escaping (KeyChange<Value>) -> Void

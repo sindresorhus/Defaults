@@ -15,6 +15,14 @@ extension UserDefaults {
 		return _migration(key, text: anyObject as? String)
 	}
 
+	private func _get<Value: Defaults.GenericCollectionType>(_ key: String) -> Value? {
+		guard let anyObject = object(forKey: key) as? Value.Serializable else {
+			return nil
+		}
+
+		return Value.bridge.deserialize(anyObject) as? Value
+	}
+
 	private func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {
 		guard let anyObject = object(forKey: key) as? Value.Serializable else {
 			return nil
@@ -30,6 +38,15 @@ extension UserDefaults {
 		}
 
  		set(value, forKey: key)
+	}
+
+	private func _set<Value: Defaults.GenericCollectionType>(_ key: String, to value: Value) {
+		if (value as? _DefaultsOptionalType)?.isNil == true {
+			removeObject(forKey: key)
+			return
+		}
+
+		set(Value.bridge.serialize(value as? Value.Value), forKey: key)
 	}
 
 	private func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
@@ -52,6 +69,13 @@ extension UserDefaults {
 	}
 
 	public subscript<Value: Defaults.NativelySupportedType>(key: Defaults.Key<Value>) -> Value {
+		get { _get(key.name) ?? key.defaultValue }
+		set {
+			_set(key.name, to: newValue)
+		}
+	}
+
+	public subscript<Value: Defaults.GenericCollectionType>(key: Defaults.Key<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)

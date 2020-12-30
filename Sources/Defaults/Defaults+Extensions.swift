@@ -5,6 +5,7 @@ import AppKit
 #else
 import UIKit
 #endif
+
 extension Data: Defaults.NativelySupportedType {}
 extension Date: Defaults.NativelySupportedType {}
 extension Bool: Defaults.NativelySupportedType {}
@@ -23,9 +24,24 @@ extension Int64: Defaults.NativelySupportedType {}
 extension UInt64: Defaults.NativelySupportedType {}
 
 extension Optional: Defaults.NativelySupportedType where Wrapped: Defaults.NativelySupportedType {}
-extension Set: Defaults.NativelySupportedType where Element: Defaults.NativelySupportedType {}
 extension Array: Defaults.NativelySupportedType where Element: Defaults.NativelySupportedType {}
 extension Dictionary: Defaults.NativelySupportedType where Key == String, Value: Defaults.NativelySupportedType {}
+
+extension Optional: Defaults.GenericCollectionType where Wrapped: Defaults.GenericCollectionType {
+	public static var bridge: Defaults.OptionalGenericCollectionBridge<Wrapped> { return Defaults.OptionalGenericCollectionBridge() }
+
+}
+extension Set: Defaults.GenericCollectionType where Element: Defaults.NativelySupportedType {
+	public static var bridge: Defaults.SetNativeBridge<Element> { return Defaults.SetNativeBridge() }
+}
+
+extension Array: Defaults.GenericCollectionType where Element: Defaults.GenericCollectionType {
+	public static var bridge: Defaults.ArrayGenericCollectionBridge<Element> { return Defaults.ArrayGenericCollectionBridge() }
+}
+
+extension Dictionary: Defaults.GenericCollectionType where Value: Defaults.GenericCollectionType {
+	public static var bridge: Defaults.DictionaryGenericCollectionBridge<Value> { return Defaults.DictionaryGenericCollectionBridge() }
+}
 
 extension URL: Defaults.Serializable {
 	public static let bridge = Defaults.URLBridge()

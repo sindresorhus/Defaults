@@ -17,6 +17,7 @@ public enum Defaults {
 	public typealias BaseKey = DefaultsBaseKey
 	public typealias AnyKey = Keys
 	public typealias Serializable = DefaultsSerializable
+	public typealias GenericCollectionType = DefaultsGenericCollectionType
 	public typealias NativelySupportedType = DefaultsNativelySupportedType
 	public typealias Bridge = DefaultsBridge
 	public typealias CodableBridge = DefaultsCodableBridge
@@ -50,6 +51,22 @@ public enum Defaults {
 			suite.register(defaults: [key: defaultValue])
 		}
 
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) where Value: GenericCollectionType {
+			self.defaultValue = defaultValue
+
+			super.init(name: key, suite: suite)
+
+			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
+				return
+			}
+
+			guard let value = Value.bridge.serialize(defaultValue as? Value.Value) else {
+				return
+			}
+
+			suite.register(defaults: [key: value])
+		}
+
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) where Value: Serializable {
 			self.defaultValue = defaultValue
 
@@ -69,6 +86,13 @@ public enum Defaults {
 
 	/// Access a defaults value using a `Defaults.Key`.
 	public static subscript<Value: NativelySupportedType>(key: Key<Value>) -> Value {
+		get { key.suite[key] }
+		set {
+			key.suite[key] = newValue
+		}
+	}
+
+	public static subscript<Value: GenericCollectionType>(key: Key<Value>) -> Value {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -96,6 +120,10 @@ extension Defaults {
 
 extension Defaults.Key {
 	public convenience init<T: Defaults.NativelySupportedType>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
+		self.init(key, default: nil, suite: suite)
+	}
+
+	public convenience init<T: Defaults.GenericCollectionType>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
 		self.init(key, default: nil, suite: suite)
 	}
 

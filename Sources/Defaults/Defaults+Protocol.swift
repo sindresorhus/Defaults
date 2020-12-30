@@ -2,6 +2,28 @@ import Foundation
 
 public protocol DefaultsNativelySupportedType: Codable {}
 
+/**
+DefaultsGenericCollectionType should exist because of overlapping conformances
+We cannot use the syntax below:
+```
+extension Set: Defaults.Serializable where Element: Defaults.Serializable {
+	public static var bridge: Defaults.SetBridge<Element> { return Defaults.SetBridge<Element> }
+}
+
+//
+extension Set: Defaults.Serializable where Element: Defaults.NativelySupportedType {
+	public static var bridge: Defaults.SetNativeBridge<Element> { return Defaults.SetNativeBridge<Element> }
+}
+```
+So we have to create a new protocol to deal with `Set<Element: NativelySupportedType>`
+*/
+public protocol DefaultsGenericCollectionType {
+	typealias Value = GenericBridge.Value
+	typealias Serializable = GenericBridge.Serializable
+	associatedtype GenericBridge: DefaultsBridge
+	static var bridge: GenericBridge { get }
+}
+
 public protocol DefaultsSerializable {
 	typealias Value = Bridge.Value
 	typealias Serializable = Bridge.Serializable

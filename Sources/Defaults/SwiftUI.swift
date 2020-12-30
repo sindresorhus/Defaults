@@ -23,6 +23,20 @@ extension Defaults {
 			}
 		}
 
+		init(_ key: Key<Value>) where Value: GenericCollectionType {
+			self.key = key
+
+			self.observation = Defaults.observe(key, options: [.prior]) { [weak self] change in
+				guard change.isPrior else {
+					return
+				}
+
+				DispatchQueue.mainSafeAsync {
+					self?.objectWillChange.send()
+				}
+			}
+		}
+
 		init(_ key: Key<Value>) where Value: Serializable {
 			self.key = key
 
@@ -46,6 +60,17 @@ extension Defaults {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Defaults.Observable where Value: Defaults.NativelySupportedType {
+	var value: Value {
+		get { Defaults[key] }
+		set {
+			objectWillChange.send()
+			Defaults[key] = newValue
+		}
+	}
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Defaults.Observable where Value: Defaults.GenericCollectionType {
 	var value: Value {
 		get { Defaults[key] }
 		set {
@@ -94,6 +119,15 @@ public struct Default<Value>: DynamicProperty {
 	init(_ key: Defaults.Key<Value>, _ observables: Defaults.Observable<Value>, get: @escaping () -> Value, set: @escaping (Value) -> Void) where Value: Defaults.NativelySupportedType {
 		self.key = key
 		self.observable = observables
+		self.get = get
+		self.set = set
+		self.publisher = Defaults.publisher(key)
+		self.projectedValue = Binding(get: get, set: set)
+	}
+
+	init(_ key: Defaults.Key<Value>, _ observable: Defaults.Observable<Value>, get: @escaping () -> Value, set: @escaping (Value) -> Void) where Value: Defaults.GenericCollectionType {
+		self.key = key
+		self.observable = observable
 		self.get = get
 		self.set = set
 		self.publisher = Defaults.publisher(key)
@@ -163,6 +197,18 @@ extension Default where Value: Defaults.NativelySupportedType {
 */
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Default where Value: Defaults.NativelySupportedType {
+	public init(_ key: Defaults.Key<Value>) {
+		let observable = Defaults.Observable(key)
+		self.init(key, observable, get: {
+			observable.value
+		}, set: { newValue in
+			observable.value = newValue
+		})
+	}
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Default where Value: Defaults.GenericCollectionType {
 	public init(_ key: Defaults.Key<Value>) {
 		let observable = Defaults.Observable(key)
 		self.init(key, observable, get: {
