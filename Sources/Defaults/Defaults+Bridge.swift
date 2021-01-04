@@ -42,7 +42,7 @@ extension Defaults {
 		public typealias Value = URL
 	}
 
-	public struct RawRepresentableBridge<Value: RawRepresentable>: Bridge {
+	public struct RawRepresentableBridge<Value: RawRepresentable>: Defaults.Bridge {
 		public func serialize(_ value: Value?) -> Value.RawValue? {
 			return value?.rawValue
 		}
