@@ -46,4 +46,4 @@ public protocol DefaultsBridge {
 }
 
 
-public protocol DefaultsCodableBridge: Defaults.Bridge where Serializable == String, Value: Codable {}
+public protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}
