@@ -10,7 +10,7 @@ extension Set: Defaults.Serializable where Element: Defaults.Serializable {
 	public static var bridge: Defaults.SetBridge<Element> { return Defaults.SetBridge<Element> }
 }
 
-//
+
 extension Set: Defaults.Serializable where Element: Defaults.NativelySupportedType {
 	public static var bridge: Defaults.SetNativeBridge<Element> { return Defaults.SetNativeBridge<Element> }
 }
