@@ -59,6 +59,10 @@ extension URL: Defaults.Serializable {
 	public static let bridge = Defaults.URLBridge()
 }
 
+extension Defaults.Serializable where Self: Collection & ExpressibleByArrayLiteral, Element: Defaults.Serializable {
+	public static var bridge: Defaults.CollectionBridge<Self> { return Defaults.CollectionBridge() }
+}
+
 extension Defaults.Serializable where Self: Codable {
 	public static var bridge: Defaults.TopLevelCodableBridge<Self> { return Defaults.TopLevelCodableBridge() }
 }

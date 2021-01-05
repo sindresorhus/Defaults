@@ -42,6 +42,52 @@ extension Defaults {
 		public typealias Value = URL
 	}
 
+	public struct CollectionBridge<Value: Defaults.Serializable & Collection & ExpressibleByArrayLiteral>: Defaults.Bridge where Value.Element: Defaults.Serializable {
+		public typealias Value = Value
+		public typealias Serializable = Any
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			if Value.Element.isNativelySupportedType {
+				guard let value = value else {
+					return nil
+				}
+
+				return value.map { $0 }.compact()
+			}
+
+			var array: [Value.Serializable] = []
+
+			value?.forEach {
+				guard let element = Value.bridge.serialize($0 as? Value.Value) else {
+					return
+				}
+				array.append(element)
+			}
+
+			return array
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			if Value.Element.isNativelySupportedType {
+				guard let object = object as? [Value.ArrayLiteralElement] else {
+					return nil
+				}
+
+				// We cannot pass an array to variadic function. SR-128
+				return unsafeBitCast(Value.init, to: (([Value.ArrayLiteralElement]) -> Value).self)(object)
+			}
+
+			guard
+				let object = object as? [Value.Serializable],
+				let array = object.map({ Value.bridge.deserialize($0) }).compact() as? [Value.ArrayLiteralElement]
+			else {
+				return nil
+			}
+
+			return unsafeBitCast(Value.init, to: (([Value.ArrayLiteralElement]) -> Value).self)(array)
+		}
+	}
+
 	public struct RawRepresentableBridge<Value: RawRepresentable>: Defaults.Bridge {
 		public func serialize(_ value: Value?) -> Value.RawValue? {
 			return value?.rawValue

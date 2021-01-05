@@ -14,6 +14,9 @@
 		7108EAF425949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
 		7108EAF525949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
 		7108EAF625949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
+		71573E9925A445CE00F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
+		71573EA125A445D400F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
+		71573EA925A445DB00F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
 		718B783325917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783425917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783525917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
@@ -118,6 +121,7 @@
 		6614F6E222FC6E1C00B0C9CE /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = readme.md; sourceTree = "<group>"; usesTabs = 1; };
 		7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsSwiftUITests.swift; sourceTree = "<group>"; };
 		7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsDictionaryTests.swift; sourceTree = "<group>"; };
+		71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCollectionTests.swift; sourceTree = "<group>"; };
 		718B783225917CCA004FF90D /* Defaults+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Protocol.swift"; sourceTree = "<group>"; };
 		718B783E25917D09004FF90D /* Defaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Extensions.swift"; sourceTree = "<group>"; };
 		7191AD862591977700AD472F /* DefaultsArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsArrayTests.swift; sourceTree = "<group>"; };
@@ -258,6 +262,7 @@
 				71C55FF4259C13190053CCB3 /* DefaultsNSColorTests.swift */,
 				71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */,
 				71C5602D259C2A950053CCB3 /* DefaultsSetTests.swift */,
+				71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */,
 			);
 			name = Tests;
 			path = Tests/DefaultsTests;
@@ -598,6 +603,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71573E9925A445CE00F18D4E /* DefaultsCollectionTests.swift in Sources */,
 				71F002F925959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031A2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
@@ -667,6 +673,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71573EA125A445D400F18D4E /* DefaultsCollectionTests.swift in Sources */,
 				71C55FF6259C13190053CCB3 /* DefaultsNSColorTests.swift in Sources */,
 				71F002FA25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
@@ -685,6 +692,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71573EA925A445DB00F18D4E /* DefaultsCollectionTests.swift in Sources */,
 				71F002FB25959000001A1864 /* DefaultsNSSecureCodingTests.swift in Sources */,
 				7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */,
 				71F0031C2595E15B001A1864 /* DefaultsCodableEnumTests.swift in Sources */,
