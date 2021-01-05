@@ -45,7 +45,7 @@ extension Defaults {
 			return nil
 		}
 
-		if Value.isNativelySupportType {
+		if Value.isNativelySupportedType {
 			// This handles the case where the value was a plist value using `isNativelySupportedType`
 			guard let value = value as? Value else {
 				return nil

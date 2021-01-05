@@ -9,11 +9,11 @@ public protocol DefaultsSerializable {
 	static var bridge: Bridge { get }
 
 	// A flag to determine whether `Value` can be store natively or not
-	static var isNativelySupportType: Bool { get }
+	static var isNativelySupportedType: Bool { get }
 }
 
 extension DefaultsSerializable {
-	public static var isNativelySupportType: Bool { false }
+	public static var isNativelySupportedType: Bool { false }
 }
 
 public protocol DefaultsBridge {

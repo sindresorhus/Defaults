@@ -46,7 +46,7 @@ public enum Defaults {
 				return
 			}
 
-			if Value.isNativelySupportType {
+			if Value.isNativelySupportedType {
 				suite.register(defaults: [key: defaultValue])
 				return
 			}

@@ -4,7 +4,7 @@ extension UserDefaults {
 	private func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {
 		let anyObject = object(forKey: key)
 
-		if Value.isNativelySupportType {
+		if Value.isNativelySupportedType {
 			// Return directly if anyObject can cast to Value
 			if let anyObject = anyObject as? Value {
 				return anyObject
@@ -30,7 +30,7 @@ extension UserDefaults {
 			return
 		}
 
-		if Value.isNativelySupportType {
+		if Value.isNativelySupportedType {
 			set(value, forKey: key)
 			return
 		}

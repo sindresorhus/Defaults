@@ -135,7 +135,7 @@ extension Defaults {
 				return nil
 			}
 
-			if Element.isNativelySupportType {
+			if Element.isNativelySupportedType {
 				return Array(set)
 			}
 
@@ -143,7 +143,7 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			if Element.isNativelySupportType {
+			if Element.isNativelySupportedType {
 				guard let array = object as? [Element] else {
 					return nil
 				}

@@ -7,52 +7,52 @@ import UIKit
 #endif
 
 extension Data: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Date: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Bool: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Int: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Double: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Float: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension String: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension CGFloat: Defaults.Serializable{
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Int8: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension UInt8: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Int16: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension UInt16: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Int32: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension UInt32: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension Int64: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 extension UInt64: Defaults.Serializable {
-	public static let isNativelySupportType = true
+	public static let isNativelySupportedType = true
 }
 
 extension URL: Defaults.Serializable {
@@ -80,17 +80,17 @@ extension Set: Defaults.Serializable where Element: Defaults.Serializable {
 }
 
 extension Optional: Defaults.Serializable where Wrapped: Defaults.Serializable {
-	public static var isNativelySupportType: Bool { Wrapped.isNativelySupportType }
+	public static var isNativelySupportedType: Bool { Wrapped.isNativelySupportedType }
 	public static var bridge: Defaults.OptionalBridge<Wrapped> { return Defaults.OptionalBridge() }
 }
 
 extension Array: Defaults.Serializable where Element: Defaults.Serializable {
-	public static var isNativelySupportType: Bool { Element.isNativelySupportType }
+	public static var isNativelySupportedType: Bool { Element.isNativelySupportedType }
 	public static var bridge: Defaults.ArrayBridge<Element> { return Defaults.ArrayBridge() }
 }
 
 extension Dictionary: Defaults.Serializable where Key == String, Value: Defaults.Serializable {
-	public static var isNativelySupportType: Bool { Value.isNativelySupportType }
+	public static var isNativelySupportedType: Bool { Value.isNativelySupportedType }
 	public static var bridge: Defaults.DictionaryBridge<Value> { return Defaults.DictionaryBridge() }
 }
 
