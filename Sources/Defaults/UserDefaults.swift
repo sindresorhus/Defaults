@@ -1,52 +1,27 @@
 import Foundation
 
 extension UserDefaults {
-	private func _get<Value: Defaults.NativelySupportedType>(_ key: String) -> Value? {
-		guard let anyObject = object(forKey: key) else {
-			return nil
-		}
-
-		// Return directly if anyObject can cast to Value
-		if let value = anyObject as? Value {
-			return value
-		}
-
-		// Auto migration old codable value to native supported type.
-		return _migration(key, text: anyObject as? String)
-	}
-
-	private func _get<Value: Defaults.GenericCollectionType>(_ key: String) -> Value? {
-		guard let anyObject = object(forKey: key) as? Value.Serializable else {
-			return nil
-		}
-
-		return Value.bridge.deserialize(anyObject) as? Value
-	}
-
 	private func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {
-		guard let anyObject = object(forKey: key) as? Value.Serializable else {
+		let anyObject = object(forKey: key)
+
+		if Value.isNativelySupportType {
+			// Return directly if anyObject can cast to Value
+			if let anyObject = anyObject as? Value {
+				return anyObject
+			}
+
+			guard let string = anyObject as? String else {
+				return nil
+			}
+			// Auto migration old codable value to native supported type.
+			return _migration(string, key: key)
+		}
+
+		guard let value = Value.bridge.deserialize(anyObject as? Value.Serializable) as? Value else {
 			return nil
 		}
 
-		return Value.bridge.deserialize(anyObject) as? Value
-	}
-
-	private func _set<Value: Defaults.NativelySupportedType>(_ key: String, to value: Value) {
-		if (value as? _DefaultsOptionalType)?.isNil == true {
-			removeObject(forKey: key)
-			return
-		}
-
- 		set(value, forKey: key)
-	}
-
-	private func _set<Value: Defaults.GenericCollectionType>(_ key: String, to value: Value) {
-		if (value as? _DefaultsOptionalType)?.isNil == true {
-			removeObject(forKey: key)
-			return
-		}
-
-		set(Value.bridge.serialize(value as? Value.Value), forKey: key)
+		return value
 	}
 
 	private func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
@@ -55,31 +30,26 @@ extension UserDefaults {
 			return
 		}
 
+		if Value.isNativelySupportType {
+			set(value, forKey: key)
+			return
+		}
+
 		set(Value.bridge.serialize(value as? Value.Value), forKey: key)
 	}
 
-	private func _migration<Value: Defaults.NativelySupportedType>(_ key: String, text: String?) -> Value? {
-		guard let value = [Value].init(jsonString: text)?.first else {
+	private func _migration<Value: Defaults.Serializable>(_ value: String, key: String) -> Value? {
+		guard
+			let data = "[\(value)]".data(using: .utf8),
+			let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [Value],
+			let object = jsonObject.first
+		else {
 			return nil
 		}
+		
+		_set(key, to: object)
 
-		_set(key, to: value)
-
-		return value
-	}
-
-	public subscript<Value: Defaults.NativelySupportedType>(key: Defaults.Key<Value>) -> Value {
-		get { _get(key.name) ?? key.defaultValue }
-		set {
-			_set(key.name, to: newValue)
-		}
-	}
-
-	public subscript<Value: Defaults.GenericCollectionType>(key: Defaults.Key<Value>) -> Value {
-		get { _get(key.name) ?? key.defaultValue }
-		set {
-			_set(key.name, to: newValue)
-		}
+		return object
 	}
 	
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {

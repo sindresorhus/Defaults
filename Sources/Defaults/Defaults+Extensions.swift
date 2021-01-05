@@ -6,41 +6,53 @@ import AppKit
 import UIKit
 #endif
 
-extension Data: Defaults.NativelySupportedType {}
-extension Date: Defaults.NativelySupportedType {}
-extension Bool: Defaults.NativelySupportedType {}
-extension Int: Defaults.NativelySupportedType {}
-extension Double: Defaults.NativelySupportedType {}
-extension Float: Defaults.NativelySupportedType {}
-extension String: Defaults.NativelySupportedType {}
-extension CGFloat: Defaults.NativelySupportedType{}
-extension Int8: Defaults.NativelySupportedType {}
-extension UInt8: Defaults.NativelySupportedType {}
-extension Int16: Defaults.NativelySupportedType {}
-extension UInt16: Defaults.NativelySupportedType {}
-extension Int32: Defaults.NativelySupportedType {}
-extension UInt32: Defaults.NativelySupportedType {}
-extension Int64: Defaults.NativelySupportedType {}
-extension UInt64: Defaults.NativelySupportedType {}
-
-extension Optional: Defaults.NativelySupportedType where Wrapped: Defaults.NativelySupportedType {}
-extension Array: Defaults.NativelySupportedType where Element: Defaults.NativelySupportedType {}
-extension Dictionary: Defaults.NativelySupportedType where Key == String, Value: Defaults.NativelySupportedType {}
-
-extension Optional: Defaults.GenericCollectionType where Wrapped: Defaults.GenericCollectionType {
-	public static var bridge: Defaults.OptionalGenericCollectionBridge<Wrapped> { return Defaults.OptionalGenericCollectionBridge() }
-
+extension Data: Defaults.Serializable {
+	public static let isNativelySupportType = true
 }
-extension Set: Defaults.GenericCollectionType where Element: Defaults.NativelySupportedType {
-	public static var bridge: Defaults.SetNativeBridge<Element> { return Defaults.SetNativeBridge() }
+extension Date: Defaults.Serializable {
+	public static let isNativelySupportType = true
 }
-
-extension Array: Defaults.GenericCollectionType where Element: Defaults.GenericCollectionType {
-	public static var bridge: Defaults.ArrayGenericCollectionBridge<Element> { return Defaults.ArrayGenericCollectionBridge() }
+extension Bool: Defaults.Serializable {
+	public static let isNativelySupportType = true
 }
-
-extension Dictionary: Defaults.GenericCollectionType where Value: Defaults.GenericCollectionType {
-	public static var bridge: Defaults.DictionaryGenericCollectionBridge<Value> { return Defaults.DictionaryGenericCollectionBridge() }
+extension Int: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension Double: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension Float: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension String: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension CGFloat: Defaults.Serializable{
+	public static let isNativelySupportType = true
+}
+extension Int8: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension UInt8: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension Int16: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension UInt16: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension Int32: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension UInt32: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension Int64: Defaults.Serializable {
+	public static let isNativelySupportType = true
+}
+extension UInt64: Defaults.Serializable {
+	public static let isNativelySupportType = true
 }
 
 extension URL: Defaults.Serializable {
@@ -59,24 +71,27 @@ extension Defaults.Serializable where Self: RawRepresentable & Codable {
 	public static var bridge: Defaults.RawRepresentableCodableBridge<Self> { return Defaults.RawRepresentableCodableBridge() }
 }
 
-extension Optional: Defaults.Serializable where Wrapped: Defaults.Serializable {
-	public static var bridge: Defaults.OptionalBridge<Wrapped> { return Defaults.OptionalBridge() }
+extension Defaults.Serializable where Self: NSSecureCoding {
+	public static var bridge: Defaults.NSSecureCodingBridge<Self> { return Defaults.NSSecureCodingBridge() }
 }
 
 extension Set: Defaults.Serializable where Element: Defaults.Serializable {
 	public static var bridge: Defaults.SetBridge<Element> { return Defaults.SetBridge() }
 }
 
+extension Optional: Defaults.Serializable where Wrapped: Defaults.Serializable {
+	public static var isNativelySupportType: Bool { Wrapped.isNativelySupportType }
+	public static var bridge: Defaults.OptionalBridge<Wrapped> { return Defaults.OptionalBridge() }
+}
+
 extension Array: Defaults.Serializable where Element: Defaults.Serializable {
+	public static var isNativelySupportType: Bool { Element.isNativelySupportType }
 	public static var bridge: Defaults.ArrayBridge<Element> { return Defaults.ArrayBridge() }
 }
 
 extension Dictionary: Defaults.Serializable where Key == String, Value: Defaults.Serializable {
+	public static var isNativelySupportType: Bool { Value.isNativelySupportType }
 	public static var bridge: Defaults.DictionaryBridge<Value> { return Defaults.DictionaryBridge() }
-}
-
-extension Defaults.Serializable where Self: NSSecureCoding {
-	public static var bridge: Defaults.NSSecureCodingBridge<Self> { return Defaults.NSSecureCodingBridge() }
 }
 
 #if os(macOS)
