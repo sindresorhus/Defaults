@@ -38,9 +38,9 @@ private let fixtureSetAlgebra2 = Item(name: "Grape", count: 30)
 private let fixtureSetAlgebra3 = Item(name: "Guava", count: 40)
 
 extension Defaults.Keys {
-	fileprivate static let setAlgebraCustomElement = Key<DefaultedSetAlgebra<Item>>("setAlgebraCustomElement", default: .init([fixtureSetAlgebra]))
-	fileprivate static let setAlgebraCustomElementArray = Key<[DefaultedSetAlgebra<Item>]>("setAlgebraArrayCustomElement", default: [.init([fixtureSetAlgebra])])
-	fileprivate static let setAlgebraCustomElementDictionary = Key<[String: DefaultedSetAlgebra<Item>]>("setAlgebraDictionaryCustomElement", default: ["0": .init([fixtureSetAlgebra])])
+	fileprivate static let setAlgebraCustomElement = Key<DefaultsSetAlgebra<Item>>("setAlgebraCustomElement", default: .init([fixtureSetAlgebra]))
+	fileprivate static let setAlgebraCustomElementArray = Key<[DefaultsSetAlgebra<Item>]>("setAlgebraArrayCustomElement", default: [.init([fixtureSetAlgebra])])
+	fileprivate static let setAlgebraCustomElementDictionary = Key<[String: DefaultsSetAlgebra<Item>]>("setAlgebraDictionaryCustomElement", default: ["0": .init([fixtureSetAlgebra])])
 }
 
 final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
@@ -55,7 +55,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testKey() {
-		let key = Defaults.Key<DefaultedSetAlgebra<Item>>("independentSetAlgebraKey", default: .init([fixtureSetAlgebra]))
+		let key = Defaults.Key<DefaultsSetAlgebra<Item>>("independentSetAlgebraKey", default: .init([fixtureSetAlgebra]))
 		Defaults[key].insert(fixtureSetAlgebra)
 		XCTAssertEqual(Defaults[key], .init([fixtureSetAlgebra]))
 		Defaults[key].insert(fixtureSetAlgebra1)
@@ -63,7 +63,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testOptionalKey() {
-		let key = Defaults.Key<DefaultedSetAlgebra<Item>?>("independentSetAlgebraOptionalKey")
+		let key = Defaults.Key<DefaultsSetAlgebra<Item>?>("independentSetAlgebraOptionalKey")
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = .init([fixtureSetAlgebra])
 		Defaults[key]?.insert(fixtureSetAlgebra)
@@ -73,7 +73,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testArrayKey() {
-		let key = Defaults.Key<[DefaultedSetAlgebra<Item>]>("independentSetAlgebraArrayKey", default: [.init([fixtureSetAlgebra])])
+		let key = Defaults.Key<[DefaultsSetAlgebra<Item>]>("independentSetAlgebraArrayKey", default: [.init([fixtureSetAlgebra])])
 		Defaults[key][0].insert(fixtureSetAlgebra1)
 		Defaults[key].append(.init([fixtureSetAlgebra2]))
 		Defaults[key][1].insert(fixtureSetAlgebra3)
@@ -82,7 +82,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[DefaultedSetAlgebra<Item>]?>("independentSetAlgebraArrayOptionalKey")
+		let key = Defaults.Key<[DefaultsSetAlgebra<Item>]?>("independentSetAlgebraArrayOptionalKey")
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [.init([fixtureSetAlgebra])]
 		Defaults[key]?[0].insert(fixtureSetAlgebra1)
@@ -93,7 +93,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[DefaultedSetAlgebra<Item>]]>("independentSetAlgebraNestedArrayKey", default: [[.init([fixtureSetAlgebra])]])
+		let key = Defaults.Key<[[DefaultsSetAlgebra<Item>]]>("independentSetAlgebraNestedArrayKey", default: [[.init([fixtureSetAlgebra])]])
 		Defaults[key][0][0].insert(fixtureSetAlgebra1)
 		Defaults[key][0].append(.init([fixtureSetAlgebra1]))
 		Defaults[key][0][1].insert(fixtureSetAlgebra2)
@@ -105,7 +105,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: DefaultedSetAlgebra<Item>]]>("independentSetAlgebraArrayDictionaryKey", default: [["0": .init([fixtureSetAlgebra])]])
+		let key = Defaults.Key<[[String: DefaultsSetAlgebra<Item>]]>("independentSetAlgebraArrayDictionaryKey", default: [["0": .init([fixtureSetAlgebra])]])
 		Defaults[key][0]["0"]?.insert(fixtureSetAlgebra1)
 		Defaults[key][0]["1"] = .init([fixtureSetAlgebra1])
 		Defaults[key][0]["1"]?.insert(fixtureSetAlgebra2)
@@ -117,7 +117,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: DefaultedSetAlgebra<Item>]>("independentSetAlgebraDictionaryKey", default: ["0": .init([fixtureSetAlgebra])])
+		let key = Defaults.Key<[String: DefaultsSetAlgebra<Item>]>("independentSetAlgebraDictionaryKey", default: ["0": .init([fixtureSetAlgebra])])
 		Defaults[key]["0"]?.insert(fixtureSetAlgebra1)
 		Defaults[key]["1"] = .init([fixtureSetAlgebra2])
 		Defaults[key]["1"]?.insert(fixtureSetAlgebra3)
@@ -126,7 +126,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: DefaultedSetAlgebra<Item>]?>("independentSetAlgebraDictionaryOptionalKey")
+		let key = Defaults.Key<[String: DefaultsSetAlgebra<Item>]?>("independentSetAlgebraDictionaryOptionalKey")
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": .init([fixtureSetAlgebra])]
 		Defaults[key]?["0"]?.insert(fixtureSetAlgebra1)
@@ -137,7 +137,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testDictionaryArrayKey() {
-		let key = Defaults.Key<[String: [DefaultedSetAlgebra<Item>]]>("independentSetAlgebraDictionaryArrayKey", default: ["0": [.init([fixtureSetAlgebra])]])
+		let key = Defaults.Key<[String: [DefaultsSetAlgebra<Item>]]>("independentSetAlgebraDictionaryArrayKey", default: ["0": [.init([fixtureSetAlgebra])]])
 		Defaults[key]["0"]?[0].insert(fixtureSetAlgebra1)
 		Defaults[key]["0"]?.append(.init([fixtureSetAlgebra1]))
 		Defaults[key]["0"]?[1].insert(fixtureSetAlgebra2)
@@ -173,7 +173,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
-		let key = Defaults.Key<DefaultedSetAlgebra<Item>>("observeSetAlgebraKeyCombine", default: .init([fixtureSetAlgebra]))
+		let key = Defaults.Key<DefaultsSetAlgebra<Item>>("observeSetAlgebraKeyCombine", default: .init([fixtureSetAlgebra]))
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -181,7 +181,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(2)
 
-		let expectedValue: [(DefaultedSetAlgebra<Item>, DefaultedSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
+		let expectedValue: [(DefaultsSetAlgebra<Item>, DefaultsSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
 			for (i, expected) in expectedValue.enumerated() {
@@ -201,7 +201,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<DefaultedSetAlgebra<Item>?>("observeSetAlgebraOptionalKeyCombine")
+		let key = Defaults.Key<DefaultsSetAlgebra<Item>?>("observeSetAlgebraOptionalKeyCombine")
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -209,7 +209,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(3)
 
-		let expectedValue: [(DefaultedSetAlgebra<Item>?, DefaultedSetAlgebra<Item>?)] = [(nil, .init([fixtureSetAlgebra])), (.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), nil)]
+		let expectedValue: [(DefaultsSetAlgebra<Item>?, DefaultsSetAlgebra<Item>?)] = [(nil, .init([fixtureSetAlgebra])), (.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), nil)]
 
 		let cancellable = publisher.sink { tuples in
 			for (i, expected) in expectedValue.enumerated() {
@@ -230,7 +230,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveArrayKeyCombine() {
-		let key = Defaults.Key<[DefaultedSetAlgebra<Item>]>("observeSetAlgebraArrayKeyCombine", default: [.init([fixtureSetAlgebra])])
+		let key = Defaults.Key<[DefaultsSetAlgebra<Item>]>("observeSetAlgebraArrayKeyCombine", default: [.init([fixtureSetAlgebra])])
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -238,7 +238,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(2)
 
-		let expectedValue: [(DefaultedSetAlgebra<Item>, DefaultedSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
+		let expectedValue: [(DefaultsSetAlgebra<Item>, DefaultsSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
 			for (i, expected) in expectedValue.enumerated() {
@@ -258,7 +258,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveDictionaryKeyCombine() {
-		let key = Defaults.Key<[String: DefaultedSetAlgebra<Item>]>("observeSetAlgebraDictionaryKeyCombine", default: ["0": .init([fixtureSetAlgebra])])
+		let key = Defaults.Key<[String: DefaultsSetAlgebra<Item>]>("observeSetAlgebraDictionaryKeyCombine", default: ["0": .init([fixtureSetAlgebra])])
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -266,7 +266,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(2)
 
-		let expectedValue: [(DefaultedSetAlgebra<Item>, DefaultedSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
+		let expectedValue: [(DefaultsSetAlgebra<Item>, DefaultsSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
 			for (i, expected) in expectedValue.enumerated() {
@@ -285,7 +285,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testObserveKey() {
-		let key = Defaults.Key<DefaultedSetAlgebra<Item>>("observeSetAlgebraKey", default: .init([fixtureSetAlgebra]))
+		let key = Defaults.Key<DefaultsSetAlgebra<Item>>("observeSetAlgebraKey", default: .init([fixtureSetAlgebra]))
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -303,7 +303,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testObserveOptionalKey() {
-		let key = Defaults.Key<DefaultedSetAlgebra<Item>?>("observeSetAlgebraOptionalKey")
+		let key = Defaults.Key<DefaultsSetAlgebra<Item>?>("observeSetAlgebraOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -321,7 +321,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testObserveArrayKey() {
-		let key = Defaults.Key<[DefaultedSetAlgebra<Item>]>("observeSetAlgebraArrayKey", default: [.init([fixtureSetAlgebra])])
+		let key = Defaults.Key<[DefaultsSetAlgebra<Item>]>("observeSetAlgebraArrayKey", default: [.init([fixtureSetAlgebra])])
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -339,7 +339,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testObserveDictioanryKey() {
-		let key = Defaults.Key<[String: DefaultedSetAlgebra<Item>]>("observeSetAlgebraDictionaryKey", default: ["0": .init([fixtureSetAlgebra])])
+		let key = Defaults.Key<[String: DefaultsSetAlgebra<Item>]>("observeSetAlgebraDictionaryKey", default: ["0": .init([fixtureSetAlgebra])])
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
