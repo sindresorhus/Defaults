@@ -1,13 +1,16 @@
 import Foundation
-import Combine
 import XCTest
 import Defaults
 
-private struct Bag: Collection, Defaults.Serializable {
-	var items: [String]
+struct Bag<Element: Defaults.Serializable>: Defaults.CollectionSerializable {
+	var items: [Element]
 
-	init(items: [String]) {
+	init(items: [Element]) {
 		self.items = items
+	}
+
+	init(_ elements: [Element]) {
+		self.items = elements
 	}
 
 	public var startIndex: Int {
@@ -18,7 +21,7 @@ private struct Bag: Collection, Defaults.Serializable {
 		items.endIndex
 	}
 
-	public mutating func insert(element: String, at: Int) {
+	public mutating func insert(element: Element, at: Int) {
 		items.insert(element, at: at)
 	}
 
@@ -26,23 +29,18 @@ private struct Bag: Collection, Defaults.Serializable {
 		items.index(after: i)
 	}
 
-	subscript(position: Int) -> String {
+	subscript(position: Int) -> Element {
 		items[position]
 	}
 }
 
-extension Bag: ExpressibleByArrayLiteral {
-	init(arrayLiteral elements: String...) {
-		self.items = elements
-	}
-}
 
 private let fixtureCollection = ["Juice", "Apple", "Banana"]
 
 extension Defaults.Keys {
-	fileprivate static let collection = Key<Bag>("collection", default: Bag(items: fixtureCollection))
-	fileprivate static let collectionArray = Key<[Bag]>("collectionArray", default: [Bag(items: fixtureCollection)])
-	fileprivate static let collectionDictionary = Key<[String: Bag]>("collectionDictionary", default: ["0": Bag(items: fixtureCollection)])
+	fileprivate static let collection = Key<Bag<String>>("collection", default: Bag(items: fixtureCollection))
+	fileprivate static let collectionArray = Key<[Bag<String>]>("collectionArray", default: [Bag(items: fixtureCollection)])
+	fileprivate static let collectionDictionary = Key<[String: Bag<String>]>("collectionDictionary", default: ["0": Bag(items: fixtureCollection)])
 }
 
 final class DefaultsCollectionTests: XCTestCase {
@@ -57,15 +55,15 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testKey() {
-		let key = Defaults.Key<Bag>("independentCollectionKey", default: Bag(items: fixtureCollection))
+		let key = Defaults.Key<Bag<String>>("independentCollectionKey", default: Bag(items: fixtureCollection))
 		Defaults[key].insert(element: "123", at: 0)
 		XCTAssertEqual(Defaults[key][0], "123")
 	}
 
 	func testOptionalKey() {
-		let key = Defaults.Key<Bag?>("independentCollectionOptionalKey")
+		let key = Defaults.Key<Bag<String>?>("independentCollectionOptionalKey")
 		XCTAssertNil(Defaults[key])
-		Defaults[key] = []
+		Defaults[key] = Bag(items: [])
 		Defaults[key]?.insert(element: fixtureCollection[0], at: 0)
 		XCTAssertEqual(Defaults[key]?[0], fixtureCollection[0])
 		Defaults[key]?.insert(element: fixtureCollection[1], at: 1)
@@ -73,25 +71,25 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testArrayKey() {
-		let key = Defaults.Key<[Bag]>("independentCollectionArrayKey", default: [Bag(items: [fixtureCollection[0]])])
-		Defaults[key].append([fixtureCollection[1]])
+		let key = Defaults.Key<[Bag<String>]>("independentCollectionArrayKey", default: [Bag(items: [fixtureCollection[0]])])
+		Defaults[key].append(Bag(items: [fixtureCollection[1]]))
 		XCTAssertEqual(Defaults[key][1][0], fixtureCollection[1])
 		Defaults[key][0].insert(element: fixtureCollection[2], at: 1)
 		XCTAssertEqual(Defaults[key][0][1], fixtureCollection[2])
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[Bag]?>("independentCollectionArrayOptionalKey")
+		let key = Defaults.Key<[Bag<String>]?>("independentCollectionArrayOptionalKey")
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [Bag(items: [fixtureCollection[0]])]
-		Defaults[key]?.append([fixtureCollection[1]])
+		Defaults[key]?.append(Bag(items: [fixtureCollection[1]]))
 		XCTAssertEqual(Defaults[key]?[1][0], fixtureCollection[1])
 		Defaults[key]?[0].insert(element: fixtureCollection[2], at: 1)
 		XCTAssertEqual(Defaults[key]?[0][1], fixtureCollection[2])
 	}
 
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[Bag]]>("independentCollectionNestedArrayKey", default: [[Bag(items: [fixtureCollection[0]])]])
+		let key = Defaults.Key<[[Bag<String>]]>("independentCollectionNestedArrayKey", default: [[Bag(items: [fixtureCollection[0]])]])
 		Defaults[key][0].append(Bag(items: [fixtureCollection[1]]))
 		Defaults[key].append([Bag(items: [fixtureCollection[2]])])
 		XCTAssertEqual(Defaults[key][0][0][0], fixtureCollection[0])
@@ -100,7 +98,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: Bag]]>("independentCollectionArrayDictionaryKey", default: [["0": Bag(items: [fixtureCollection[0]])]])
+		let key = Defaults.Key<[[String: Bag<String>]]>("independentCollectionArrayDictionaryKey", default: [["0": Bag(items: [fixtureCollection[0]])]])
 		Defaults[key][0]["1"] = Bag(items: [fixtureCollection[1]])
 		Defaults[key].append(["0": Bag(items: [fixtureCollection[2]])])
 		XCTAssertEqual(Defaults[key][0]["0"]?[0], fixtureCollection[0])
@@ -109,7 +107,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: Bag]>("independentCollectionDictionaryKey", default: ["0": Bag(items: [fixtureCollection[0]])])
+		let key = Defaults.Key<[String: Bag<String>]>("independentCollectionDictionaryKey", default: ["0": Bag(items: [fixtureCollection[0]])])
 		Defaults[key]["0"]?.insert(element: fixtureCollection[1], at: 1)
 		Defaults[key]["1"] = Bag(items: [fixtureCollection[2]])
 		XCTAssertEqual(Defaults[key]["0"]?[0], fixtureCollection[0])
@@ -118,7 +116,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: Bag]?>("independentCollectionDictionaryOptionalKey")
+		let key = Defaults.Key<[String: Bag<String>]?>("independentCollectionDictionaryOptionalKey")
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": Bag(items: [fixtureCollection[0]])]
 		Defaults[key]?["0"]?.insert(element: fixtureCollection[1], at: 1)
@@ -129,7 +127,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testDictionaryArrayKey() {
-		let key = Defaults.Key<[String: [Bag]]>("independentCollectionDictionaryArrayKey", default: ["0": [Bag(items: [fixtureCollection[0]])]])
+		let key = Defaults.Key<[String: [Bag<String>]]>("independentCollectionDictionaryArrayKey", default: ["0": [Bag(items: [fixtureCollection[0]])]])
 		Defaults[key]["0"]?[0].insert(element: fixtureCollection[1], at: 1)
 		Defaults[key]["1"] = [Bag(items: [fixtureCollection[2]])]
 		XCTAssertEqual(Defaults[key]["0"]?[0][0], fixtureCollection[0])
@@ -158,7 +156,7 @@ final class DefaultsCollectionTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
-		let key = Defaults.Key<Bag>("observeCollectionKeyCombine", default: Bag(items: fixtureCollection))
+		let key = Defaults.Key<Bag<String>>("observeCollectionKeyCombine", default: .init(items: fixtureCollection))
 		let item = "Grape"
 		let expect = expectation(description: "Observation closure being called")
 
@@ -185,7 +183,7 @@ final class DefaultsCollectionTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<Bag?>("observeCollectionOptionalKeyCombine")
+		let key = Defaults.Key<Bag<String>?>("observeCollectionOptionalKeyCombine")
 		let item = "Grape"
 		let expect = expectation(description: "Observation closure being called")
 
@@ -215,7 +213,7 @@ final class DefaultsCollectionTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveArrayKeyCombine() {
-		let key = Defaults.Key<[Bag]>("observeCollectionArrayKeyCombine", default: [Bag(items: fixtureCollection)])
+		let key = Defaults.Key<[Bag<String>]>("observeCollectionArrayKeyCombine", default: [.init(items: fixtureCollection)])
 		let item = "Grape"
 		let expect = expectation(description: "Observation closure being called")
 
@@ -242,7 +240,7 @@ final class DefaultsCollectionTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveDictionaryKeyCombine() {
-		let key = Defaults.Key<[String: Bag]>("observeCollectionArrayKeyCombine", default: ["0": Bag(items: fixtureCollection)])
+		let key = Defaults.Key<[String: Bag<String>]>("observeCollectionArrayKeyCombine", default: ["0": .init(items: fixtureCollection)])
 		let item = "Grape"
 		let expect = expectation(description: "Observation closure being called")
 
@@ -268,7 +266,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testObserveKey() {
-		let key = Defaults.Key<Bag>("observeCollectionKey", default: Bag(items: fixtureCollection))
+		let key = Defaults.Key<Bag<String>>("observeCollectionKey", default: .init(items: fixtureCollection))
 		let item = "Grape"
 		let expect = expectation(description: "Observation closure being called")
 
@@ -287,7 +285,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testObserveOptionalKey() {
-		let key = Defaults.Key<Bag?>("observeCollectionOptionalKey")
+		let key = Defaults.Key<Bag<String>?>("observeCollectionOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -298,14 +296,14 @@ final class DefaultsCollectionTests: XCTestCase {
 			expect.fulfill()
 		}
 
-		Defaults[key] = Bag(items: fixtureCollection)
+		Defaults[key] = .init(items: fixtureCollection)
 		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
 
 	func testObserveArrayKey() {
-		let key = Defaults.Key<[Bag]>("observeCollectionArrayKey", default: [Bag(items: fixtureCollection)])
+		let key = Defaults.Key<[Bag<String>]>("observeCollectionArrayKey", default: [.init(items: fixtureCollection)])
 		let item = "Grape"
 		let expect = expectation(description: "Observation closure being called")
 
@@ -324,7 +322,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testObserveDictionaryKey() {
-		let key = Defaults.Key<[String: Bag]>("observeCollectionDictionaryKey", default: ["0": Bag(items: fixtureCollection)])
+		let key = Defaults.Key<[String: Bag<String>]>("observeCollectionDictionaryKey", default: ["0": .init(items: fixtureCollection)])
 		let item = "Grape"
 		let expect = expectation(description: "Observation closure being called")
 

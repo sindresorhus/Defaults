@@ -6,6 +6,10 @@ import AppKit
 import UIKit
 #endif
 
+extension DefaultsSerializable {
+	public static var isNativelySupportedType: Bool { false }
+}
+
 extension Data: Defaults.Serializable {
 	public static let isNativelySupportedType = true
 }
@@ -59,8 +63,12 @@ extension URL: Defaults.Serializable {
 	public static let bridge = Defaults.URLBridge()
 }
 
-extension Defaults.Serializable where Self: Collection & ExpressibleByArrayLiteral, Element: Defaults.Serializable {
+extension Defaults.Serializable where Self: Defaults.CollectionSerializable, Element: Defaults.Serializable {
 	public static var bridge: Defaults.CollectionBridge<Self> { return Defaults.CollectionBridge() }
+}
+
+extension Defaults.Serializable where Self: Defaults.SetAlgebraSerializable, Element: Defaults.Serializable & Hashable {
+	public static var bridge: Defaults.SetAlgebraBridge<Self> { return Defaults.SetAlgebraBridge() }
 }
 
 extension Defaults.Serializable where Self: Codable {

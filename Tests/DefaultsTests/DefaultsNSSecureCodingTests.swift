@@ -4,7 +4,7 @@ import Defaults
 import XCTest
 
 @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults.Serializable {
+private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults.Serializable {
 	let value: String
 
 	init(value: String) {
@@ -308,6 +308,30 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
 		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
 		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
+	func testObserveMultipleNSSecureKeys() {
+		let key1 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
+		let key2 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: Defaults.Observation!
+		var counter = 0
+		observation = Defaults.observe(keys: key1, key2, options: []) {
+			counter += 1
+			if counter == 2 {
+				expect.fulfill()
+			} else if counter > 2 {
+				XCTFail()
+			}
+		}
+
+		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
+		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
+		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}

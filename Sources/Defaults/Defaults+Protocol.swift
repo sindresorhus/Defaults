@@ -12,8 +12,14 @@ public protocol DefaultsSerializable {
 	static var isNativelySupportedType: Bool { get }
 }
 
-extension DefaultsSerializable {
-	public static var isNativelySupportedType: Bool { false }
+public protocol DefaultsCollectionSerializable: Collection & DefaultsSerializable {
+	// Need protocol initialize to complete generic initialization
+	init(_ elements: [Element])
+}
+
+public protocol DefaultsSetAlgebraSerializable: SetAlgebra & DefaultsSerializable {
+	init(_ elements: [Element])
+	func toArray() -> [Element]
 }
 
 public protocol DefaultsBridge {
@@ -30,5 +36,5 @@ public protocol DefaultsBridge {
 	func deserialize(_ object: Serializable?) -> Value?
 }
 
-/// Convenience protocol for `Codable`
+// Convenience protocol for `Codable`
 public protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}

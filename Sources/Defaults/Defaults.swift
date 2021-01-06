@@ -18,6 +18,8 @@ public enum Defaults {
 	public typealias AnyKey = Keys
 	public typealias Serializable = DefaultsSerializable
 	public typealias Bridge = DefaultsBridge
+	public typealias CollectionSerializable = DefaultsCollectionSerializable
+	public typealias SetAlgebraSerializable = DefaultsSetAlgebraSerializable
 	public typealias CodableBridge = DefaultsCodableBridge
 
 	public class Keys: BaseKey {

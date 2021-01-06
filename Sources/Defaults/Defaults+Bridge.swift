@@ -35,19 +35,21 @@ extension Defaults.CodableBridge {
 extension Defaults {
 	public struct TopLevelCodableBridge<Value: Codable>: CodableBridge {}
 
-	// RawRepresentableCodableBridge is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable` the compiler will confuse between RawRepresentableBridge and TopLevelCodableBridge
+	// RawRepresentableCodableBridge is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable`
+	// the compiler will confuse between RawRepresentableBridge and TopLevelCodableBridge
 	public struct RawRepresentableCodableBridge<Value>: CodableBridge where Value: RawRepresentable & Codable {}
 
 	public struct URLBridge: CodableBridge {
 		public typealias Value = URL
 	}
 
-	public struct CollectionBridge<Value: Defaults.Serializable & Collection & ExpressibleByArrayLiteral>: Defaults.Bridge where Value.Element: Defaults.Serializable {
+	public struct CollectionBridge<Value: Defaults.CollectionSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
 		public typealias Value = Value
+		public typealias Element = Value.Element
 		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			if Value.Element.isNativelySupportedType {
+			if Element.isNativelySupportedType {
 				guard let value = value else {
 					return nil
 				}
@@ -55,10 +57,10 @@ extension Defaults {
 				return value.map { $0 }.compact()
 			}
 
-			var array: [Value.Element.Serializable] = []
+			var array: [Element.Serializable] = []
 
 			value?.forEach {
-				guard let element = Value.Element.bridge.serialize($0 as? Value.Element.Value) else {
+				guard let element = Element.bridge.serialize($0 as? Element.Value) else {
 					return
 				}
 
@@ -69,23 +71,59 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			if Value.Element.isNativelySupportedType {
-				guard let object = object as? [Value.ArrayLiteralElement] else {
+			if Element.isNativelySupportedType {
+				guard let object = object as? [Element] else {
 					return nil
 				}
 
-				// We cannot pass an array to variadic function. SR-128
-				return unsafeBitCast(Value.init, to: (([Value.ArrayLiteralElement]) -> Value).self)(object)
+				return Value.init(object)
 			}
 
 			guard
-				let object = object as? [Value.Element.Serializable],
-				let array = object.map({ Value.Element.bridge.deserialize($0) }).compact() as? [Value.ArrayLiteralElement]
+				let object = object as? [Element.Serializable],
+				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
 			else {
 				return nil
 			}
 
-			return unsafeBitCast(Value.init, to: (([Value.ArrayLiteralElement]) -> Value).self)(array)
+			return Value.init(array)
+		}
+	}
+
+	public struct SetAlgebraBridge<Value: Defaults.SetAlgebraSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
+		public typealias Value = Value
+		public typealias Element = Value.Element
+		public typealias Serializable = Any
+
+		public func serialize(_ value: Value?) -> Any? {
+			guard let value = value else {
+				return nil
+			}
+
+			if Element.isNativelySupportedType {
+				return value.toArray()
+			}
+
+			return value.toArray().map { Element.bridge.serialize($0 as? Element.Value) }.compact()
+		}
+
+		public func deserialize(_ object: Any?) -> Value? {
+			if Element.isNativelySupportedType {
+				guard let object = object as? [Element] else {
+					return nil
+				}
+
+				return Value.init(object)
+			}
+
+			guard
+				let object = object as? [Element.Serializable],
+				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+			else {
+				return nil
+			}
+
+			return Value.init(array)
 		}
 	}
 
@@ -165,7 +203,7 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			return object?.reduce([:]) { (memo: [String: Element.Value], tuple: (key: String, value: Element.Serializable)) in
+			object?.reduce([:]) { (memo: [String: Element.Value], tuple: (key: String, value: Element.Serializable)) in
 				var result = memo
 				result[tuple.key] = Element.bridge.deserialize(tuple.value)
 				return result
@@ -220,7 +258,7 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			return object?.map { Element.bridge.deserialize($0) } .compact() as? Value
+			object?.map { Element.bridge.deserialize($0) } .compact() as? Value
 		}
 	}
 }

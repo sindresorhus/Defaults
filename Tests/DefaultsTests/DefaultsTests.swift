@@ -298,30 +298,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	func testObserveMultipleNSSecureKeys() {
-		let key1 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
-		let key2 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		var counter = 0
-		observation = Defaults.observe(keys: key1, key2, options: []) {
-			counter += 1
-			if counter == 2 {
-				expect.fulfill()
-			} else if counter > 2 {
-				XCTFail()
-			}
-		}
-
-		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
-		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
 	func testObserveKeyURL() {
 		let key = Defaults.Key<URL>("observeKeyURL", default: fixtureURL)
 		let expect = expectation(description: "Observation closure being called")
@@ -504,10 +480,8 @@ final class DefaultsTests: XCTestCase {
 	func testResetKey() {
 		let defaultFixture1 = "foo1"
 		let defaultFixture2 = 0
-		let defaultFixture3 = "foo3"
 		let newFixture1 = "bar1"
 		let newFixture2 = 1
-		let newFixture3 = "bar3"
 		let key1 = Defaults.Key<String>("key1", default: defaultFixture1)
 		let key2 = Defaults.Key<Int>("key2", default: defaultFixture2)
 		Defaults[key1] = newFixture1
@@ -515,14 +489,6 @@ final class DefaultsTests: XCTestCase {
 		Defaults.reset(key1)
 		XCTAssertEqual(Defaults[key1], defaultFixture1)
 		XCTAssertEqual(Defaults[key2], newFixture2)
-
-		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
-			let key3 = Defaults.Key<ExamplePersistentHistory>("key3", default: ExamplePersistentHistory(value: defaultFixture3))
-			Defaults[key3] = ExamplePersistentHistory(value: newFixture3)
-			Defaults.reset(key3)
-
-			XCTAssertEqual(Defaults[key3].value, defaultFixture3)
-		}
 	}
 
 	func testResetMultipleKeys() {
@@ -547,7 +513,6 @@ final class DefaultsTests: XCTestCase {
 	func testResetOptionalKey() {
 		let newString1 = "bar1"
 		let newString2 = "bar2"
-		let newString3 = "bar3"
 		let key1 = Defaults.Key<String?>("optionalKey1")
 		let key2 = Defaults.Key<String?>("optionalKey2")
 		Defaults[key1] = newString1
@@ -555,13 +520,6 @@ final class DefaultsTests: XCTestCase {
 		Defaults.reset(key1)
 		XCTAssertEqual(Defaults[key1], nil)
 		XCTAssertEqual(Defaults[key2], newString2)
-
-		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
-			let key3 = Defaults.Key<ExamplePersistentHistory?>("optionalKey3")
-			Defaults[key3] = ExamplePersistentHistory(value: newString3)
-			Defaults.reset(key3)
-			XCTAssertEqual(Defaults[key3], nil)
-		}
 	}
 
 	func testResetMultipleOptionalKeys() {

@@ -1,15 +1,14 @@
 import Foundation
-import Combine
 import XCTest
 import Defaults
 
-struct Item: Defaults.Serializable, Equatable {
+private struct Item: Defaults.Serializable, Equatable {
 	let name: String
 	let count: UInt
 	public static let bridge = ItemBridge()
 }
 
-struct ItemBridge: Defaults.Bridge {
+private struct ItemBridge: Defaults.Bridge {
 	public typealias Value = Item
 	public typealias Serializable = [String: String]
 	public func serialize(_ value: Value?) -> Serializable? {
@@ -33,49 +32,14 @@ struct ItemBridge: Defaults.Bridge {
 	}
 }
 
-
-private struct Bag: Collection, Defaults.Serializable {
-	var items: [Item]
-
-	init(items: [Item]) {
-		self.items = items
-	}
-
-	public var startIndex: Int {
-		items.startIndex
-	}
-
-	public var endIndex: Int {
-		items.endIndex
-	}
-
-	public mutating func insert(element: Item, at: Int) {
-		items.insert(element, at: at)
-	}
-
-	public func index(after i: Int) -> Int {
-		items.index(after: i)
-	}
-
-	subscript(position: Int) -> Item {
-		items[position]
-	}
-}
-
-extension Bag: ExpressibleByArrayLiteral {
-	init(arrayLiteral elements: Item...) {
-		self.items = elements
-	}
-}
-
 private let fixtureCustomCollection = Item(name: "Apple", count: 10)
 private let fixtureCustomCollection1 = Item(name: "Banana", count: 20)
 private let fixtureCustomCollection2 = Item(name: "Grape", count: 30)
 
 extension Defaults.Keys {
-	fileprivate static let collectionCustomElement = Key<Bag>("collectionCustomElement", default: Bag(items: [fixtureCustomCollection]))
-	fileprivate static let collectionCustomElementArray = Key<[Bag]>("collectionCustomElementArray", default: [Bag(items: [fixtureCustomCollection])])
-	fileprivate static let collectionCustomElementDictionary = Key<[String: Bag]>("collectionCustomElementDictionary", default: ["0": Bag(items: [fixtureCustomCollection])])
+	fileprivate static let collectionCustomElement = Key<Bag<Item>>("collectionCustomElement", default: .init(items: [fixtureCustomCollection]))
+	fileprivate static let collectionCustomElementArray = Key<[Bag<Item>]>("collectionCustomElementArray", default: [.init(items: [fixtureCustomCollection])])
+	fileprivate static let collectionCustomElementDictionary = Key<[String: Bag<Item>]>("collectionCustomElementDictionary", default: ["0": .init(items: [fixtureCustomCollection])])
 }
 
 final class DefaultsCollectionCustomElementTests: XCTestCase {
@@ -90,7 +54,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testKey() {
-		let key = Defaults.Key<Bag>("independentCollectionCustomElementKey", default: Bag(items: [fixtureCustomCollection]))
+		let key = Defaults.Key<Bag<Item>>("independentCollectionCustomElementKey", default: .init(items: [fixtureCustomCollection]))
 		Defaults[key].insert(element: fixtureCustomCollection1, at: 1)
 		Defaults[key].insert(element: fixtureCustomCollection2, at: 2)
 		XCTAssertEqual(Defaults[key][0], fixtureCustomCollection)
@@ -99,8 +63,8 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testOptionalKey() {
-		let key = Defaults.Key<Bag?>("independentCollectionCustomElementOptionalKey")
-		Defaults[key] = Bag(items: [fixtureCustomCollection])
+		let key = Defaults.Key<Bag<Item>?>("independentCollectionCustomElementOptionalKey")
+		Defaults[key] = .init(items: [fixtureCustomCollection])
 		Defaults[key]?.insert(element: fixtureCustomCollection1, at: 1)
 		Defaults[key]?.insert(element: fixtureCustomCollection2, at: 2)
 		XCTAssertEqual(Defaults[key]?[0], fixtureCustomCollection)
@@ -109,17 +73,17 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testArrayKey() {
-		let key = Defaults.Key<[Bag]>("independentCollectionCustomElementArrayKey", default: [Bag(items: [fixtureCustomCollection])])
+		let key = Defaults.Key<[Bag<Item>]>("independentCollectionCustomElementArrayKey", default: [.init(items: [fixtureCustomCollection])])
 		Defaults[key][0].insert(element: fixtureCustomCollection1, at: 1)
-		Defaults[key].append(Bag(items: [fixtureCustomCollection2]))
+		Defaults[key].append(.init(items: [fixtureCustomCollection2]))
 		XCTAssertEqual(Defaults[key][0][0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key][0][1], fixtureCustomCollection1)
 		XCTAssertEqual(Defaults[key][1][0], fixtureCustomCollection2)
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[Bag]?>("independentCollectionCustomElementArrayOptionalKey")
-		Defaults[key] = [Bag(items: [fixtureCustomCollection])]
+		let key = Defaults.Key<[Bag<Item>]?>("independentCollectionCustomElementArrayOptionalKey")
+		Defaults[key] = [.init(items: [fixtureCustomCollection])]
 		Defaults[key]?[0].insert(element: fixtureCustomCollection1, at: 1)
 		Defaults[key]?.append(Bag(items: [fixtureCustomCollection2]))
 		XCTAssertEqual(Defaults[key]?[0][0], fixtureCustomCollection)
@@ -128,10 +92,10 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[Bag]]>("independentCollectionCustomElementNestedArrayKey", default: [[Bag(items: [fixtureCustomCollection])]])
+		let key = Defaults.Key<[[Bag<Item>]]>("independentCollectionCustomElementNestedArrayKey", default: [[.init(items: [fixtureCustomCollection])]])
 		Defaults[key][0][0].insert(element: fixtureCustomCollection, at: 1)
-		Defaults[key][0].append(Bag(items: [fixtureCustomCollection1]))
-		Defaults[key].append([Bag(items: [fixtureCustomCollection2])])
+		Defaults[key][0].append(.init(items: [fixtureCustomCollection1]))
+		Defaults[key].append([.init(items: [fixtureCustomCollection2])])
 		XCTAssertEqual(Defaults[key][0][0][0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key][0][0][1], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key][0][1][0], fixtureCustomCollection1)
@@ -139,10 +103,10 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: Bag]]>("independentCollectionCustomElementArrayDictionaryKey", default: [["0": Bag(items: [fixtureCustomCollection])]])
+		let key = Defaults.Key<[[String: Bag<Item>]]>("independentCollectionCustomElementArrayDictionaryKey", default: [["0": .init(items: [fixtureCustomCollection])]])
 		Defaults[key][0]["0"]?.insert(element: fixtureCustomCollection, at: 1)
-		Defaults[key][0]["1"] = Bag(items: [fixtureCustomCollection1])
-		Defaults[key].append(["0": Bag(items: [fixtureCustomCollection2])])
+		Defaults[key][0]["1"] = .init(items: [fixtureCustomCollection1])
+		Defaults[key].append(["0": .init(items: [fixtureCustomCollection2])])
 		XCTAssertEqual(Defaults[key][0]["0"]?[0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key][0]["0"]?[1], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key][0]["1"]?[0], fixtureCustomCollection1)
@@ -150,29 +114,29 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: Bag]>("independentCollectionCustomElementDictionaryKey", default: ["0": Bag(items: [fixtureCustomCollection])])
+		let key = Defaults.Key<[String: Bag<Item>]>("independentCollectionCustomElementDictionaryKey", default: ["0": .init(items: [fixtureCustomCollection])])
 		Defaults[key]["0"]?.insert(element: fixtureCustomCollection1, at: 1)
-		Defaults[key]["1"] = Bag(items: [fixtureCustomCollection2])
+		Defaults[key]["1"] = .init(items: [fixtureCustomCollection2])
 		XCTAssertEqual(Defaults[key]["0"]?[0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key]["0"]?[1], fixtureCustomCollection1)
 		XCTAssertEqual(Defaults[key]["1"]?[0], fixtureCustomCollection2)
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: Bag]?>("independentCollectionCustomElementDictionaryOptionalKey")
-		Defaults[key] = ["0": Bag(items: [fixtureCustomCollection])]
+		let key = Defaults.Key<[String: Bag<Item>]?>("independentCollectionCustomElementDictionaryOptionalKey")
+		Defaults[key] = ["0": .init(items: [fixtureCustomCollection])]
 		Defaults[key]?["0"]?.insert(element: fixtureCustomCollection1, at: 1)
-		Defaults[key]?["1"] = Bag(items: [fixtureCustomCollection2])
+		Defaults[key]?["1"] = .init(items: [fixtureCustomCollection2])
 		XCTAssertEqual(Defaults[key]?["0"]?[0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key]?["0"]?[1], fixtureCustomCollection1)
 		XCTAssertEqual(Defaults[key]?["1"]?[0], fixtureCustomCollection2)
 	}
 
 	func testDictionaryArrayKey() {
-		let key = Defaults.Key<[String: [Bag]]>("independentCollectionCustomElementDictionaryArrayKey", default: ["0": [Bag(items: [fixtureCustomCollection])]])
+		let key = Defaults.Key<[String: [Bag<Item>]]>("independentCollectionCustomElementDictionaryArrayKey", default: ["0": [.init(items: [fixtureCustomCollection])]])
 		Defaults[key]["0"]?[0].insert(element: fixtureCustomCollection, at: 1)
-		Defaults[key]["0"]?.append(Bag(items: [fixtureCustomCollection1]))
-		Defaults[key]["1"] = [Bag(items: [fixtureCustomCollection2])]
+		Defaults[key]["0"]?.append(.init(items: [fixtureCustomCollection1]))
+		Defaults[key]["1"] = [.init(items: [fixtureCustomCollection2])]
 		XCTAssertEqual(Defaults[key]["0"]?[0][0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key]["0"]?[0][1], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[key]["0"]?[1][0], fixtureCustomCollection1)
@@ -189,7 +153,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 
 	func testArrayType() {
 		Defaults[.collectionCustomElementArray][0].insert(element: fixtureCustomCollection1, at: 1)
-		Defaults[.collectionCustomElementArray].append(Bag(items: [fixtureCustomCollection2]))
+		Defaults[.collectionCustomElementArray].append(.init(items: [fixtureCustomCollection2]))
 		XCTAssertEqual(Defaults[.collectionCustomElementArray][0][0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[.collectionCustomElementArray][0][1], fixtureCustomCollection1)
 		XCTAssertEqual(Defaults[.collectionCustomElementArray][1][0], fixtureCustomCollection2)
@@ -197,7 +161,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 
 	func testDictionaryType() {
 		Defaults[.collectionCustomElementDictionary]["0"]?.insert(element: fixtureCustomCollection1, at: 1)
-		Defaults[.collectionCustomElementDictionary]["1"] = Bag(items: [fixtureCustomCollection2])
+		Defaults[.collectionCustomElementDictionary]["1"] = .init(items: [fixtureCustomCollection2])
 		XCTAssertEqual(Defaults[.collectionCustomElementDictionary]["0"]?[0], fixtureCustomCollection)
 		XCTAssertEqual(Defaults[.collectionCustomElementDictionary]["0"]?[1], fixtureCustomCollection1)
 		XCTAssertEqual(Defaults[.collectionCustomElementDictionary]["1"]?[0], fixtureCustomCollection2)
@@ -205,7 +169,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
-		let key = Defaults.Key<Bag>("observeCollectionCustomElementKeyCombine", default: Bag(items: [fixtureCustomCollection]))
+		let key = Defaults.Key<Bag<Item>>("observeCollectionCustomElementKeyCombine", default: .init(items: [fixtureCustomCollection]))
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -231,7 +195,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<Bag?>("observeCollectionCustomElementOptionalKeyCombine")
+		let key = Defaults.Key<Bag<Item>?>("observeCollectionCustomElementOptionalKeyCombine")
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -250,7 +214,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 			expect.fulfill()
 		}
 
-		Defaults[key] = Bag(items: [fixtureCustomCollection])
+		Defaults[key] = .init(items: [fixtureCustomCollection])
 		Defaults[key]?.insert(element: fixtureCustomCollection1, at: 0)
 		Defaults.reset(key)
 		cancellable.cancel()
@@ -260,7 +224,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveArrayKeyCombine() {
-		let key = Defaults.Key<[Bag]>("observeCollectionCustomElementArrayKeyCombine", default: [Bag(items: [fixtureCustomCollection])])
+		let key = Defaults.Key<[Bag<Item>]>("observeCollectionCustomElementArrayKeyCombine", default: [.init(items: [fixtureCustomCollection])])
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -286,7 +250,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveDictionaryKeyCombine() {
-		let key = Defaults.Key<[String: Bag]>("observeCollectionCustomElementDictionaryKeyCombine", default: ["0": Bag(items: [fixtureCustomCollection])])
+		let key = Defaults.Key<[String: Bag<Item>]>("observeCollectionCustomElementDictionaryKeyCombine", default: ["0": .init(items: [fixtureCustomCollection])])
 		let expect = expectation(description: "Observation closure being called")
 
 		let publisher = Defaults
@@ -311,7 +275,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testObserveKey() {
-		let key = Defaults.Key<Bag>("observeCollectionCustomElementKey", default: Bag(items: [fixtureCustomCollection]))
+		let key = Defaults.Key<Bag<Item>>("observeCollectionCustomElementKey", default: .init(items: [fixtureCustomCollection]))
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -329,7 +293,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testObserveOptionalKey() {
-		let key = Defaults.Key<Bag?>("observeCollectionCustomElementOptionalKey")
+		let key = Defaults.Key<Bag<Item>?>("observeCollectionCustomElementOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -340,14 +304,14 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 			expect.fulfill()
 		}
 
-		Defaults[key] = Bag(items: [fixtureCustomCollection])
+		Defaults[key] = .init(items: [fixtureCustomCollection])
 		observation.invalidate()
 
 		waitForExpectations(timeout: 10)
 	}
 
 	func testObserveArrayKey() {
-		let key = Defaults.Key<[Bag]>("observeCollectionCustomElementArrayKey", default: [Bag(items: [fixtureCustomCollection])])
+		let key = Defaults.Key<[Bag<Item>]>("observeCollectionCustomElementArrayKey", default: [.init(items: [fixtureCustomCollection])])
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
@@ -365,7 +329,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testObserveDictionaryKey() {
-		let key = Defaults.Key<[String: Bag]>("observeCollectionCustomElementArrayKey", default: ["0": Bag(items: [fixtureCustomCollection])])
+		let key = Defaults.Key<[String: Bag<Item>]>("observeCollectionCustomElementArrayKey", default: ["0": .init(items: [fixtureCustomCollection])])
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!
