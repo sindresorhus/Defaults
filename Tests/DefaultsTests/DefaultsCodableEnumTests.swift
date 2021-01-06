@@ -2,16 +2,16 @@ import Foundation
 import Defaults
 import XCTest
 
-enum FixtureCodableEnum: String, Codable, Defaults.Serializable {
+private enum FixtureCodableEnum: String, Codable, Defaults.Serializable {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
 }
 
 extension Defaults.Keys {
-	static let codableEnum = Key<FixtureCodableEnum>("codable_enum", default: .oneHour)
-	static let codableEnumArray = Key<[FixtureCodableEnum]>("codable_enum", default: [.oneHour])
-	static let codableEnumDictionary = Key<[String: FixtureCodableEnum]>("codable_enum", default: ["0": .oneHour])
+	fileprivate static let codableEnum = Key<FixtureCodableEnum>("codable_enum", default: .oneHour)
+	fileprivate static let codableEnumArray = Key<[FixtureCodableEnum]>("codable_enum", default: [.oneHour])
+	fileprivate static let codableEnumDictionary = Key<[String: FixtureCodableEnum]>("codable_enum", default: ["0": .oneHour])
 }
 
 final class DefaultsCodableEnumTests: XCTestCase {

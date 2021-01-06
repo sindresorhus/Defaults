@@ -4,9 +4,9 @@ import SwiftUI
 import Defaults
 
 extension Defaults.Keys {
-	static let hasUnicorn = Key<Bool>("swiftui_hasUnicorn", default: false)
-	static let user = Key<User>("swiftui_user", default: User(username: "Hank", password: "123456"))
-	static let setInt = Key<Set<Int>>("swiftui_setInt", default: Set(1...3))
+	fileprivate static let hasUnicorn = Key<Bool>("swiftui_hasUnicorn", default: false)
+	fileprivate static let user = Key<User>("swiftui_user", default: User(username: "Hank", password: "123456"))
+	fileprivate static let setInt = Key<Set<Int>>("swiftui_setInt", default: Set(1...3))
 }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)

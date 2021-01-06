@@ -26,13 +26,13 @@ final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults.Seriali
 
 // NSSecureCoding
 @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
+private let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
 
 @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 extension Defaults.Keys {
-	static let persistentHistory = Key<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
-	static let persistentHistoryArray = Key<[ExamplePersistentHistory]>("array_persistentHistory", default: [persistentHistoryValue])
-	static let persistentHistoryDictionary = Key<[String: ExamplePersistentHistory]>("dictionary_persistentHistory", default: ["0": persistentHistoryValue])
+	fileprivate static let persistentHistory = Key<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
+	fileprivate static let persistentHistoryArray = Key<[ExamplePersistentHistory]>("array_persistentHistory", default: [persistentHistoryValue])
+	fileprivate static let persistentHistoryDictionary = Key<[String: ExamplePersistentHistory]>("dictionary_persistentHistory", default: ["0": persistentHistoryValue])
 }
 
 @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)

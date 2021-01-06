@@ -339,40 +339,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	func testObserveKeyCodable() {
-		let key = Defaults.Key<Unicorn>("observeKeyCodable", default: Unicorn(isUnicorn: false))
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertFalse(change.oldValue.isUnicorn)
-			XCTAssertTrue(change.newValue.isUnicorn)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = Unicorn(isUnicorn: true)
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveKeyOptionalIntEnum() {
-		let key = Defaults.Key<FixtureCodableEnum?>("observeKeyOptionalIntEnum")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue, nil)
-			XCTAssertEqual(change.newValue, .halfHour)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = .halfHour
-
-		waitForExpectations(timeout: 10)
-	}
-
 	func testObservePreventPropagation() {
 		let key1 = Defaults.Key<Bool?>("preventPropagation0", default: nil)
 		let expect = expectation(description: "No infinite recursion")

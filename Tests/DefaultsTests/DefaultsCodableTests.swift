@@ -3,16 +3,16 @@ import Combine
 import XCTest
 import Defaults
 
-struct Unicorn: Codable, Defaults.Serializable {
+private struct Unicorn: Codable, Defaults.Serializable {
 	var isUnicorn: Bool
 }
 
-let fixtureCodable = Unicorn(isUnicorn: true)
+private let fixtureCodable = Unicorn(isUnicorn: true)
 
 extension Defaults.Keys {
-	static let codable = Key<Unicorn>("codable", default: fixtureCodable)
-	static let codableArray = Key<[Unicorn]>("codable", default: [fixtureCodable])
-	static let codableDictionary = Key<[String: Unicorn]>("codable", default: ["0": fixtureCodable])
+	fileprivate static let codable = Key<Unicorn>("codable", default: fixtureCodable)
+	fileprivate static let codableArray = Key<[Unicorn]>("codable", default: [fixtureCodable])
+	fileprivate static let codableDictionary = Key<[String: Unicorn]>("codable", default: ["0": fixtureCodable])
 }
 
 final class DefaultsCodableTests: XCTestCase {

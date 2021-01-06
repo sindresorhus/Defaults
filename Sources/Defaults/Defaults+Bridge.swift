@@ -55,12 +55,13 @@ extension Defaults {
 				return value.map { $0 }.compact()
 			}
 
-			var array: [Value.Serializable] = []
+			var array: [Value.Element.Serializable] = []
 
 			value?.forEach {
-				guard let element = Value.bridge.serialize($0 as? Value.Value) else {
+				guard let element = Value.Element.bridge.serialize($0 as? Value.Element.Value) else {
 					return
 				}
+
 				array.append(element)
 			}
 
@@ -78,8 +79,8 @@ extension Defaults {
 			}
 
 			guard
-				let object = object as? [Value.Serializable],
-				let array = object.map({ Value.bridge.deserialize($0) }).compact() as? [Value.ArrayLiteralElement]
+				let object = object as? [Value.Element.Serializable],
+				let array = object.map({ Value.Element.bridge.deserialize($0) }).compact() as? [Value.ArrayLiteralElement]
 			else {
 				return nil
 			}

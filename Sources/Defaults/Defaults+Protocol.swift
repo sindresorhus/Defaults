@@ -30,5 +30,5 @@ public protocol DefaultsBridge {
 	func deserialize(_ object: Serializable?) -> Value?
 }
 
-// Convenience protocol for `Codable`
+/// Convenience protocol for `Codable`
 public protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}

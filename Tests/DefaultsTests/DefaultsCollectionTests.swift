@@ -3,7 +3,7 @@ import Combine
 import XCTest
 import Defaults
 
-struct Bag: Collection, Defaults.Serializable {
+private struct Bag: Collection, Defaults.Serializable {
 	var items: [String]
 
 	init(items: [String]) {
@@ -40,9 +40,9 @@ extension Bag: ExpressibleByArrayLiteral {
 private let fixtureCollection = ["Juice", "Apple", "Banana"]
 
 extension Defaults.Keys {
-	static let collection = Key<Bag>("collection", default: Bag(items: fixtureCollection))
-	static let collectionArray = Key<[Bag]>("collectionArray", default: [Bag(items: fixtureCollection)])
-	static let collectionDictionary = Key<[String: Bag]>("collectionDictionary", default: ["0": Bag(items: fixtureCollection)])
+	fileprivate static let collection = Key<Bag>("collection", default: Bag(items: fixtureCollection))
+	fileprivate static let collectionArray = Key<[Bag]>("collectionArray", default: [Bag(items: fixtureCollection)])
+	fileprivate static let collectionDictionary = Key<[String: Bag]>("collectionDictionary", default: ["0": Bag(items: fixtureCollection)])
 }
 
 final class DefaultsCollectionTests: XCTestCase {

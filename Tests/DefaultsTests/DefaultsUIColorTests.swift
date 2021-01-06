@@ -3,14 +3,14 @@ import Defaults
 import XCTest
 import UIKit
 
-let fixtureColor = UIColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 1)
-let fixtureColor1 = UIColor(red: CGFloat(255) / CGFloat(0xFF), green: CGFloat(241) / CGFloat(0xFF), blue: CGFloat(180) / CGFloat(0xFF), alpha: 1)
-let fixtureColor2 = UIColor(red: CGFloat(255) / CGFloat(0xFF), green: CGFloat(180) / CGFloat(0xFF), blue: CGFloat(194) / CGFloat(0xFF), alpha: 1)
+private let fixtureColor = UIColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 1)
+private let fixtureColor1 = UIColor(red: CGFloat(255) / CGFloat(0xFF), green: CGFloat(241) / CGFloat(0xFF), blue: CGFloat(180) / CGFloat(0xFF), alpha: 1)
+private let fixtureColor2 = UIColor(red: CGFloat(255) / CGFloat(0xFF), green: CGFloat(180) / CGFloat(0xFF), blue: CGFloat(194) / CGFloat(0xFF), alpha: 1)
 
 extension Defaults.Keys {
-	static let color = Defaults.Key<UIColor>("NSColor", default: fixtureColor)
-	static let colorArray = Defaults.Key<[UIColor]>("NSColorArray", default: [fixtureColor])
-	static let colorDictionary = Defaults.Key<[String: UIColor]>("NSColorArray", default: ["0": fixtureColor])
+	fileprivate static let color = Defaults.Key<UIColor>("NSColor", default: fixtureColor)
+	fileprivate static let colorArray = Defaults.Key<[UIColor]>("NSColorArray", default: [fixtureColor])
+	fileprivate static let colorDictionary = Defaults.Key<[String: UIColor]>("NSColorArray", default: ["0": fixtureColor])
 }
 
 final class DefaultsNSColorTests: XCTestCase {

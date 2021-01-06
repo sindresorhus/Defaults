@@ -2,10 +2,10 @@ import Foundation
 import Defaults
 import XCTest
 
-let fixtureArray = ["Hank", "Chen"]
+private let fixtureArray = ["Hank", "Chen"]
 
 extension Defaults.Keys {
-	static let array = Key<[String]>("array", default: fixtureArray)
+	fileprivate static let array = Key<[String]>("array", default: fixtureArray)
 }
 
 final class DefaultsArrayTests: XCTestCase {

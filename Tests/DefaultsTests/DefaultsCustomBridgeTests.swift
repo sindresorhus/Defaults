@@ -25,23 +25,32 @@ final class User: Defaults.Serializable, Hashable, Equatable {
 
 final class DefaultsUserBridge: Defaults.Bridge {
 	public func serialize(_ value: User?) -> [String: String]? {
-		return ["username": value?.username ?? "", "password": value?.password ?? ""]
+		guard let value = value else {
+			return nil
+		}
+
+		return ["username": value.username, "password": value.password]
 	}
 
 	public func deserialize(_ object: [String: String]?) -> User? {
-		guard let object = object else {
+		guard
+			let object = object,
+			let username = object["username"],
+			let password = object["password"]
+		else {
 			return nil
 		}
-		return User(username: object["username"] ?? "", password: object["password"] ?? "")
+
+		return User(username: username, password: password)
 	}
 }
 
 private let fixtureCustomBridge = User(username: "hank121314", password: "123456")
 
 extension Defaults.Keys {
-	static let customBridge = Key<User>("customBridge", default: fixtureCustomBridge)
-	static let customBridgeArray = Key<[User]>("array_customBridge", default: [fixtureCustomBridge])
-	static let customBridgeDictionary = Key<[String: User]>("dictionary_customBridge", default: ["0": fixtureCustomBridge])
+	fileprivate static let customBridge = Key<User>("customBridge", default: fixtureCustomBridge)
+	fileprivate static let customBridgeArray = Key<[User]>("array_customBridge", default: [fixtureCustomBridge])
+	fileprivate static let customBridgeDictionary = Key<[String: User]>("dictionary_customBridge", default: ["0": fixtureCustomBridge])
 }
 
 
@@ -105,13 +114,10 @@ final class DefaultsCustomBridge: XCTestCase {
 	func testArrayDictionaryKey() {
 		let key = Defaults.Key<[[String: User]]>("independentCustomBridgeArrayDictionaryKey", default: [["0": fixtureCustomBridge], ["0": fixtureCustomBridge]])
 		XCTAssertEqual(Defaults[key][0]["0"]?.username, fixtureCustomBridge.username)
-		let newUsername = "John"
-		let newPassword = "7891011"
-		Defaults[key][0]["0"] = User(username: newUsername, password: newPassword)
-		XCTAssertEqual(Defaults[key][0]["0"]?.username, newUsername)
-		XCTAssertEqual(Defaults[key][0]["0"]?.password, newPassword)
-		XCTAssertEqual(Defaults[key][1]["0"]?.username, fixtureCustomBridge.username)
-		XCTAssertEqual(Defaults[key][1]["0"]?.password, fixtureCustomBridge.password)
+		let newUser = User(username: "sindresorhus", password: "123456789")
+		Defaults[key][0]["0"] = newUser
+		XCTAssertEqual(Defaults[key][0]["0"], newUser)
+		XCTAssertEqual(Defaults[key][1]["0"], fixtureCustomBridge)
 	}
 
 	func testSetKey() {
@@ -119,6 +125,9 @@ final class DefaultsCustomBridge: XCTestCase {
 		XCTAssertEqual(Defaults[key].first, fixtureCustomBridge)
 		Defaults[key].insert(fixtureCustomBridge)
 		XCTAssertEqual(Defaults[key].count, 1)
+		let newUser = User(username: "sindresorhus", password: "123456789")
+		Defaults[key].insert(newUser)
+		XCTAssertTrue(Defaults[key].contains(newUser))
 	}
 
 	func testDictionaryKey() {

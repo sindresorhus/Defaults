@@ -2,16 +2,16 @@ import Foundation
 import Defaults
 import XCTest
 
-enum FixtureEnum: String, Defaults.Serializable {
+private enum FixtureEnum: String, Defaults.Serializable {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
 }
 
 extension Defaults.Keys {
-	static let `enum` = Key<FixtureEnum>("enum", default: .tenMinutes)
-	static let enumArray = Key<[FixtureEnum]>("array_enum", default: [.tenMinutes])
-	static let enumDictionary = Key<[String: FixtureEnum]>("dictionary_enum", default: ["0": .tenMinutes])
+	fileprivate static let `enum` = Key<FixtureEnum>("enum", default: .tenMinutes)
+	fileprivate static let enumArray = Key<[FixtureEnum]>("array_enum", default: [.tenMinutes])
+	fileprivate static let enumDictionary = Key<[String: FixtureEnum]>("dictionary_enum", default: ["0": .tenMinutes])
 }
 
 final class DefaultsEnumTests: XCTestCase {

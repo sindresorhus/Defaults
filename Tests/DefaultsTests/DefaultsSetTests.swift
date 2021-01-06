@@ -2,10 +2,10 @@ import Foundation
 import Defaults
 import XCTest
 
-let fixtureSet = Set(1...5)
+private let fixtureSet = Set(1...5)
 
 extension Defaults.Keys {
-	static let set = Key<Set<Int>>("setInt", default: fixtureSet)
+	fileprivate static let set = Key<Set<Int>>("setInt", default: fixtureSet)
 }
 
 final class DefaultsSetTests: XCTestCase {

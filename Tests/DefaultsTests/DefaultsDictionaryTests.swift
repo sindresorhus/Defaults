@@ -2,11 +2,12 @@ import Foundation
 import Defaults
 import XCTest
 
-let fixtureDictionary = ["0": "Hank"]
+private let fixtureDictionary = ["0": "Hank"]
 
+private let fixtureArray = ["Hank", "Chen"]
 
 extension Defaults.Keys {
-	static let dictionary = Key<[String: String]>("dictionary", default: fixtureDictionary)
+	fileprivate static let dictionary = Key<[String: String]>("dictionary", default: fixtureDictionary)
 }
 
 final class DefaultsDictionaryTests: XCTestCase {
@@ -114,32 +115,6 @@ final class DefaultsDictionaryTests: XCTestCase {
 		Defaults[key] = fixtureDictionary
 		Defaults[key] = newName
 		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-	func testObserveEnumKeyCombine() {
-		let key = Defaults.Key<[String: FixtureEnum]>("observeDictionaryEnumKeyCombine", default: ["0": .tenMinutes])
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(FixtureEnum.tenMinutes, FixtureEnum.halfHour), (FixtureEnum.halfHour, FixtureEnum.oneHour)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"])
-				XCTAssertEqual(expected.1, tuples[i].1["0"])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key]["0"] = .halfHour
-		Defaults[key]["0"] = .oneHour
 		cancellable.cancel()
 
 		waitForExpectations(timeout: 10)

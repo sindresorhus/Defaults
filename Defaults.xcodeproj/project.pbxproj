@@ -14,6 +14,9 @@
 		7108EAF425949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
 		7108EAF525949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
 		7108EAF625949DBF0013A623 /* DefaultsDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */; };
+		71362AC025A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71362ABF25A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift */; };
+		71362AC125A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71362ABF25A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift */; };
+		71362AC225A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71362ABF25A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift */; };
 		71573E9925A445CE00F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
 		71573EA125A445D400F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
 		71573EA925A445DB00F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
@@ -121,6 +124,7 @@
 		6614F6E222FC6E1C00B0C9CE /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = readme.md; sourceTree = "<group>"; usesTabs = 1; };
 		7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsSwiftUITests.swift; sourceTree = "<group>"; };
 		7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsDictionaryTests.swift; sourceTree = "<group>"; };
+		71362ABF25A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCollectionCustomElementTests.swift; sourceTree = "<group>"; };
 		71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCollectionTests.swift; sourceTree = "<group>"; };
 		718B783225917CCA004FF90D /* Defaults+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Protocol.swift"; sourceTree = "<group>"; };
 		718B783E25917D09004FF90D /* Defaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Extensions.swift"; sourceTree = "<group>"; };
@@ -263,6 +267,7 @@
 				71C56006259C25080053CCB3 /* DefaultsUIColorTests.swift */,
 				71C5602D259C2A950053CCB3 /* DefaultsSetTests.swift */,
 				71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */,
+				71362ABF25A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift */,
 			);
 			name = Tests;
 			path = Tests/DefaultsTests;
@@ -615,6 +620,7 @@
 				71B96F1E259986F100079F69 /* DefaultsCodableTests.swift in Sources */,
 				71F0030F2595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */,
 				7191AD872591977700AD472F /* DefaultsArrayTests.swift in Sources */,
+				71362AC025A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -685,6 +691,7 @@
 				71B96F1F259986F100079F69 /* DefaultsCodableTests.swift in Sources */,
 				71F003102595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */,
 				7191AD882591977700AD472F /* DefaultsArrayTests.swift in Sources */,
+				71362AC125A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -704,6 +711,7 @@
 				71B96F20259986F100079F69 /* DefaultsCodableTests.swift in Sources */,
 				71F003112595C7B8001A1864 /* DefaultsEnumTests.swift in Sources */,
 				7191AD892591977700AD472F /* DefaultsArrayTests.swift in Sources */,
+				71362AC225A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
