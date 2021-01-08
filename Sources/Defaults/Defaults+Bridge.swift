@@ -111,8 +111,7 @@ extension Defaults {
 				return nil
 			}
 
-			let object = array.map { Element.bridge.serialize($0) } .compact()
-			return object
+			return array.map { Element.bridge.serialize($0) } .compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
@@ -170,11 +169,14 @@ extension Defaults {
 				return Set(array)
 			}
 
-			guard let array = object as? [Element.Serializable] else {
+			guard
+				let array = object as? [Element.Serializable],
+				let elements = array.map({ Element.bridge.deserialize($0)}) .compact() as? [Element]
+			else {
 				return nil
 			}
 
-			return Set(array.map({ Element.bridge.deserialize($0) as? Element}) .compact())
+			return Set(elements)
 		}
 	}
 
@@ -184,34 +186,34 @@ extension Defaults {
 		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let value = value else {
+			guard let setAlgebra = value else {
 				return nil
 			}
 
 			if Element.isNativelySupportedType {
-				return value.toArray()
+				return setAlgebra.toArray()
 			}
 
-			return value.toArray().map { Element.bridge.serialize($0 as? Element.Value) }.compact()
+			return setAlgebra.toArray().map { Element.bridge.serialize($0 as? Element.Value) }.compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
 			if Element.isNativelySupportedType {
-				guard let object = object as? [Element] else {
+				guard let array = object as? [Element] else {
 					return nil
 				}
 
-				return Value.init(object)
+				return Value.init(array)
 			}
 
 			guard
-				let object = object as? [Element.Serializable],
-				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+				let array = object as? [Element.Serializable],
+				let elements = array.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
 			else {
 				return nil
 			}
 
-			return Value.init(array)
+			return Value.init(elements)
 		}
 	}
 
@@ -221,34 +223,34 @@ extension Defaults {
 		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let value = value else {
+			guard let collection = value else {
 				return nil
 			}
 
 			if Element.isNativelySupportedType {
-				return Array(value)
+				return Array(collection)
 			}
 
-			return value.map { Element.bridge.serialize($0 as? Element.Value) }.compact()
+			return collection.map { Element.bridge.serialize($0 as? Element.Value) }.compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
 			if Element.isNativelySupportedType {
-				guard let object = object as? [Element] else {
+				guard let array = object as? [Element] else {
 					return nil
 				}
 
-				return Value.init(object)
+				return Value.init(array)
 			}
 
 			guard
-				let object = object as? [Element.Serializable],
-				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+				let array = object as? [Element.Serializable],
+				let elements = array.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
 			else {
 				return nil
 			}
 
-			return Value.init(array)
+			return Value.init(elements)
 		}
 	}
 }

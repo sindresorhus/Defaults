@@ -34,12 +34,12 @@ public enum Defaults {
 		}
 	}
 
-	public final class Key<Value>: AnyKey {
+	public final class Key<Value: Serializable>: AnyKey {
 		public let defaultValue: Value
 
 		/// Create a defaults key.
 		/// The `default` parameter can be left out if the `Value` type is an optional.
-		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) where Value: Serializable {
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
 			self.defaultValue = defaultValue
 
 			super.init(name: key, suite: suite)
