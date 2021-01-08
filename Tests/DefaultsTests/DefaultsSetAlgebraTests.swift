@@ -4,12 +4,9 @@ import Defaults
 
 struct DefaultsSetAlgebra<Element : Defaults.Serializable & Hashable>: Defaults.SetAlgebraSerializable {
 	var store = Set<Element>()
+
 	public init() {}
-
-	public init(_ elements: [Element]) {
-		store = Set(elements)
-	}
-
+	
 	public init(_store: Set<Element>) {
 		store = _store
 	}
@@ -24,9 +21,9 @@ struct DefaultsSetAlgebra<Element : Defaults.Serializable & Hashable>: Defaults.
 
 	public func intersection(_ other: DefaultsSetAlgebra)
 		-> DefaultsSetAlgebra {
-		var defaultedSetAlgebra = DefaultsSetAlgebra()
-		defaultedSetAlgebra.store = store.intersection(other.store)
-		return defaultedSetAlgebra
+		var defaultsSetAlgebra = DefaultsSetAlgebra()
+		defaultsSetAlgebra.store = store.intersection(other.store)
+		return defaultsSetAlgebra
 	}
 
 	public func symmetricDifference(_ other: DefaultsSetAlgebra)

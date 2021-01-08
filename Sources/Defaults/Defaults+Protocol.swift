@@ -18,7 +18,7 @@ public protocol DefaultsCollectionSerializable: Collection & DefaultsSerializabl
 }
 
 public protocol DefaultsSetAlgebraSerializable: SetAlgebra & DefaultsSerializable {
-	init(_ elements: [Element])
+	// We cannot convert `SetAlgebra` to array directly
 	func toArray() -> [Element]
 }
 

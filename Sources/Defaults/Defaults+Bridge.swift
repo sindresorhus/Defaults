@@ -37,94 +37,10 @@ extension Defaults {
 
 	// RawRepresentableCodableBridge is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable`
 	// the compiler will confuse between RawRepresentableBridge and TopLevelCodableBridge
-	public struct RawRepresentableCodableBridge<Value>: CodableBridge where Value: RawRepresentable & Codable {}
+	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {}
 
 	public struct URLBridge: CodableBridge {
 		public typealias Value = URL
-	}
-
-	public struct CollectionBridge<Value: Defaults.CollectionSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
-		public typealias Value = Value
-		public typealias Element = Value.Element
-		public typealias Serializable = Any
-
-		public func serialize(_ value: Value?) -> Serializable? {
-			if Element.isNativelySupportedType {
-				guard let value = value else {
-					return nil
-				}
-
-				return value.map { $0 }.compact()
-			}
-
-			var array: [Element.Serializable] = []
-
-			value?.forEach {
-				guard let element = Element.bridge.serialize($0 as? Element.Value) else {
-					return
-				}
-
-				array.append(element)
-			}
-
-			return array
-		}
-
-		public func deserialize(_ object: Serializable?) -> Value? {
-			if Element.isNativelySupportedType {
-				guard let object = object as? [Element] else {
-					return nil
-				}
-
-				return Value.init(object)
-			}
-
-			guard
-				let object = object as? [Element.Serializable],
-				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
-			else {
-				return nil
-			}
-
-			return Value.init(array)
-		}
-	}
-
-	public struct SetAlgebraBridge<Value: Defaults.SetAlgebraSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
-		public typealias Value = Value
-		public typealias Element = Value.Element
-		public typealias Serializable = Any
-
-		public func serialize(_ value: Value?) -> Any? {
-			guard let value = value else {
-				return nil
-			}
-
-			if Element.isNativelySupportedType {
-				return value.toArray()
-			}
-
-			return value.toArray().map { Element.bridge.serialize($0 as? Element.Value) }.compact()
-		}
-
-		public func deserialize(_ object: Any?) -> Value? {
-			if Element.isNativelySupportedType {
-				guard let object = object as? [Element] else {
-					return nil
-				}
-
-				return Value.init(object)
-			}
-
-			guard
-				let object = object as? [Element.Serializable],
-				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
-			else {
-				return nil
-			}
-
-			return Value.init(array)
-		}
 	}
 
 	public struct RawRepresentableBridge<Value: RawRepresentable>: Defaults.Bridge {
@@ -186,6 +102,24 @@ extension Defaults {
 		}
 	}
 
+	public struct ArrayBridge<Element: Defaults.Serializable>: Defaults.Bridge {
+		public typealias Value = [Element]
+		public typealias Serializable = [Element.Serializable]
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let array = value as? [Element.Value] else {
+				return nil
+			}
+
+			let object = array.map { Element.bridge.serialize($0) } .compact()
+			return object
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			object?.map { Element.bridge.deserialize($0) } .compact() as? Value
+		}
+	}
+
 	public struct DictionaryBridge<Element: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = [String: Element]
 		public typealias Serializable = [String: Element.Serializable]
@@ -244,21 +178,77 @@ extension Defaults {
 		}
 	}
 
-	public struct ArrayBridge<Element: Defaults.Serializable>: Defaults.Bridge {
-		public typealias Value = [Element]
-		public typealias Serializable = [Element.Serializable]
+	public struct SetAlgebraBridge<Value: Defaults.SetAlgebraSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
+		public typealias Value = Value
+		public typealias Element = Value.Element
+		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let array = value as? [Element.Value] else {
+			guard let value = value else {
 				return nil
 			}
 
-			let object = array.map { Element.bridge.serialize($0) } .compact()
-			return object
+			if Element.isNativelySupportedType {
+				return value.toArray()
+			}
+
+			return value.toArray().map { Element.bridge.serialize($0 as? Element.Value) }.compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			object?.map { Element.bridge.deserialize($0) } .compact() as? Value
+			if Element.isNativelySupportedType {
+				guard let object = object as? [Element] else {
+					return nil
+				}
+
+				return Value.init(object)
+			}
+
+			guard
+				let object = object as? [Element.Serializable],
+				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+			else {
+				return nil
+			}
+
+			return Value.init(array)
+		}
+	}
+
+	public struct CollectionBridge<Value: Defaults.CollectionSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
+		public typealias Value = Value
+		public typealias Element = Value.Element
+		public typealias Serializable = Any
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let value = value else {
+				return nil
+			}
+
+			if Element.isNativelySupportedType {
+				return Array(value)
+			}
+
+			return value.map { Element.bridge.serialize($0 as? Element.Value) }.compact()
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			if Element.isNativelySupportedType {
+				guard let object = object as? [Element] else {
+					return nil
+				}
+
+				return Value.init(object)
+			}
+
+			guard
+				let object = object as? [Element.Serializable],
+				let array = object.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+			else {
+				return nil
+			}
+
+			return Value.init(array)
 		}
 	}
 }
