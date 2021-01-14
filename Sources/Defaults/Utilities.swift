@@ -9,9 +9,8 @@ extension Decodable {
 		self = value
 	}
 
-	init?(jsonString: String?) {
-		guard let jsonString = jsonString,
-					let data = "[\(jsonString)]".data(using: .utf8) else {
+	init?(jsonString: String) {
+		guard let data = jsonString.data(using: .utf8) else {
 			return nil
 		}
 

@@ -8,20 +8,15 @@ extension UserDefaults {
 			// Return directly if anyObject can cast to Value
 			if let anyObject = anyObject as? Value {
 				return anyObject
+			} else if let string = anyObject as? String {
+				// Auto migration old codable value to native supported type.
+				return _migration(string, key: key)
 			}
-
-			guard let string = anyObject as? String else {
-				return nil
-			}
-			// Auto migration old codable value to native supported type.
-			return _migration(string, key: key)
+		} else if let value = Value.bridge.deserialize(anyObject as? Value.Serializable) {
+			return value as? Value
 		}
 
-		guard let value = Value.bridge.deserialize(anyObject as? Value.Serializable) as? Value else {
-			return nil
-		}
-
-		return value
+		return nil
 	}
 
 	private func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
@@ -32,10 +27,9 @@ extension UserDefaults {
 
 		if Value.isNativelySupportedType {
 			set(value, forKey: key)
-			return
+		} else if let serialized = Value.bridge.serialize(value as? Value.Value) {
+			set(serialized, forKey: key)
 		}
-
-		set(Value.bridge.serialize(value as? Value.Value), forKey: key)
 	}
 
 	private func _migration<Value: Defaults.Serializable>(_ value: String, key: String) -> Value? {

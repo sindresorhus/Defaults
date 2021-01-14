@@ -24,11 +24,11 @@ extension Defaults.CodableBridge {
 	}
 
 	public func deserialize(_ object: Serializable?) -> Value? {
-		guard let value = [Value].init(jsonString: object)?.first else {
+		guard let jsonString = object else {
 			return nil
 		}
 
-		return value
+		return [Value].init(jsonString: "[\(jsonString)]")?.first
 	}
 }
 

@@ -48,16 +48,12 @@ public enum Defaults {
 				return
 			}
 
+			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
 			if Value.isNativelySupportedType {
 				suite.register(defaults: [key: defaultValue])
-				return
+			} else if let value = Value.bridge.serialize(defaultValue as? Value.Value) {
+				suite.register(defaults: [key: value])
 			}
-
-			guard let value = Value.bridge.serialize(defaultValue as? Value.Value) else {
-				return
-			}
-
-			suite.register(defaults: [key: value])
 		}
 	}
 
