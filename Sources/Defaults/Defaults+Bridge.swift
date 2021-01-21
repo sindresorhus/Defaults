@@ -44,11 +44,14 @@ extension Defaults {
 	}
 
 	public struct RawRepresentableBridge<Value: RawRepresentable>: Defaults.Bridge {
-		public func serialize(_ value: Value?) -> Value.RawValue? {
+		public typealias Value = Value
+		public typealias Serializable = Value.RawValue
+
+		public func serialize(_ value: Value?) -> Serializable? {
 			return value?.rawValue
 		}
 
-		public func deserialize(_ object: Value.RawValue?) -> Value? {
+		public func deserialize(_ object: Serializable?) -> Value? {
 			guard let rawValue = object else {
 				return nil
 			}
@@ -58,7 +61,10 @@ extension Defaults {
 	}
 
 	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Defaults.Bridge {
-		public func serialize(_ value: Value?) -> Data? {
+		public typealias Value = Value
+		public typealias Serializable = Data
+		
+		public func serialize(_ value: Value?) -> Serializable? {
 			guard let object = value else {
 				return nil
 			}
@@ -75,7 +81,7 @@ extension Defaults {
 			};
 		}
 
-		public func deserialize(_ object: Data?) -> Value? {
+		public func deserialize(_ object: Serializable?) -> Value? {
 			guard let data = object else {
 				return nil
 			}

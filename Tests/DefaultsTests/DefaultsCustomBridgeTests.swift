@@ -2,25 +2,11 @@ import Foundation
 import Defaults
 import XCTest
 
-final class User: Defaults.Serializable, Hashable, Equatable {
+struct User: Defaults.Serializable, Hashable, Equatable {
 	var username: String
 	var password: String
-
-	init(username: String, password: String) {
-		self.username = username
-		self.password = password
-	}
-
-	func hash(into hasher: inout Hasher) {
-			hasher.combine(username)
-			hasher.combine(password)
-	}
-
-	static func == (lhs: User, rhs: User) -> Bool {
-		lhs.username == rhs.username && lhs.password == rhs.password
-	}
-
-	public static var bridge: DefaultsUserBridge { return DefaultsUserBridge() }
+	
+	public static let bridge = DefaultsUserBridge()
 }
 
 final class DefaultsUserBridge: Defaults.Bridge {

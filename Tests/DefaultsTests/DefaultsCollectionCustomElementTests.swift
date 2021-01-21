@@ -5,6 +5,7 @@ import Defaults
 private struct Item: Defaults.Serializable, Equatable {
 	let name: String
 	let count: UInt
+
 	public static let bridge = ItemBridge()
 }
 
