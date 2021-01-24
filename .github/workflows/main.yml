@@ -1,0 +1,15 @@
+name: CI
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: swift test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: norio-nomura/action-swiftlint@3.2.1
