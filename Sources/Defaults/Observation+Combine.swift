@@ -110,13 +110,15 @@ extension Defaults {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
 
 		let combinedPublisher =
-			keys.map { key in
-				DefaultsPublisher(suite: key.suite, key: key.name, options: options)
-					.map { _ in () }
-					.eraseToAnyPublisher()
-			}.reduce(initial) { combined, keyPublisher in
-				combined.merge(with: keyPublisher).eraseToAnyPublisher()
-			}
+			keys
+				.map { key in
+					DefaultsPublisher(suite: key.suite, key: key.name, options: options)
+						.map { _ in () }
+						.eraseToAnyPublisher()
+				}
+				.reduce(initial) { combined, keyPublisher in
+					combined.merge(with: keyPublisher).eraseToAnyPublisher()
+				}
 
 		return combinedPublisher
 	}

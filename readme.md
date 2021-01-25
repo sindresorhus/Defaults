@@ -1,4 +1,4 @@
-# Defaults [![Build Status](https://travis-ci.org/sindresorhus/Defaults.svg?branch=master)](https://travis-ci.org/sindresorhus/Defaults)
+# Defaults
 
 > Swifty and modern [UserDefaults](https://developer.apple.com/documentation/foundation/userdefaults)
 
@@ -32,8 +32,6 @@ For a real-world example, see my [Plash app](https://github.com/sindresorhus/Pla
 #### Swift Package Manager
 
 Add `https://github.com/sindresorhus/Defaults` in the [“Swift Package Manager” tab in Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app).
-
-You also need to set the build setting “Other Linker Flags” to `-weak_framework Combine` to work around [this Xcode bug](https://github.com/feedback-assistant/reports/issues/44).
 
 #### Carthage
 
@@ -315,7 +313,7 @@ extension Defaults.Keys {
 	static let isUnicornMode = Key<Bool>("isUnicornMode", default: true)
 }
 
-print(UserDefaults.standard.bool(forKey: isUnicornMode.name))
+print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 //=> true
 ```
 

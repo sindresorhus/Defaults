@@ -159,6 +159,7 @@ extension Defaults {
 		private var lifetimeAssociation: LifetimeAssociation?
 
 		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+			// swiftlint:disable:next trailing_closure
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
 				self?.invalidate()
 			})
@@ -246,6 +247,7 @@ extension Defaults {
 		}
 
 		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+			// swiftlint:disable:next trailing_closure
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
 				self?.invalidate()
 			})

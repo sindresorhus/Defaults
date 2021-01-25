@@ -24,7 +24,7 @@ final class DefaultsTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -56,9 +56,9 @@ final class DefaultsTests: XCTestCase {
 
 	func testKeyRegistersDefault() {
 		let keyName = "registersDefault"
-		XCTAssertEqual(UserDefaults.standard.bool(forKey: keyName), false)
+		XCTAssertFalse(UserDefaults.standard.bool(forKey: keyName))
 		_ = Defaults.Key<Bool>(keyName, default: true)
-		XCTAssertEqual(UserDefaults.standard.bool(forKey: keyName), true)
+		XCTAssertTrue(UserDefaults.standard.bool(forKey: keyName))
 
 		// Test that it works with multiple keys with `Defaults`.
 		let keyName2 = "registersDefault2"
@@ -138,9 +138,9 @@ final class DefaultsTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(false, true), (true, false)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in [(false, true), (true, false)].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -373,7 +373,7 @@ final class DefaultsTests: XCTestCase {
 				XCTAssert(Defaults[key1]! == 4)
 				expect.fulfill()
 			} else {
-				usleep(100000)
+				usleep(100_000)
 				print("--- Release: \(Thread.isMainThread)")
 			}
 		}
@@ -395,6 +395,7 @@ final class DefaultsTests: XCTestCase {
 		let observation1 = Defaults.observe(key2, options: []) { _ in
 			XCTFail()
 		}
+
 		let observation2 = Defaults.observe(keys: key1, key2, options: []) {
 			Defaults.withoutPropagation {
 				Defaults[key2] = true
@@ -518,8 +519,15 @@ final class DefaultsTests: XCTestCase {
 		Defaults[key1] = newString1
 		Defaults[key2] = newString2
 		Defaults.reset(key1)
-		XCTAssertEqual(Defaults[key1], nil)
+		XCTAssertNil(Defaults[key1])
 		XCTAssertEqual(Defaults[key2], newString2)
+
+		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
+			let key3 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("optionalKey3")
+			Defaults[key3] = ExamplePersistentHistory(value: newString3)
+			Defaults.reset(key3)
+			XCTAssertNil(Defaults[key3])
+		}
 	}
 
 	func testResetMultipleOptionalKeys() {
@@ -533,8 +541,8 @@ final class DefaultsTests: XCTestCase {
 		Defaults[key2] = newFixture2
 		Defaults[key3] = newFixture3
 		Defaults.reset(key1, key2)
-		XCTAssertEqual(Defaults[key1], nil)
-		XCTAssertEqual(Defaults[key2], nil)
+		XCTAssertNil(Defaults[key1])
+		XCTAssertNil(Defaults[key2])
 		XCTAssertEqual(Defaults[key3], newFixture3)
 	}
 
@@ -546,7 +554,8 @@ final class DefaultsTests: XCTestCase {
 		observation = Defaults.observe(key, options: []) { _ in
 			observation.invalidate()
 			expect.fulfill()
-		}.tieToLifetime(of: self)
+		}
+			.tieToLifetime(of: self)
 
 		Defaults[key] = true
 
@@ -559,14 +568,14 @@ final class DefaultsTests: XCTestCase {
 		weak var observation: Defaults.Observation? = Defaults.observe(key, options: []) { _ in }.tieToLifetime(of: self)
 		observation!.removeLifetimeTie()
 
-		for i in 1...10 {
+		for index in 1...10 {
 			if observation == nil {
 				break
 			}
 
 			sleep(1)
 
-			if i == 10 {
+			if index == 10 {
 				XCTFail()
 			}
 		}
