@@ -2,31 +2,31 @@ import Foundation
 import XCTest
 import Defaults
 
-struct DefaultsSetAlgebra<Element : Defaults.Serializable & Hashable>: Defaults.SetAlgebraSerializable {
+struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: Defaults.SetAlgebraSerializable {
 	var store = Set<Element>()
 
-	public init() {}
-	
-	public init(_store: Set<Element>) {
+	init() {}
+
+	init(_store: Set<Element>) {
 		store = _store
 	}
 
-	public func contains(_ member: Element) -> Bool {
-		return store.contains(member)
+	func contains(_ member: Element) -> Bool {
+		store.contains(member)
 	}
 
-	public func union(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
-		return DefaultsSetAlgebra(_store: store.union(other.store))
+	func union(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
+		DefaultsSetAlgebra(_store: store.union(other.store))
 	}
 
-	public func intersection(_ other: DefaultsSetAlgebra)
+	func intersection(_ other: DefaultsSetAlgebra)
 		-> DefaultsSetAlgebra {
 		var defaultsSetAlgebra = DefaultsSetAlgebra()
 		defaultsSetAlgebra.store = store.intersection(other.store)
 		return defaultsSetAlgebra
 	}
 
-	public func symmetricDifference(_ other: DefaultsSetAlgebra)
+	func symmetricDifference(_ other: DefaultsSetAlgebra)
 		-> DefaultsSetAlgebra {
 		var defaultedSetAlgebra = DefaultsSetAlgebra()
 		defaultedSetAlgebra.store = store.symmetricDifference(other.store)
@@ -34,32 +34,32 @@ struct DefaultsSetAlgebra<Element : Defaults.Serializable & Hashable>: Defaults.
 	}
 
 	@discardableResult
-	public mutating func insert(_ newMember: Element)
+	mutating func insert(_ newMember: Element)
 		-> (inserted: Bool, memberAfterInsert: Element) {
-		return store.insert(newMember)
+		store.insert(newMember)
 	}
 
-	public mutating func remove(_ member: Element) -> Element? {
-		return store.remove(member)
+	mutating func remove(_ member: Element) -> Element? {
+		store.remove(member)
 	}
 
-	public mutating func update(with newMember: Element) -> Element? {
-		return store.update(with: newMember)
+	mutating func update(with newMember: Element) -> Element? {
+		store.update(with: newMember)
 	}
 
-	public mutating func formUnion(_ other: DefaultsSetAlgebra) {
+	mutating func formUnion(_ other: DefaultsSetAlgebra) {
 		store.formUnion(other.store)
 	}
 
-	public mutating func formSymmetricDifference(_ other: DefaultsSetAlgebra) {
+	mutating func formSymmetricDifference(_ other: DefaultsSetAlgebra) {
 		store.formSymmetricDifference(other.store)
 	}
 
-	public mutating func formIntersection(_ other: DefaultsSetAlgebra) {
+	mutating func formIntersection(_ other: DefaultsSetAlgebra) {
 		store.formIntersection(other.store)
 	}
 
-	public func toArray() -> [Element] {
+	func toArray() -> [Element] {
 		Array(store)
 	}
 }
@@ -82,7 +82,7 @@ final class DefaultsSetAlgebraTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -216,9 +216,9 @@ final class DefaultsSetAlgebraTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Int>, DefaultsSetAlgebra<Int>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -244,9 +244,9 @@ final class DefaultsSetAlgebraTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Int>?, DefaultsSetAlgebra<Int>?)] = [(nil, .init([fixtureSetAlgebra])), (.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -273,9 +273,9 @@ final class DefaultsSetAlgebraTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Int>, DefaultsSetAlgebra<Int>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0[0])
-				XCTAssertEqual(expected.1, tuples[i].1[0])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0[0])
+				XCTAssertEqual(expected.1, tuples[index].1[0])
 			}
 
 			expect.fulfill()
@@ -301,9 +301,9 @@ final class DefaultsSetAlgebraTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Int>, DefaultsSetAlgebra<Int>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"])
-				XCTAssertEqual(expected.1, tuples[i].1["0"])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0["0"])
+				XCTAssertEqual(expected.1, tuples[index].1["0"])
 			}
 
 			expect.fulfill()

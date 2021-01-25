@@ -6,13 +6,13 @@ private struct Item: Defaults.Serializable, Equatable, Hashable {
 	let name: String
 	let count: UInt
 
-	public static let bridge = ItemBridge()
+	static let bridge = ItemBridge()
 }
 
 private struct ItemBridge: Defaults.Bridge {
-	public typealias Value = Item
-	public typealias Serializable = [String: String]
-	public func serialize(_ value: Value?) -> Serializable? {
+	typealias Value = Item
+	typealias Serializable = [String: String]
+	func serialize(_ value: Value?) -> Serializable? {
 		guard let value = value else {
 			return nil
 		}
@@ -20,7 +20,7 @@ private struct ItemBridge: Defaults.Bridge {
 		return ["name": value.name, "count": String(value.count)]
 	}
 
-	public func deserialize(_ object: Serializable?) -> Value? {
+	func deserialize(_ object: Serializable?) -> Value? {
 		guard
 			let object = object,
 			let name = object["name"],
@@ -29,7 +29,7 @@ private struct ItemBridge: Defaults.Bridge {
 			return nil
 		}
 
-		return Value.init(name: name, count: count)
+		return Value(name: name, count: count)
 	}
 }
 
@@ -51,7 +51,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -185,9 +185,9 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Item>, DefaultsSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -213,9 +213,9 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Item>?, DefaultsSetAlgebra<Item>?)] = [(nil, .init([fixtureSetAlgebra])), (.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -242,9 +242,9 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Item>, DefaultsSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0[0])
-				XCTAssertEqual(expected.1, tuples[i].1[0])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0[0])
+				XCTAssertEqual(expected.1, tuples[index].1[0])
 			}
 
 			expect.fulfill()
@@ -270,9 +270,9 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 		let expectedValue: [(DefaultsSetAlgebra<Item>, DefaultsSetAlgebra<Item>)] = [(.init([fixtureSetAlgebra]), .init([fixtureSetAlgebra, fixtureSetAlgebra1])), (.init([fixtureSetAlgebra, fixtureSetAlgebra1]), .init([fixtureSetAlgebra]))]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"])
-				XCTAssertEqual(expected.1, tuples[i].1["0"])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0["0"])
+				XCTAssertEqual(expected.1, tuples[index].1["0"])
 			}
 
 			expect.fulfill()

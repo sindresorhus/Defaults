@@ -48,7 +48,7 @@ extension Defaults {
 		public typealias Serializable = Value.RawValue
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			return value?.rawValue
+			value?.rawValue
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
@@ -63,7 +63,7 @@ extension Defaults {
 	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Defaults.Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Data
-		
+
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let object = value else {
 				return nil
@@ -78,7 +78,7 @@ extension Defaults {
 				keyedArchiver.requiresSecureCoding = true
 				keyedArchiver.encode(object, forKey: NSKeyedArchiveRootObjectKey)
 				return keyedArchiver.encodedData
-			};
+			}
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
@@ -117,36 +117,32 @@ extension Defaults {
 				return nil
 			}
 
-			return array.map { Element.bridge.serialize($0) } .compact()
+			return array.map { Element.bridge.serialize($0) }.compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			object?.map { Element.bridge.deserialize($0) } .compact() as? Value
+			object?.map { Element.bridge.deserialize($0) }.compact() as? Value
 		}
 	}
 
 	public struct DictionaryBridge<Element: Defaults.Serializable>: Defaults.Bridge {
-		public typealias Value = [String: Element]
+		public typealias Value = [String: Element.Value]
 		public typealias Serializable = [String: Element.Serializable]
-		
+
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let dictionary = value as? [String: Element.Value] else {
+			guard let dictionary = value else {
 				return nil
 			}
 
-			return dictionary.reduce([:]) { (memo: Serializable, tuple: (key: String, value: Element.Value)) in
-				var result = memo
-				result[tuple.key] = Element.bridge.serialize(tuple.value)
-				return result
+			return dictionary.reduce(into: Serializable()) { memo, tuple in
+				memo[tuple.key] = Element.bridge.serialize(tuple.value)
 			}
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			object?.reduce([:]) { (memo: [String: Element.Value], tuple: (key: String, value: Element.Serializable)) in
-				var result = memo
-				result[tuple.key] = Element.bridge.deserialize(tuple.value)
-				return result
-			} as? Value
+			object?.reduce(into: Value()) { memo, tuple in
+				memo[tuple.key] = Element.bridge.deserialize(tuple.value)
+			}
 		}
 	}
 
@@ -163,7 +159,7 @@ extension Defaults {
 				return Array(set)
 			}
 
-			return set.map { Element.bridge.serialize($0 as? Element.Value) } .compact()
+			return set.map { Element.bridge.serialize($0 as? Element.Value) }.compact()
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
@@ -177,7 +173,7 @@ extension Defaults {
 
 			guard
 				let array = object as? [Element.Serializable],
-				let elements = array.map({ Element.bridge.deserialize($0)}) .compact() as? [Element]
+				let elements = array.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
 			else {
 				return nil
 			}
@@ -209,7 +205,7 @@ extension Defaults {
 					return nil
 				}
 
-				return Value.init(array)
+				return Value(array)
 			}
 
 			guard
@@ -219,7 +215,7 @@ extension Defaults {
 				return nil
 			}
 
-			return Value.init(elements)
+			return Value(elements)
 		}
 	}
 
@@ -246,7 +242,7 @@ extension Defaults {
 					return nil
 				}
 
-				return Value.init(array)
+				return Value(array)
 			}
 
 			guard
@@ -256,7 +252,7 @@ extension Defaults {
 				return nil
 			}
 
-			return Value.init(elements)
+			return Value(elements)
 		}
 	}
 }

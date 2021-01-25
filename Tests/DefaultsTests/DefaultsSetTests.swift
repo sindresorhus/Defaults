@@ -15,7 +15,7 @@ final class DefaultsSetTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 

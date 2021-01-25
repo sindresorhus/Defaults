@@ -20,7 +20,7 @@ final class DefaultsNSColorTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -126,9 +126,9 @@ final class DefaultsNSColorTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
-				XCTAssertTrue(expected.0.isEqual(tuples[i].0))
-				XCTAssertTrue(expected.1.isEqual(tuples[i].1))
+			for (index, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
+				XCTAssertTrue(expected.0.isEqual(tuples[index].0))
+				XCTAssertTrue(expected.1.isEqual(tuples[index].1))
 			}
 
 			expect.fulfill()
@@ -154,17 +154,17 @@ final class DefaultsNSColorTests: XCTestCase {
 		let expectedValue: [(UIColor?, UIColor?)] = [(nil, fixtureColor), (fixtureColor, fixtureColor1), (fixtureColor1, nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
+			for (index, expected) in expectedValue.enumerated() {
 				guard let oldValue = expected.0 else {
-					XCTAssertNil(tuples[i].0)
+					XCTAssertNil(tuples[index].0)
 					continue
 				}
 				guard let newValue = expected.1 else {
-					XCTAssertNil(tuples[i].1)
+					XCTAssertNil(tuples[index].1)
 					continue
 				}
-				XCTAssertTrue(oldValue.isEqual(tuples[i].0))
-				XCTAssertTrue(newValue.isEqual(tuples[i].1))
+				XCTAssertTrue(oldValue.isEqual(tuples[index].0))
+				XCTAssertTrue(newValue.isEqual(tuples[index].1))
 			}
 
 			expect.fulfill()
@@ -189,9 +189,9 @@ final class DefaultsNSColorTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
-				XCTAssertTrue(expected.0.isEqual(tuples[i].0[0]))
-				XCTAssertTrue(expected.1.isEqual(tuples[i].1[0]))
+			for (index, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
+				XCTAssertTrue(expected.0.isEqual(tuples[index].0[0]))
+				XCTAssertTrue(expected.1.isEqual(tuples[index].1[0]))
 			}
 
 			expect.fulfill()
@@ -215,9 +215,9 @@ final class DefaultsNSColorTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
-				XCTAssertTrue(expected.0.isEqual(tuples[i].0["0"]))
-				XCTAssertTrue(expected.1.isEqual(tuples[i].1["0"]))
+			for (index, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
+				XCTAssertTrue(expected.0.isEqual(tuples[index].0["0"]))
+				XCTAssertTrue(expected.1.isEqual(tuples[index].1["0"]))
 			}
 
 			expect.fulfill()

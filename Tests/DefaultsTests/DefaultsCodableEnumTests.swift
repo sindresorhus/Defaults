@@ -21,7 +21,7 @@ final class DefaultsCodableEnumTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -131,9 +131,9 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		let expectedValue: [(FixtureCodableEnum, FixtureCodableEnum)] = [(.tenMinutes, .oneHour), (.oneHour, .tenMinutes)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -159,9 +159,9 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		let expectedValue: [(FixtureCodableEnum?, FixtureCodableEnum?)] = [(nil, .tenMinutes), (.tenMinutes, .halfHour), (.halfHour, nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -188,9 +188,9 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		let expectedValue: [(FixtureCodableEnum?, FixtureCodableEnum?)] = [(.tenMinutes, .halfHour), (.halfHour, .tenMinutes)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0[0])
-				XCTAssertEqual(expected.1, tuples[i].1[0])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0[0])
+				XCTAssertEqual(expected.1, tuples[index].1[0])
 			}
 
 			expect.fulfill()
@@ -216,9 +216,9 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		let expectedValue: [(FixtureCodableEnum?, FixtureCodableEnum?)] = [(.tenMinutes, .halfHour), (.halfHour, .tenMinutes)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"])
-				XCTAssertEqual(expected.1, tuples[i].1["0"])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0["0"])
+				XCTAssertEqual(expected.1, tuples[index].1["0"])
 			}
 
 			expect.fulfill()
@@ -245,7 +245,7 @@ final class DefaultsCodableEnumTests: XCTestCase {
 
 		Defaults[key] = .halfHour
 		observation.invalidate()
-		
+
 		waitForExpectations(timeout: 10)
 	}
 

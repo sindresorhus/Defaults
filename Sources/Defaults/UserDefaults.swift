@@ -40,12 +40,12 @@ extension UserDefaults {
 		else {
 			return nil
 		}
-		
+
 		_set(key, to: object)
 
 		return object
 	}
-	
+
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {

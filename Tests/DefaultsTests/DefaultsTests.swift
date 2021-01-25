@@ -511,25 +511,6 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertEqual(Defaults[key3], newFixture3)
 	}
 
-	func testResetOptionalKey() {
-		let newString1 = "bar1"
-		let newString2 = "bar2"
-		let key1 = Defaults.Key<String?>("optionalKey1")
-		let key2 = Defaults.Key<String?>("optionalKey2")
-		Defaults[key1] = newString1
-		Defaults[key2] = newString2
-		Defaults.reset(key1)
-		XCTAssertNil(Defaults[key1])
-		XCTAssertEqual(Defaults[key2], newString2)
-
-		if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
-			let key3 = Defaults.NSSecureCodingOptionalKey<ExamplePersistentHistory>("optionalKey3")
-			Defaults[key3] = ExamplePersistentHistory(value: newString3)
-			Defaults.reset(key3)
-			XCTAssertNil(Defaults[key3])
-		}
-	}
-
 	func testResetMultipleOptionalKeys() {
 		let newFixture1 = "bar1"
 		let newFixture2 = 1

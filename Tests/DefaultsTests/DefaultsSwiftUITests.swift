@@ -29,7 +29,7 @@ final class DefaultsSwiftUITests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 

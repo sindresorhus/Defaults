@@ -21,7 +21,7 @@ final class DefaultsEnumTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -129,9 +129,9 @@ final class DefaultsEnumTests: XCTestCase {
 		let expectedValue: [(FixtureEnum, FixtureEnum)] = [(.tenMinutes, .halfHour), (.halfHour, .oneHour), (.oneHour, .tenMinutes)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -159,9 +159,9 @@ final class DefaultsEnumTests: XCTestCase {
 		let expectedValue: [(FixtureEnum?, FixtureEnum?)] = [(nil, .tenMinutes), (.tenMinutes, .halfHour), (.halfHour, .oneHour), (.oneHour, nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -190,9 +190,9 @@ final class DefaultsEnumTests: XCTestCase {
 
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0[0])
-				XCTAssertEqual(expected.1, tuples[i].1[0])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0[0])
+				XCTAssertEqual(expected.1, tuples[index].1[0])
 			}
 
 			expect.fulfill()
@@ -219,9 +219,9 @@ final class DefaultsEnumTests: XCTestCase {
 
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"])
-				XCTAssertEqual(expected.1, tuples[i].1["0"])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0["0"])
+				XCTAssertEqual(expected.1, tuples[index].1["0"])
 			}
 
 			expect.fulfill()

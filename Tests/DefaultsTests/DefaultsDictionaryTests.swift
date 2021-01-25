@@ -17,7 +17,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -76,9 +76,9 @@ final class DefaultsDictionaryTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(fixtureDictionary["0"]!, newName), (newName, fixtureDictionary["0"]!)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"])
-				XCTAssertEqual(expected.1, tuples[i].1["0"])
+			for (index, expected) in [(fixtureDictionary["0"]!, newName), (newName, fixtureDictionary["0"]!)].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0["0"])
+				XCTAssertEqual(expected.1, tuples[index].1["0"])
 			}
 
 			expect.fulfill()
@@ -101,6 +101,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(3)
 
+		// swiftlint:disable discouraged_optional_collection
 		let expectedValues: [([String: String]?, [String: String]?)] = [(nil, fixtureDictionary), (fixtureDictionary, newName), (newName, nil)]
 
 		let cancellable = publisher.sink { actualValues in

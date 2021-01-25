@@ -21,7 +21,7 @@ final class DefaultsCodableTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -67,7 +67,7 @@ final class DefaultsCodableTests: XCTestCase {
 	}
 
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: Unicorn]]>("independentCodableArrayDictionaryKey", default: [["0":fixtureCodable]])
+		let key = Defaults.Key<[[String: Unicorn]]>("independentCodableArrayDictionaryKey", default: [["0": fixtureCodable]])
 		XCTAssertTrue(Defaults[key][0]["0"]?.isUnicorn ?? false)
 		Defaults[key].append(["0": fixtureCodable])
 		Defaults[key][0]["1"] = Unicorn(isUnicorn: false)
@@ -77,7 +77,7 @@ final class DefaultsCodableTests: XCTestCase {
 	}
 
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: Unicorn]>("independentCodableDictionaryKey", default: ["0":fixtureCodable])
+		let key = Defaults.Key<[String: Unicorn]>("independentCodableDictionaryKey", default: ["0": fixtureCodable])
 		XCTAssertTrue(Defaults[key]["0"]?.isUnicorn ?? false)
 		Defaults[key]["1"] = Unicorn(isUnicorn: false)
 		XCTAssertTrue(Defaults[key]["0"]?.isUnicorn ?? false)
@@ -131,9 +131,9 @@ final class DefaultsCodableTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(true, false), (false, true)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in [(true, false), (false, true)].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -159,9 +159,9 @@ final class DefaultsCodableTests: XCTestCase {
 		let expectedValue: [(Bool?, Bool?)] = [(nil, true), (true, nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -185,9 +185,9 @@ final class DefaultsCodableTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(true, false), (false, true)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0[0].isUnicorn)
-				XCTAssertEqual(expected.1, tuples[i].1[0].isUnicorn)
+			for (index, expected) in [(true, false), (false, true)].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0[0].isUnicorn)
+				XCTAssertEqual(expected.1, tuples[index].1[0].isUnicorn)
 			}
 
 			expect.fulfill()
@@ -211,9 +211,9 @@ final class DefaultsCodableTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(true, false), (false, true)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"]?.isUnicorn)
-				XCTAssertEqual(expected.1, tuples[i].1["0"]?.isUnicorn)
+			for (index, expected) in [(true, false), (false, true)].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0["0"]?.isUnicorn)
+				XCTAssertEqual(expected.1, tuples[index].1["0"]?.isUnicorn)
 			}
 
 			expect.fulfill()

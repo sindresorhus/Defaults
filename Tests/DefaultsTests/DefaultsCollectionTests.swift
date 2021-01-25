@@ -13,20 +13,20 @@ struct Bag<Element: Defaults.Serializable>: Defaults.CollectionSerializable {
 		self.items = elements
 	}
 
-	public var startIndex: Int {
+	var startIndex: Int {
 		items.startIndex
 	}
 
-	public var endIndex: Int {
+	var endIndex: Int {
 		items.endIndex
 	}
 
-	public mutating func insert(element: Element, at: Int) {
+	mutating func insert(element: Element, at: Int) {
 		items.insert(element, at: at)
 	}
 
-	public func index(after i: Int) -> Int {
-		items.index(after: i)
+	func index(after index: Int) -> Int {
+		items.index(after: index)
 	}
 
 	subscript(position: Int) -> Element {
@@ -50,7 +50,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -166,9 +166,9 @@ final class DefaultsCollectionTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0[0])
-				XCTAssertEqual(expected.1, tuples[i].1[0])
+			for (index, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0[0])
+				XCTAssertEqual(expected.1, tuples[index].1[0])
 			}
 
 			expect.fulfill()
@@ -195,9 +195,9 @@ final class DefaultsCollectionTests: XCTestCase {
 		let expectedValue: [(String?, String?)] = [(nil, fixtureCollection[0]), (fixtureCollection[0], item), (item, nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0?[0])
-				XCTAssertEqual(expected.1, tuples[i].1?[0])
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0?[0])
+				XCTAssertEqual(expected.1, tuples[index].1?[0])
 			}
 
 			expect.fulfill()
@@ -223,9 +223,9 @@ final class DefaultsCollectionTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0[0][0])
-				XCTAssertEqual(expected.1, tuples[i].1[0][0])
+			for (index, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0[0][0])
+				XCTAssertEqual(expected.1, tuples[index].1[0][0])
 			}
 
 			expect.fulfill()
@@ -250,9 +250,9 @@ final class DefaultsCollectionTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0["0"]?[0])
-				XCTAssertEqual(expected.1, tuples[i].1["0"]?[0])
+			for (index, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0["0"]?[0])
+				XCTAssertEqual(expected.1, tuples[index].1["0"]?[0])
 			}
 
 			expect.fulfill()
@@ -339,5 +339,4 @@ final class DefaultsCollectionTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-
 }

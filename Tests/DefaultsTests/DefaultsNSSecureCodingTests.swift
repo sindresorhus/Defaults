@@ -43,7 +43,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 	}
 
 	override func tearDown() {
-		super.setUp()
+		super.tearDown()
 		Defaults.removeAll()
 	}
 
@@ -171,9 +171,9 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 			.collect(2)
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in [(persistentHistoryValue.value, newPersistentHistory.value), (newPersistentHistory.value, persistentHistoryValue.value)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[i].0)
-				XCTAssertEqual(expected.1, tuples[i].1)
+			for (index, expected) in [(persistentHistoryValue.value, newPersistentHistory.value), (newPersistentHistory.value, persistentHistoryValue.value)].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -200,9 +200,9 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		let expectedValue: [(ExamplePersistentHistory?, ExamplePersistentHistory?)] = [(nil, persistentHistoryValue), (persistentHistoryValue, newPersistentHistory), (newPersistentHistory, nil)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0?.value, tuples[i].0)
-				XCTAssertEqual(expected.1?.value, tuples[i].1)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0?.value, tuples[index].0)
+				XCTAssertEqual(expected.1?.value, tuples[index].1)
 			}
 
 			expect.fulfill()
@@ -230,9 +230,9 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		let expectedValue: [(ExamplePersistentHistory, ExamplePersistentHistory)] = [(persistentHistoryValue, newPersistentHistory), (newPersistentHistory, persistentHistoryValue)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0.value, tuples[i].0[0].value)
-				XCTAssertEqual(expected.1.value, tuples[i].1[0].value)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0.value, tuples[index].0[0].value)
+				XCTAssertEqual(expected.1.value, tuples[index].1[0].value)
 			}
 
 			expect.fulfill()
@@ -259,9 +259,9 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		let expectedValue: [(ExamplePersistentHistory, ExamplePersistentHistory)] = [(persistentHistoryValue, newPersistentHistory), (newPersistentHistory, persistentHistoryValue)]
 
 		let cancellable = publisher.sink { tuples in
-			for (i, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0.value, tuples[i].0["0"]?.value)
-				XCTAssertEqual(expected.1.value, tuples[i].1["0"]?.value)
+			for (index, expected) in expectedValue.enumerated() {
+				XCTAssertEqual(expected.0.value, tuples[index].0["0"]?.value)
+				XCTAssertEqual(expected.1.value, tuples[index].1["0"]?.value)
 			}
 
 			expect.fulfill()
@@ -380,8 +380,8 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 
 		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(Defaults[key][0].value, persistentHistoryValue.value)
-			XCTAssertEqual(Defaults[key].map { $0.value }, [persistentHistoryValue, newPersistentHistory].map { $0.value })
+			XCTAssertEqual(change.oldValue[0].value, persistentHistoryValue.value)
+			XCTAssertEqual(change.newValue.map { $0.value }, [persistentHistoryValue, newPersistentHistory].map { $0.value })
 			observation.invalidate()
 			expect.fulfill()
 		}
@@ -412,5 +412,4 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-
 }
