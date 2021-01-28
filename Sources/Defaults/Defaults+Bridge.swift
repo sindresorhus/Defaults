@@ -196,6 +196,17 @@ extension Defaults {
 	}
 }
 
+/**
+We need both `SetBridge` and `SetAlgebraBridge`.
+
+Because `Set` conforms to `Sequence` but `SetAlgebra` not.
+
+Set conforms to `Sequence`, so we can convert it to an array with `Array.init<S>(S)` and store it in the `UserDefaults`.
+
+But `SetAlgebra` does not, so it is hard to convert it to an array.
+
+Thats why we need `Defaults.SetAlgebraSerializable` protocol to convert it to an array.
+*/
 extension Defaults {
 	public struct SetBridge<Element: Defaults.Serializable & Hashable>: Defaults.Bridge {
 		public typealias Value = Set<Element>

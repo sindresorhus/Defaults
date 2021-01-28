@@ -40,7 +40,7 @@ struct TimeZoneBridge: Defaults.Bridge {
 			else {
 				return nil
 			}
-			
+
 			// check json string is valid brutally
 			if let instance = try? JSONDecoder().decode(CodableTimeZone.self, from: jsonData) {
 				return instance.toTimeZone()
