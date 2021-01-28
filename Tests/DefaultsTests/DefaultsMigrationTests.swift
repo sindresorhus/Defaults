@@ -31,6 +31,8 @@ struct TimeZoneBridge: Defaults.Bridge {
 	}
 
 	func deserialize(_ object: Any?) -> Any? {
+		// `object` should be a dictionary which `Key` is String and `Value` is Serializable,
+		// When it is String, that means we need to do some migration.
 		if object is String {
 			guard
 				let jsonString = object as? String,
@@ -38,7 +40,8 @@ struct TimeZoneBridge: Defaults.Bridge {
 			else {
 				return nil
 			}
-
+			
+			// check json string is valid brutally
 			if let instance = try? JSONDecoder().decode(CodableTimeZone.self, from: jsonData) {
 				return instance.toTimeZone()
 			} else if let array = try? JSONDecoder().decode([CodableTimeZone].self, from: jsonData) {
