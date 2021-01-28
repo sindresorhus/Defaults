@@ -128,7 +128,7 @@ extension Defaults {
 extension Defaults {
 	public struct ArrayBridge<Element: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = [Element]
-		public typealias Serializable = [Element.Serializable]
+		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let array = value as? [Element.Value] else {
@@ -139,7 +139,21 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			object?.map { Element.bridge.deserialize($0) }.compact() as? Value
+			// `object` should be an array of Element, when it is String, that means we need to do some migration.
+			if object is String {
+				guard let string = object as? Element.Serializable else {
+					return nil
+				}
+
+				// pass jsonString to user-defined `deserialize`, in order to let the user do their own migration.
+				return Element.bridge.deserialize(string) as? Value
+			}
+
+			guard let array = object as? [Element.Serializable] else {
+				return nil
+			}
+
+			return array.map { Element.bridge.deserialize($0) }.compact() as? Value
 		}
 	}
 }
@@ -147,20 +161,35 @@ extension Defaults {
 extension Defaults {
 	public struct DictionaryBridge<Element: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = [String: Element.Value]
-		public typealias Serializable = [String: Element.Serializable]
+		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let dictionary = value else {
 				return nil
 			}
 
-			return dictionary.reduce(into: Serializable()) { memo, tuple in
+			return dictionary.reduce(into: [String: Element.Serializable]()) { memo, tuple in
 				memo[tuple.key] = Element.bridge.serialize(tuple.value)
 			}
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			object?.reduce(into: Value()) { memo, tuple in
+			// `object` should be a dictionary which `Key` is String and `Value` is Serializable,
+			// When it is String, that means we need to do some migration.
+			if object is String {
+				guard let string = object as? Element.Serializable else {
+					return nil
+				}
+
+				// pass jsonString to user-defined `deserialize`, in order to let the user do their own migration.
+				return Element.bridge.deserialize(string) as? Value
+			}
+
+			guard let dictionary = object as? [String: Element.Serializable] else {
+				return nil
+			}
+
+			return dictionary.reduce(into: Value()) { memo, tuple in
 				memo[tuple.key] = Element.bridge.deserialize(tuple.value)
 			}
 		}

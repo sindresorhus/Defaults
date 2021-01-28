@@ -35,6 +35,8 @@ extension UserDefaults {
 	private func _migration<Value: Defaults.Serializable>(_ value: String, key: String) -> Value? {
 		guard
 			let data = "[\(value)]".data(using: .utf8),
+			// `JSONSerialization` will only convert the value into a Foundation object,
+			// if the value is not a Foundation object it will need to do migration in the `bridge`
 			let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [Value],
 			let object = jsonObject.first
 		else {

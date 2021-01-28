@@ -164,14 +164,4 @@ final class DefaultsArrayTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-
-	func testCodableArrayToNativeArray() {
-		let text = "[\"a\",\"b\",\"c\"]"
-		let keyName = "codableArrayToNativeArrayKey"
-		UserDefaults.standard.set(text, forKey: keyName)
-		let key = Defaults.Key<[String]?>(keyName)
-		XCTAssertEqual(Defaults[key]?[0], "a")
-		XCTAssertEqual(Defaults[key]?[1], "b")
-		XCTAssertEqual(Defaults[key]?[2], "c")
-	}
 }
