@@ -13,12 +13,12 @@ public protocol DefaultsSerializable {
 }
 
 public protocol DefaultsCollectionSerializable: Collection & DefaultsSerializable {
-	// Need protocol initialize to complete generic initialization
+	// Need protocol initialize to complete the generic initialization
 	init(_ elements: [Element])
 }
 
 public protocol DefaultsSetAlgebraSerializable: SetAlgebra & DefaultsSerializable {
-	// We cannot convert `SetAlgebra` to array directly
+	// We cannot convert a `SetAlgebra` to an `Array` directly
 	func toArray() -> [Element]
 }
 

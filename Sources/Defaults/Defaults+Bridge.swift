@@ -32,17 +32,29 @@ extension Defaults.CodableBridge {
 	}
 }
 
+/**
+Any `Value` which protocol conforms to Codable and Defaults.Serializable will use CodableBridge
+to do the serialization and deserialization.
+*/
 extension Defaults {
 	public struct TopLevelCodableBridge<Value: Codable>: CodableBridge {}
+}
 
-	// RawRepresentableCodableBridge is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable`
-	// the compiler will confuse between RawRepresentableBridge and TopLevelCodableBridge
+/**
+RawRepresentableCodableBridge is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable`
+the compiler will confuse between RawRepresentableBridge and TopLevelCodableBridge
+*/
+extension Defaults {
 	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {}
+}
 
+extension Defaults {
 	public struct URLBridge: CodableBridge {
 		public typealias Value = URL
 	}
+}
 
+extension Defaults {
 	public struct RawRepresentableBridge<Value: RawRepresentable>: Defaults.Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Value.RawValue
@@ -59,7 +71,9 @@ extension Defaults {
 			return Value(rawValue: rawValue)
 		}
 	}
+}
 
+extension Defaults {
 	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Defaults.Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Data
@@ -94,7 +108,9 @@ extension Defaults {
 			}
 		}
 	}
+}
 
+extension Defaults {
 	public struct OptionalBridge<Wrapped: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = Wrapped.Value
 		public typealias Serializable = Wrapped.Serializable
@@ -107,7 +123,9 @@ extension Defaults {
 			Wrapped.bridge.deserialize(object)
 		}
 	}
+}
 
+extension Defaults {
 	public struct ArrayBridge<Element: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = [Element]
 		public typealias Serializable = [Element.Serializable]
@@ -124,7 +142,9 @@ extension Defaults {
 			object?.map { Element.bridge.deserialize($0) }.compact() as? Value
 		}
 	}
+}
 
+extension Defaults {
 	public struct DictionaryBridge<Element: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = [String: Element.Value]
 		public typealias Serializable = [String: Element.Serializable]
@@ -145,7 +165,9 @@ extension Defaults {
 			}
 		}
 	}
+}
 
+extension Defaults {
 	public struct SetBridge<Element: Defaults.Serializable & Hashable>: Defaults.Bridge {
 		public typealias Value = Set<Element>
 		public typealias Serializable = Any
@@ -164,6 +186,20 @@ extension Defaults {
 
 		public func deserialize(_ object: Serializable?) -> Value? {
 			if Element.isNativelySupportedType {
+				// `object` should be an array of Element, when it is String, that means we need to do some migration
+				if object is String {
+					guard
+						let object = object as? String,
+						let data = object.data(using: .utf8),
+						// `JSONSerialization.jsonObject` will always convert a string to a Foundation object
+						let array = try? JSONSerialization.jsonObject(with: data, options: []) as? [Element]
+					else {
+						return nil
+					}
+
+					return Set(array)
+				}
+
 				guard let array = object as? [Element] else {
 					return nil
 				}
@@ -181,7 +217,9 @@ extension Defaults {
 			return Set(elements)
 		}
 	}
+}
 
+extension Defaults {
 	public struct SetAlgebraBridge<Value: Defaults.SetAlgebraSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
 		public typealias Value = Value
 		public typealias Element = Value.Element
@@ -218,7 +256,9 @@ extension Defaults {
 			return Value(elements)
 		}
 	}
+}
 
+extension Defaults {
 	public struct CollectionBridge<Value: Defaults.CollectionSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
 		public typealias Value = Value
 		public typealias Element = Value.Element

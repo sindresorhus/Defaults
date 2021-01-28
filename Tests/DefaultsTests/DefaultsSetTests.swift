@@ -52,4 +52,28 @@ final class DefaultsSetTests: XCTestCase {
 		Defaults[key]["1"] = Set(1...4)
 		XCTAssertEqual(Defaults[key]["1"], Set(1...4))
 	}
+
+	func testCodableArrayToNativeSet() {
+		let keyName = "codableArrayToNativeSetKey"
+		let text = "[\"a\",\"b\",\"c\"]"
+		UserDefaults.standard.set(text, forKey: keyName)
+		let key = Defaults.Key<Set<String>>(keyName, default: [])
+		XCTAssertEqual(Defaults[key], Set(["a", "b", "c"]))
+		Defaults[key].insert("d")
+		XCTAssertEqual(Defaults[key], Set(["a", "b", "c", "d"]))
+		Defaults.reset(key)
+		XCTAssertEqual(Defaults[key], [])
+	}
+
+	func testCodableArrayToNativeOptionalSet() {
+		let text = "[\"a\",\"b\",\"c\"]"
+		let keyName = "codableArrayToNativeOptionalSetKey"
+		UserDefaults.standard.set(text, forKey: keyName)
+		let key = Defaults.Key<Set<String>?>(keyName)
+		XCTAssertEqual(Defaults[key], Set(["a", "b", "c"]))
+		Defaults[key]?.insert("d")
+		XCTAssertEqual(Defaults[key], Set(["a", "b", "c", "d"]))
+		Defaults.reset(key)
+		XCTAssertNil(Defaults[key])
+	}
 }
