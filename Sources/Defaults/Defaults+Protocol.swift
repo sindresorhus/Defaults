@@ -34,6 +34,9 @@ public protocol DefaultsBridge {
 
 	// Deserialize Serializable to Value
 	func deserialize(_ object: Serializable?) -> Value?
+
+	// Convert json string into `Any`
+	func migration(_ object: String?) -> Any?
 }
 
 // Convenience protocol for `Codable`

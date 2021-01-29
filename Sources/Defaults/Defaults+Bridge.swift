@@ -5,6 +5,12 @@ import AppKit
 import UIKit
 #endif
 
+extension Defaults.Bridge {
+	public func migration(_ object: String?) -> Any? {
+		nil
+	}
+}
+
 extension Defaults.CodableBridge {
 	public func serialize(_ value: Value?) -> Serializable? {
 		guard let value = value else {
@@ -122,6 +128,10 @@ extension Defaults {
 		public func deserialize(_ object: Serializable?) -> Value? {
 			Wrapped.bridge.deserialize(object)
 		}
+
+		public func migration(_ object: String?) -> Any? {
+			Wrapped.bridge.migration(object)
+		}
 	}
 }
 
@@ -154,6 +164,10 @@ extension Defaults {
 			}
 
 			return array.map { Element.bridge.deserialize($0) }.compact() as? Value
+		}
+
+		public func migration(_ object: String?) -> Any? {
+			Element.bridge.migration(object)
 		}
 	}
 }
@@ -192,6 +206,10 @@ extension Defaults {
 			return dictionary.reduce(into: Value()) { memo, tuple in
 				memo[tuple.key] = Element.bridge.deserialize(tuple.value)
 			}
+		}
+
+		public func migration(_ object: String?) -> Any? {
+			Element.bridge.migration(object)
 		}
 	}
 }
@@ -255,6 +273,16 @@ extension Defaults {
 			}
 
 			return Set(elements)
+		}
+
+		public func migration(_ object: String?) -> Any? {
+			if let set = Element.bridge.migration(object) as? Value {
+				return set
+			} else if let array = Element.bridge.migration(object) as? [Element] {
+				return Set(array)
+			}
+
+			return nil
 		}
 	}
 }

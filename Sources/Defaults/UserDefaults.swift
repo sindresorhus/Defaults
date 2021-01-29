@@ -14,6 +14,8 @@ extension UserDefaults {
 			}
 		} else if let value = Value.bridge.deserialize(anyObject as? Value.Serializable) {
 			return value as? Value
+		} else if let object = anyObject as? String {
+			return Value.bridge.migration(object) as? Value
 		}
 
 		return nil
