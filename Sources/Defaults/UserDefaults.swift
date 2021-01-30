@@ -4,18 +4,11 @@ extension UserDefaults {
 	private func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {
 		let anyObject = object(forKey: key)
 
-		if Value.isNativelySupportedType {
-			// Return directly if anyObject can cast to Value
-			if let anyObject = anyObject as? Value {
-				return anyObject
-			} else if let string = anyObject as? String {
-				// Auto migration old codable value to native supported type.
-				return _migration(string, key: key)
-			}
+		// Return directly if anyObject can cast to Value
+		if Value.isNativelySupportedType, let anyObject = anyObject as? Value {
+			return anyObject
 		} else if let value = Value.bridge.deserialize(anyObject as? Value.Serializable) {
 			return value as? Value
-		} else if let object = anyObject as? String {
-			return Value.bridge.migration(object) as? Value
 		}
 
 		return nil
@@ -27,27 +20,15 @@ extension UserDefaults {
 			return
 		}
 
+		setSerializable(key, to: value)
+	}
+
+	func setSerializable<Value: Defaults.Serializable>(_ key: String, to value: Value) {
 		if Value.isNativelySupportedType {
 			set(value, forKey: key)
 		} else if let serialized = Value.bridge.serialize(value as? Value.Value) {
 			set(serialized, forKey: key)
 		}
-	}
-
-	private func _migration<Value: Defaults.Serializable>(_ value: String, key: String) -> Value? {
-		guard
-			let data = "[\(value)]".data(using: .utf8),
-			// `JSONSerialization` will only convert the value into a Foundation object,
-			// if the value is not a Foundation object it will need to do migration in the `bridge`
-			let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [Value],
-			let object = jsonObject.first
-		else {
-			return nil
-		}
-
-		_set(key, to: object)
-
-		return object
 	}
 
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {

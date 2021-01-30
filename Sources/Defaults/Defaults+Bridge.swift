@@ -5,12 +5,6 @@ import AppKit
 import UIKit
 #endif
 
-extension Defaults.Bridge {
-	public func migration(_ object: String?) -> Any? {
-		nil
-	}
-}
-
 extension Defaults.CodableBridge {
 	public func serialize(_ value: Value?) -> Serializable? {
 		guard let value = value else {
@@ -128,10 +122,6 @@ extension Defaults {
 		public func deserialize(_ object: Serializable?) -> Value? {
 			Wrapped.bridge.deserialize(object)
 		}
-
-		public func migration(_ object: String?) -> Any? {
-			Wrapped.bridge.migration(object)
-		}
 	}
 }
 
@@ -149,25 +139,11 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			// `object` should be an array of Element, when it is String, that means we need to do some migration.
-			if object is String {
-				guard let string = object as? Element.Serializable else {
-					return nil
-				}
-
-				// pass jsonString to user-defined `deserialize`, in order to let the user do their own migration.
-				return Element.bridge.deserialize(string) as? Value
-			}
-
 			guard let array = object as? [Element.Serializable] else {
 				return nil
 			}
 
 			return array.map { Element.bridge.deserialize($0) }.compact() as? Value
-		}
-
-		public func migration(_ object: String?) -> Any? {
-			Element.bridge.migration(object)
 		}
 	}
 }
@@ -188,17 +164,6 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			// `object` should be a dictionary which `Key` is String and `Value` is Serializable,
-			// When it is String, that means we need to do some migration.
-			if object is String {
-				guard let string = object as? Element.Serializable else {
-					return nil
-				}
-
-				// pass jsonString to user-defined `deserialize`, in order to let the user do their own migration.
-				return Element.bridge.deserialize(string) as? Value
-			}
-
 			guard let dictionary = object as? [String: Element.Serializable] else {
 				return nil
 			}
@@ -206,10 +171,6 @@ extension Defaults {
 			return dictionary.reduce(into: Value()) { memo, tuple in
 				memo[tuple.key] = Element.bridge.deserialize(tuple.value)
 			}
-		}
-
-		public func migration(_ object: String?) -> Any? {
-			Element.bridge.migration(object)
 		}
 	}
 }
@@ -244,20 +205,6 @@ extension Defaults {
 
 		public func deserialize(_ object: Serializable?) -> Value? {
 			if Element.isNativelySupportedType {
-				// `object` should be an array of Element, when it is String, that means we need to do some migration
-				if object is String {
-					guard
-						let object = object as? String,
-						let data = object.data(using: .utf8),
-						// `JSONSerialization.jsonObject` will always convert a string to a Foundation object
-						let array = try? JSONSerialization.jsonObject(with: data, options: []) as? [Element]
-					else {
-						return nil
-					}
-
-					return Set(array)
-				}
-
 				guard let array = object as? [Element] else {
 					return nil
 				}
@@ -273,16 +220,6 @@ extension Defaults {
 			}
 
 			return Set(elements)
-		}
-
-		public func migration(_ object: String?) -> Any? {
-			if let set = Element.bridge.migration(object) as? Value {
-				return set
-			} else if let array = Element.bridge.migration(object) as? [Element] {
-				return Set(array)
-			}
-
-			return nil
 		}
 	}
 }
