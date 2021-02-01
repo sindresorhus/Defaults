@@ -57,14 +57,6 @@ public enum Defaults {
 				suite.register(defaults: [self.name: value])
 			}
 		}
-
-		public func migration() where Value: NativeType {
-			suite.migration(forKey: name, of: Value.self)
-		}
-
-		public func migration() where Value: NativeType & Collection, Value.Element: Serializable & NativeType {
-			suite.migration(forKey: name, of: [Value.Element].self)
-		}
 	}
 
 	public static subscript<Value: Serializable>(key: Key<Value>) -> Value {
@@ -89,13 +81,5 @@ extension Defaults {
 extension Defaults.Key {
 	public convenience init<T: Defaults.Serializable>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
 		self.init(key, default: nil, suite: suite)
-	}
-
-	public func migration<T: Defaults.Serializable & Defaults.NativeType>() where Value == T? {
-		suite.migration(forKey: name, of: T.self)
-	}
-
-	public func migration<T: Defaults.NativeType & Collection>() where Value == T?, T.Element: Defaults.Serializable & Defaults.NativeType {
-		suite.migration(forKey: name, of: [T.Element].self)
 	}
 }

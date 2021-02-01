@@ -31,13 +31,12 @@ extension UserDefaults {
 		guard
 			let jsonString = string(forKey: key),
 			let jsonData = jsonString.data(using: .utf8),
-			let codable = try? JSONDecoder().decode(Value.CodableForm.self, from: jsonData),
-			let native = codable.toNative() as? Value
+			let codable = try? JSONDecoder().decode(Value.CodableForm.self, from: jsonData)
 		else {
 			return
 		}
 
-		_set(key, to: native)
+		_set(key, to: codable.toNative())
 	}
 
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {

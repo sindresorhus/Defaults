@@ -66,6 +66,20 @@ extension Int: Defaults.CodableType {
 	}
 }
 
+extension UInt: Defaults.Serializable {
+	public static let isNativelySupportedType = true
+}
+extension UInt: Defaults.NativeType {
+	public typealias CodableForm = Self
+}
+extension UInt: Defaults.CodableType {
+	public typealias NativeForm = Self
+
+	public func toNative() -> Self {
+		self
+	}
+}
+
 extension Double: Defaults.Serializable {
 	public static let isNativelySupportedType = true
 }
@@ -257,6 +271,9 @@ extension Optional: Defaults.Serializable where Wrapped: Defaults.Serializable {
 	public static var isNativelySupportedType: Bool { Wrapped.isNativelySupportedType }
 	public static var bridge: Defaults.OptionalBridge<Wrapped> { Defaults.OptionalBridge() }
 }
+extension Optional: Defaults.NativeType where Wrapped: Defaults.NativeType {
+	public typealias CodableForm = Wrapped.CodableForm
+}
 
 extension Defaults.CollectionSerializable where Element: Defaults.Serializable {
 	public static var bridge: Defaults.CollectionBridge<Self> { Defaults.CollectionBridge() }
@@ -264,22 +281,12 @@ extension Defaults.CollectionSerializable where Element: Defaults.Serializable {
 extension Defaults.CollectionSerializable where Self: Defaults.NativeType, Element: Defaults.Serializable & Defaults.NativeType {
 	public typealias CodableForm = [Element.CodableForm]
 }
-extension Defaults.CollectionSerializable where Self: Defaults.NativeType, Element: Defaults.Serializable & Defaults.CodableType {
-	public func toNative() -> [Element.NativeForm] {
-		map { $0.toNative() }
-	}
-}
 
 extension Defaults.SetAlgebraSerializable where Element: Defaults.Serializable & Hashable {
 	public static var bridge: Defaults.SetAlgebraBridge<Self> { Defaults.SetAlgebraBridge() }
 }
-extension Defaults.SetAlgebraSerializable where Self: Defaults.NativeType, Element: Defaults.Serializable & Defaults.NativeType & Hashable {
+extension Defaults.SetAlgebraSerializable where Self: Defaults.NativeType, Element: Defaults.Serializable & Defaults.NativeType {
 	public typealias CodableForm = [Element.CodableForm]
-}
-extension Defaults.SetAlgebraSerializable where Self: Defaults.NativeType, Element: Defaults.Serializable & Defaults.CodableType & Hashable {
-	public func toNative() -> [Element.NativeForm] {
-		self.toArray().map { $0.toNative() }
-	}
 }
 
 extension Set: Defaults.Serializable where Element: Defaults.Serializable {
@@ -288,11 +295,7 @@ extension Set: Defaults.Serializable where Element: Defaults.Serializable {
 extension Set: Defaults.NativeType where Element: Defaults.Serializable & Defaults.NativeType {
 	public typealias CodableForm = [Element.CodableForm]
 }
-extension Set: Defaults.CodableType where Element: Defaults.Serializable & Defaults.CodableType {
-	public func toNative() -> [Element.NativeForm] {
-		map { $0.toNative() }
-	}
-}
+
 
 extension Array: Defaults.Serializable where Element: Defaults.Serializable {
 	public static var isNativelySupportedType: Bool { Element.isNativelySupportedType }
