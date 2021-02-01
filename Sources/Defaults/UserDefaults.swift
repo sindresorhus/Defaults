@@ -20,15 +20,24 @@ extension UserDefaults {
 			return
 		}
 
-		setSerializable(key, to: value)
-	}
-
-	func setSerializable<Value: Defaults.Serializable>(_ key: String, to value: Value) {
 		if Value.isNativelySupportedType {
 			set(value, forKey: key)
 		} else if let serialized = Value.bridge.serialize(value as? Value.Value) {
 			set(serialized, forKey: key)
 		}
+	}
+
+	func migration<Value: Defaults.Serializable & Defaults.NativeType>(forKey key: String, of type: Value.Type) {
+		guard
+			let jsonString = string(forKey: key),
+			let jsonData = jsonString.data(using: .utf8),
+			let codable = try? JSONDecoder().decode(Value.CodableForm.self, from: jsonData),
+			let native = codable.toNative() as? Value
+		else {
+			return
+		}
+
+		_set(key, to: native)
 	}
 
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {

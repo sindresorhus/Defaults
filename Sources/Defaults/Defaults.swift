@@ -58,30 +58,12 @@ public enum Defaults {
 			}
 		}
 
-		public func migration() where Value: Defaults.NativeType {
-			guard
-				let jsonString = suite.string(forKey: name),
-				let jsonData = jsonString.data(using: .utf8),
-				let codable = try? JSONDecoder().decode(Value.CodableForm.self, from: jsonData),
-				let native = codable.toNative() as? Value
-			else {
-				return
-			}
-
-			suite.setSerializable(name, to: native)
+		public func migration() where Value: NativeType {
+			suite.migration(forKey: name, of: Value.self)
 		}
 
-		public func migration() where Value: Defaults.CollectionSerializable & Defaults.NativeType, Value.Element: Defaults.Serializable & Defaults.NativeType {
-			guard
-				let jsonString = suite.string(forKey: name),
-				let jsonData = jsonString.data(using: .utf8),
-				let codable = try? JSONDecoder().decode(Value.CodableForm.self, from: jsonData),
-				let native = codable.toNative() as? [Value.Element]
-			else {
-				return
-			}
-
-			suite.setSerializable(name, to: native)
+		public func migration() where Value: NativeType & Collection, Value.Element: Serializable & NativeType {
+			suite.migration(forKey: name, of: [Value.Element].self)
 		}
 	}
 
@@ -110,28 +92,10 @@ extension Defaults.Key {
 	}
 
 	public func migration<T: Defaults.Serializable & Defaults.NativeType>() where Value == T? {
-		guard
-			let jsonString = suite.string(forKey: name),
-			let jsonData = jsonString.data(using: .utf8),
-			let codable = try? JSONDecoder().decode(T.CodableForm.self, from: jsonData),
-			let native = codable.toNative() as? T
-		else {
-			return
-		}
-
-		suite.setSerializable(name, to: native)
+		suite.migration(forKey: name, of: T.self)
 	}
 
-	public func migration<T: Defaults.Serializable & Collection & Defaults.NativeType>() where T.Element: Defaults.Serializable & Defaults.NativeType, Value == T? {
-		guard
-			let jsonString = suite.string(forKey: name),
-			let jsonData = jsonString.data(using: .utf8),
-			let codable = try? JSONDecoder().decode(T.CodableForm.self, from: jsonData),
-			let native = codable.toNative() as? [T.Element]
-		else {
-			return
-		}
-
-		suite.setSerializable(name, to: native)
+	public func migration<T: Defaults.NativeType & Collection>() where Value == T?, T.Element: Defaults.Serializable & Defaults.NativeType {
+		suite.migration(forKey: name, of: [T.Element].self)
 	}
 }
