@@ -121,6 +121,7 @@ extension String: Defaults.CodableType {
 		self
 	}
 }
+
 extension CGFloat: Defaults.Serializable {
 	public static let isNativelySupportedType = true
 }
@@ -249,6 +250,16 @@ extension UInt64: Defaults.CodableType {
 
 extension URL: Defaults.Serializable {
 	public static let bridge = Defaults.URLBridge()
+}
+extension URL: Defaults.NativeType {
+	public typealias CodableForm = Self
+}
+extension URL: Defaults.CodableType {
+	public typealias NativeForm = Self
+
+	public func toNative() -> Self {
+		self
+	}
 }
 
 extension Defaults.Serializable where Self: Codable {

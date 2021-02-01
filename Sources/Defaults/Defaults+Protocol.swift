@@ -37,7 +37,7 @@ public protocol DefaultsBridge {
 }
 
 // Convenience protocol for `Codable`
-public protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}
+protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}
 
 /**
 NativeType is a type that we want it to store in the `UserDefaults`
@@ -56,7 +56,7 @@ return codable.toNative()
 ```
 */
 public protocol DefaultsNativeType {
-	associatedtype CodableForm: DefaultsCodableType, Defaults.Serializable
+	associatedtype CodableForm: Defaults.Serializable, Defaults.CodableType
 }
 
 /**
@@ -65,6 +65,6 @@ It should have an associated type name `NativeForm` which is the type we want it
 And it also have a `toNative()` function to convert itself into `NativeForm`.
 */
 public protocol DefaultsCodableType: Codable {
-	associatedtype NativeForm: Defaults.Serializable, DefaultsNativeType
+	associatedtype NativeForm: Defaults.Serializable, Defaults.NativeType
 	func toNative() -> NativeForm
 }

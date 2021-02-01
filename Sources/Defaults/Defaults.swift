@@ -19,10 +19,10 @@ public enum Defaults {
 	public typealias NativeType = DefaultsNativeType
 	public typealias CodableType = DefaultsCodableType
 	public typealias Serializable = DefaultsSerializable
-	public typealias Bridge = DefaultsBridge
-	public typealias CodableBridge = DefaultsCodableBridge
 	public typealias CollectionSerializable = DefaultsCollectionSerializable
 	public typealias SetAlgebraSerializable = DefaultsSetAlgebraSerializable
+	public typealias Bridge = DefaultsBridge
+	typealias CodableBridge = DefaultsCodableBridge
 
 	public class Keys: BaseKey {
 		public typealias Key = Defaults.Key
