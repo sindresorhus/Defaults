@@ -151,4 +151,24 @@ extension Defaults {
 		return combinedPublisher
 	}
 }
+
+@available(OSXApplicationExtension 10.13, watchOSApplicationExtension 4.0, *)
+extension Defaults.NSSecureCodingKeyChange: Equatable where Value: Equatable {
+	public static func == (lhs: Self, rhs: Self) -> Bool {
+		lhs.newValue == rhs.newValue
+	}
+}
+
+@available(OSXApplicationExtension 10.13, watchOSApplicationExtension 4.0, *)
+extension Defaults.NSSecureCodingOptionalKeyChange: Equatable where Value: Equatable {
+	public static func == (lhs: Self, rhs: Self) -> Bool {
+		lhs.newValue == rhs.newValue
+	}
+}
+
+extension Defaults.KeyChange: Equatable where Value: Equatable {
+	public static func == (lhs: Self, rhs: Self) -> Bool {
+		lhs.newValue == rhs.newValue
+	}
+}
 #endif
