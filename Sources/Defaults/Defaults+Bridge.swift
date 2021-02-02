@@ -33,7 +33,7 @@ extension Defaults.CodableBridge {
 }
 
 /**
-Any `Value` which protocol conforms to Codable and Defaults.Serializable will use CodableBridge
+Any `Value` which protocol conforms to `Codable` and `Defaults.Serializable` will use `CodableBridge`
 to do the serialization and deserialization.
 */
 extension Defaults {
@@ -41,8 +41,8 @@ extension Defaults {
 }
 
 /**
-RawRepresentableCodableBridge is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable`
-the compiler will confuse between RawRepresentableBridge and TopLevelCodableBridge
+`RawRepresentableCodableBridge` is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable`
+the compiler will confuse between `RawRepresentableBridge` and `TopLevelCodableBridge`.
 */
 extension Defaults {
 	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {}

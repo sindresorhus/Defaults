@@ -6,42 +6,43 @@ public protocol DefaultsSerializable {
 	associatedtype Bridge: DefaultsBridge
 	associatedtype Property = Self
 
-	// Static bridge for the `Value` which cannot store natively
+	/// Static bridge for the `Value` which cannot store natively
 	static var bridge: Bridge { get }
 
-	// A flag to determine whether `Value` can be store natively or not
+	/// A flag to determine whether `Value` can be store natively or not
 	static var isNativelySupportedType: Bool { get }
 }
 
 public protocol DefaultsCollectionSerializable: Collection, Defaults.Serializable {
+	/// `Collection` does not have initializer, but we need initializer to convert an array into the `Value`
 	init(_ elements: [Element])
 }
 
 public protocol DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializable {
-	// We cannot convert a `SetAlgebra` to an `Array` directly
+	/// Since `SetAlgebra` protocol does not conform to `Sequence`, we cannot convert a `SetAlgebra` to an `Array` directly.
 	func toArray() -> [Element]
 }
 
 public protocol DefaultsBridge {
-	// The type of Value of `Key<Value>`
+	/// The type of Value of `Key<Value>`
 	associatedtype Value
 
-	// This type should be one of the NativelySupportedType
+	/// This type should be one of the NativelySupportedType
 	associatedtype Serializable
 
-	// Serialize Value to Serializable before we store it in UserDefaults
+	/// Serialize `Value` to Serializable before we store it in `UserDefaults`
 	func serialize(_ value: Value?) -> Serializable?
 
-	// Deserialize Serializable to Value
+	/// Deserialize Serializable to `Value`
 	func deserialize(_ object: Serializable?) -> Value?
 }
 
-// Convenience protocol for `Codable`
+/// Convenience protocol for `Codable`
 protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}
 
 /**
-NativeType is a type that we want it to store in the `UserDefaults`
-It should have a associated type name `CodableForm` which protocol conform to `Codable` and `Defaults.Serializable`
+`NativeForm` is a type that we want it to store in the `UserDefaults`
+It should have a associated type named `CodableForm` which protocol conform to `Codable` and `Defaults.Serializable`
 So we can convert the json string into `NativeType` like this.
 ```
 guard

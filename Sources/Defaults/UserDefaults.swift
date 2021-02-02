@@ -4,7 +4,7 @@ extension UserDefaults {
 	private func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {
 		let anyObject = object(forKey: key)
 
-		// Return directly if anyObject can cast to Value
+		/// Return directly if anyObject can cast to Value, means `Value` is Native supported type.
 		if Value.isNativelySupportedType, let anyObject = anyObject as? Value {
 			return anyObject
 		} else if let value = Value.bridge.deserialize(anyObject as? Value.Serializable) {
@@ -27,6 +27,20 @@ extension UserDefaults {
 		}
 	}
 
+	/**
+	Get json string in `UserDefaults` and decode it into the `NativeForm`.
+
+	How it works?
+	For example:
+	Step1. If `Value` is  `[String]`, `Value.CodableForm` will covert into `[String].CodableForm`.
+	`JSONDecoder().decode([String].CodableForm.self, from: jsonData)`
+
+	Step2. `Array`conform to `NativeType`, it's `CodableForm` is `[Element.CodableForm]` and `Element` is `String`.
+	`JSONDecoder().decode([String.CodableForm].self, from: jsonData)`
+
+	Step3. `String`'s `CodableForm` is `self`,  because `String` is `Codable`.
+	`JSONDecoder().decode([String].self, from: jsonData)`
+	*/
 	func migration<Value: Defaults.Serializable & Defaults.NativeType>(forKey key: String, of type: Value.Type) {
 		guard
 			let jsonString = string(forKey: key),

@@ -122,6 +122,10 @@ private func setCodable<Value: Codable>(forKey keyName: String, data: Value) {
 	UserDefaults.standard.set(string, forKey: keyName)
 }
 
+extension Defaults.Keys {
+	fileprivate static let nativeArray = Key<[String]?>("arrayToNativeStaticArrayKey")
+}
+
 final class DefaultsMigrationTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
@@ -531,19 +535,6 @@ final class DefaultsMigrationTests: XCTestCase {
 		XCTAssertEqual(Defaults[key]?[1], newURL)
 	}
 
-	func testArrayToNativeOptionalArray() {
-		let keyName = "arrayToNativeArrayKey"
-		setCodable(forKey: keyName, data: ["a", "b", "c"])
-		let key = Defaults.Key<[String]?>(keyName)
-		Defaults.migration(key)
-		let newValue = "d"
-		Defaults[key]?.append(newValue)
-		XCTAssertEqual(Defaults[key]?[0], "a")
-		XCTAssertEqual(Defaults[key]?[1], "b")
-		XCTAssertEqual(Defaults[key]?[2], "c")
-		XCTAssertEqual(Defaults[key]?[3], newValue)
-	}
-
 	func testArrayToNativeArray() {
 		let keyName = "arrayToNativeArrayKey"
 		setCodable(forKey: keyName, data: ["a", "b", "c"])
@@ -555,6 +546,31 @@ final class DefaultsMigrationTests: XCTestCase {
 		XCTAssertEqual(Defaults[key][1], "b")
 		XCTAssertEqual(Defaults[key][2], "c")
 		XCTAssertEqual(Defaults[key][3], newValue)
+	}
+
+	func testArrayToNativeStaticOptionalArray() {
+		let keyName = "arrayToNativeStaticArrayKey"
+		setCodable(forKey: keyName, data: ["a", "b", "c"])
+		Defaults.migration(.nativeArray)
+		let newValue = "d"
+		Defaults[.nativeArray]?.append(newValue)
+		XCTAssertEqual(Defaults[.nativeArray]?[0], "a")
+		XCTAssertEqual(Defaults[.nativeArray]?[1], "b")
+		XCTAssertEqual(Defaults[.nativeArray]?[2], "c")
+		XCTAssertEqual(Defaults[.nativeArray]?[3], newValue)
+	}
+
+	func testArrayToNativeOptionalArray() {
+		let keyName = "arrayToNativeArrayKey"
+		setCodable(forKey: keyName, data: ["a", "b", "c"])
+		let key = Defaults.Key<[String]?>(keyName)
+		Defaults.migration(key)
+		let newValue = "d"
+		Defaults[key]?.append(newValue)
+		XCTAssertEqual(Defaults[key]?[0], "a")
+		XCTAssertEqual(Defaults[key]?[1], "b")
+		XCTAssertEqual(Defaults[key]?[2], "c")
+		XCTAssertEqual(Defaults[key]?[3], newValue)
 	}
 
 	func testArrayToNativeSet() {
