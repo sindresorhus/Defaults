@@ -2,7 +2,7 @@ import Defaults
 import Foundation
 import XCTest
 
-private struct UniqueID: LosslessStringConvertible, Defaults.Serializable, Defaults.NativeType, Hashable {
+private struct UniqueID: LosslessStringConvertible, Defaults.NativeType, Hashable {
 	typealias CodableForm = String
 
 	var id: Int64
@@ -17,32 +17,6 @@ private struct UniqueID: LosslessStringConvertible, Defaults.Serializable, Defau
 
 	init?(_ description: String) {
 		self.init(id: Int64(description) ?? 0)
-	}
-
-	static let bridge = UniqueIDBridge()
-}
-
-private struct UniqueIDBridge: Defaults.Bridge {
-	typealias Value = UniqueID
-	typealias Serializable = String
-
-	func serialize(_ value: Value?) -> Serializable? {
-		guard let value = value else {
-			return nil
-		}
-
-		return String(value)
-	}
-
-	func deserialize(_ object: String?) -> UniqueID? {
-		guard
-			let object = object,
-			let id = UniqueID(object)
-		else {
-			return nil
-		}
-
-		return id
 	}
 }
 
@@ -736,6 +710,19 @@ final class DefaultsMigrationTests: XCTestCase {
 		let newName = "Asia/Tokyo"
 		Defaults[key]?[id]?.name = newName
 		XCTAssertEqual(Defaults[key]?[id]?.name, newName)
+	}
+
+	func testNestedDictionaryCustomKeyAndCodableValueToNativeNestedDictionary() {
+		let keyName = "nestedDictionaryCustomKeyAndCodableValueToNativeNestedDictionary"
+		setCodable(forKey: keyName, data: [12_345: [1234: CodableTimeZone(id: "0", name: "Asia/Taipei")]])
+		let key = Defaults.Key<[UniqueID: [UniqueID: TimeZone]]?>(keyName)
+		Defaults.migration(key)
+		let firstId = UniqueID(id: 12_345)
+		let secondId = UniqueID(id: 1234)
+		XCTAssertEqual(Defaults[key]?[firstId]?[secondId]?.id, "0")
+		let newName = "Asia/Tokyo"
+		Defaults[key]?[firstId]?[secondId]?.name = newName
+		XCTAssertEqual(Defaults[key]?[firstId]?[secondId]?.name, newName)
 	}
 
 	func testEnumToNativeEnum() {
