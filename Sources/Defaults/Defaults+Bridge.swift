@@ -149,8 +149,8 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct DictionaryBridge<Element: Defaults.Serializable>: Defaults.Bridge {
-		public typealias Value = [String: Element.Value]
+	public struct DictionaryBridge<Key: LosslessStringConvertible & Hashable, Element: Defaults.Serializable>: Defaults.Bridge {
+		public typealias Value = [Key: Element.Value]
 		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
@@ -158,8 +158,9 @@ extension Defaults {
 				return nil
 			}
 
+			/// `Key` which stored in `UserDefaults` have to be `String`
 			return dictionary.reduce(into: [String: Element.Serializable]()) { memo, tuple in
-				memo[tuple.key] = Element.bridge.serialize(tuple.value)
+				memo[String(tuple.key)] = Element.bridge.serialize(tuple.value)
 			}
 		}
 
@@ -169,7 +170,12 @@ extension Defaults {
 			}
 
 			return dictionary.reduce(into: Value()) { memo, tuple in
-				memo[tuple.key] = Element.bridge.deserialize(tuple.value)
+				/// Use `LosslessStringConvertible` to create `Key` instance
+				guard let key = Key(tuple.key) else {
+					return
+				}
+
+				memo[key] = Element.bridge.deserialize(tuple.value)
 			}
 		}
 	}

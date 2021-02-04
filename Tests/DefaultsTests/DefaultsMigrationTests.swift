@@ -2,6 +2,50 @@ import Defaults
 import Foundation
 import XCTest
 
+private struct UniqueID: LosslessStringConvertible, Defaults.Serializable, Defaults.NativeType, Hashable {
+	typealias CodableForm = String
+
+	var id: Int64
+
+	var description: String {
+		"\(id)"
+	}
+
+	init(id: Int64) {
+		self.id = id
+	}
+
+	init?(_ description: String) {
+		self.init(id: Int64(description) ?? 0)
+	}
+
+	static let bridge = UniqueIDBridge()
+}
+
+private struct UniqueIDBridge: Defaults.Bridge {
+	typealias Value = UniqueID
+	typealias Serializable = String
+
+	func serialize(_ value: Value?) -> Serializable? {
+		guard let value = value else {
+			return nil
+		}
+
+		return String(value)
+	}
+
+	func deserialize(_ object: String?) -> UniqueID? {
+		guard
+			let object = object,
+			let id = UniqueID(object)
+		else {
+			return nil
+		}
+
+		return id
+	}
+}
+
 private struct TimeZone: Defaults.Serializable & Defaults.NativeType, Hashable {
 	/// Associated `CodableForm` to `CodableTimeZone`
 	typealias CodableForm = CodableTimeZone
@@ -669,6 +713,29 @@ final class DefaultsMigrationTests: XCTestCase {
 		let newName = "Asia/Tokyo"
 		Defaults[key]?["0"]?.name = newName
 		XCTAssertEqual(Defaults[key]?["0"]?.name, newName)
+	}
+
+	func testDictionaryCodableKeyAndCodableValueToNativeDictionary() {
+		let keyName = "dictionaryCodableKeyAndCodableValueToNativeDictionary"
+		setCodable(forKey: keyName, data: [123: CodableTimeZone(id: "0", name: "Asia/Taipei")])
+		let key = Defaults.Key<[UInt32: TimeZone]?>(keyName)
+		Defaults.migration(key)
+		XCTAssertEqual(Defaults[key]?[123]?.id, "0")
+		let newName = "Asia/Tokyo"
+		Defaults[key]?[123]?.name = newName
+		XCTAssertEqual(Defaults[key]?[123]?.name, newName)
+	}
+
+	func testDictionaryCustomKeyAndCodableValueToNativeDictionary() {
+		let keyName = "dictionaryCustomAndCodableValueToNativeDictionary"
+		setCodable(forKey: keyName, data: [1234: CodableTimeZone(id: "0", name: "Asia/Taipei")])
+		let key = Defaults.Key<[UniqueID: TimeZone]?>(keyName)
+		Defaults.migration(key)
+		let id = UniqueID(id: 1234)
+		XCTAssertEqual(Defaults[key]?[id]?.id, "0")
+		let newName = "Asia/Tokyo"
+		Defaults[key]?[id]?.name = newName
+		XCTAssertEqual(Defaults[key]?[id]?.name, newName)
 	}
 
 	func testEnumToNativeEnum() {

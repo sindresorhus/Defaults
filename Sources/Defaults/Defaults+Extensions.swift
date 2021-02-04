@@ -321,16 +321,16 @@ extension Array: Defaults.CodableType where Element: Defaults.Serializable & Def
 	}
 }
 
-extension Dictionary: Defaults.Serializable where Key == String, Value: Defaults.Serializable {
+extension Dictionary: Defaults.Serializable where Key: LosslessStringConvertible & Hashable, Value: Defaults.Serializable {
 	public static var isNativelySupportedType: Bool { Value.isNativelySupportedType }
-	public static var bridge: Defaults.DictionaryBridge<Value> { Defaults.DictionaryBridge() }
+	public static var bridge: Defaults.DictionaryBridge<Key, Value> { Defaults.DictionaryBridge() }
 }
-extension Dictionary: Defaults.NativeType where Key == String, Value: Defaults.Serializable & Defaults.NativeType {
-	public typealias CodableForm = [Key: Value.CodableForm]
+extension Dictionary: Defaults.NativeType where Key: LosslessStringConvertible & Hashable, Value: Defaults.Serializable & Defaults.NativeType {
+	public typealias CodableForm = [String: Value.CodableForm]
 }
 extension Dictionary: Defaults.CodableType where Key == String, Value: Defaults.Serializable & Defaults.CodableType {
-	public func toNative() -> [Key: Value.NativeForm] {
-		reduce(into: [Key: Value.NativeForm]()) { memo, tuple in
+	public func toNative() -> [String: Value.NativeForm] {
+		reduce(into: [String: Value.NativeForm]()) { memo, tuple in
 			memo[tuple.key] = tuple.value.toNative()
 		}
 	}
