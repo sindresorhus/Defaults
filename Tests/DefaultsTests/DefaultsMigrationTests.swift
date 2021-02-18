@@ -2,9 +2,7 @@ import Defaults
 import Foundation
 import XCTest
 
-private struct UniqueID: LosslessStringConvertible, Defaults.NativeType, Hashable {
-	typealias CodableForm = String
-
+private struct UniqueID: LosslessStringConvertible, Hashable {
 	var id: Int64
 
 	var description: String {
@@ -20,7 +18,7 @@ private struct UniqueID: LosslessStringConvertible, Defaults.NativeType, Hashabl
 	}
 }
 
-private struct TimeZone: Defaults.Serializable & Defaults.NativeType, Hashable {
+private struct TimeZone: Defaults.NativeType, Hashable {
 	/// Associated `CodableForm` to `CodableTimeZone`
 	typealias CodableForm = CodableTimeZone
 
@@ -30,7 +28,7 @@ private struct TimeZone: Defaults.Serializable & Defaults.NativeType, Hashable {
 	static let bridge = TimeZoneBridge()
 }
 
-private struct CodableTimeZone: Defaults.Serializable & Defaults.CodableType {
+private struct CodableTimeZone: Defaults.CodableType {
 	var id: String
 	var name: String
 
@@ -65,6 +63,44 @@ private struct TimeZoneBridge: Defaults.Bridge {
 	}
 }
 
+private struct ChosenTimeZone: Defaults.NativeType, Defaults.CodableType {
+	typealias CodableForm = Self
+
+	var id: String
+	var name: String
+
+	static let bridge = ChosenTimeZoneBridge()
+
+	func toNative() -> Self {
+		self
+	}
+}
+
+private struct ChosenTimeZoneBridge: Defaults.Bridge {
+	typealias Value = ChosenTimeZone
+	typealias Serializable = [String: Any]
+
+	func serialize(_ value: Value?) -> Serializable? {
+		guard let value = value else {
+			return nil
+		}
+
+		return ["id": value.id, "name": value.name]
+	}
+
+	func deserialize(_ object: Serializable?) -> Value? {
+		guard
+			let dictionary = object,
+			let id = dictionary["id"] as? String,
+			let name = dictionary["name"] as? String
+		else {
+			return nil
+		}
+
+		return ChosenTimeZone(id: id, name: name)
+	}
+}
+
 private protocol BagForm {
 	associatedtype Element
 	var items: [Element] { get set }
@@ -93,9 +129,7 @@ extension BagForm {
 	}
 }
 
-private struct MyBag<Element: Defaults.Serializable & Defaults.NativeType>: Defaults.CollectionSerializable & Defaults.NativeType, BagForm {
-	typealias CodableForm = [Element.CodableForm]
-
+private struct MyBag<Element: Defaults.NativeType>: Defaults.CollectionSerializable & Defaults.NativeType, BagForm {
 	var items: [Element]
 
 	init(_ elements: [Element]) {
@@ -103,7 +137,7 @@ private struct MyBag<Element: Defaults.Serializable & Defaults.NativeType>: Defa
 	}
 }
 
-private enum EnumForm: String, Defaults.Serializable & Defaults.NativeType {
+private enum EnumForm: String, Defaults.NativeType {
 	typealias CodableForm = CodableEnumForm
 
 	case tenMinutes = "10 Minutes"
@@ -111,7 +145,7 @@ private enum EnumForm: String, Defaults.Serializable & Defaults.NativeType {
 	case oneHour = "1 Hour"
 }
 
-private enum CodableEnumForm: String, Defaults.Serializable & Defaults.CodableType {
+private enum CodableEnumForm: String, Defaults.CodableType {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
@@ -137,6 +171,7 @@ private func setCodable<Value: Codable>(forKey keyName: String, data: Value) {
 		return
 	}
 
+	print(string)
 	UserDefaults.standard.set(string, forKey: keyName)
 }
 
@@ -668,6 +703,28 @@ final class DefaultsMigrationTests: XCTestCase {
 		let newName = "Asia/Tokyo"
 		Defaults[key]?.insert(.init(id: newId, name: newName))
 		XCTAssertEqual(Defaults[key], Set([TimeZone(id: "0", name: "Asia/Taipei"), TimeZone(id: newId, name: newName)]))
+	}
+
+	func testCodableToNativeCodableOptionalType() {
+		let keyName = "codableToNativeCodableOptionalType"
+		setCodable(forKey: keyName, data: ChosenTimeZone(id: "0", name: "Asia/Taipei"))
+		let key = Defaults.Key<ChosenTimeZone?>(keyName)
+		Defaults.migration(key)
+		XCTAssertEqual(Defaults[key]?.id, "0")
+		let newName = "Asia/Tokyo"
+		Defaults[key]?.name = newName
+		XCTAssertEqual(Defaults[key]?.name, newName)
+	}
+
+	func testCodableArrayToNativeCodableArrayType() {
+		let keyName = "codableToNativeCodableArrayType"
+		setCodable(forKey: keyName, data: [ChosenTimeZone(id: "0", name: "Asia/Taipei")])
+		let key = Defaults.Key<[ChosenTimeZone]?>(keyName)
+		Defaults.migration(key)
+		XCTAssertEqual(Defaults[key]?[0].id, "0")
+		let newName = "Asia/Tokyo"
+		Defaults[key]?[0].name = newName
+		XCTAssertEqual(Defaults[key]?[0].name, newName)
 	}
 
 	func testDictionaryToNativelyDictionary() {

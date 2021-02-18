@@ -16,8 +16,6 @@ extension DefaultsBaseKey {
 public enum Defaults {
 	public typealias BaseKey = DefaultsBaseKey
 	public typealias AnyKey = Keys
-	public typealias NativeType = DefaultsNativeType
-	public typealias CodableType = DefaultsCodableType
 	public typealias Serializable = DefaultsSerializable
 	public typealias CollectionSerializable = DefaultsCollectionSerializable
 	public typealias SetAlgebraSerializable = DefaultsSetAlgebraSerializable
