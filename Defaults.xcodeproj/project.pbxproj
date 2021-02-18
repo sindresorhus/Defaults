@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		52D6D9871BEFF229002C0205 /* Defaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* Defaults.framework */; };
+		71056FF425DE6DEF00524EDA /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF125DE6DEF00524EDA /* Protocol.swift */; };
+		71056FF525DE6DEF00524EDA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF225DE6DEF00524EDA /* Extensions.swift */; };
+		71056FF625DE6DEF00524EDA /* UserDefaults+Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF325DE6DEF00524EDA /* UserDefaults+Migration.swift */; };
 		7108EAC125942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
 		7108EAC225942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
 		7108EAC325942BF60013A623 /* DefaultsSwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */; };
@@ -29,9 +32,6 @@
 		71573E9925A445CE00F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
 		71573EA125A445D400F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
 		71573EA925A445DB00F18D4E /* DefaultsCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */; };
-		7188DAA325DE4838009A294C /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7188DAA025DE4838009A294C /* Protocol.swift */; };
-		7188DAA425DE4838009A294C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7188DAA125DE4838009A294C /* Extensions.swift */; };
-		7188DAA525DE4838009A294C /* UserDefaults+Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7188DAA225DE4838009A294C /* UserDefaults+Migration.swift */; };
 		718B783325917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783425917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
 		718B783525917CCA004FF90D /* Defaults+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718B783225917CCA004FF90D /* Defaults+Protocol.swift */; };
@@ -134,6 +134,9 @@
 		52D6D9F01BEFFFBE002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6DA0F1BF000BD002C0205 /* Defaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Defaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6614F6E222FC6E1C00B0C9CE /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = readme.md; sourceTree = "<group>"; usesTabs = 1; };
+		71056FF125DE6DEF00524EDA /* Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		71056FF225DE6DEF00524EDA /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		71056FF325DE6DEF00524EDA /* UserDefaults+Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Migration.swift"; sourceTree = "<group>"; };
 		7108EAC025942BF60013A623 /* DefaultsSwiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsSwiftUITests.swift; sourceTree = "<group>"; };
 		7108EAF325949DBF0013A623 /* DefaultsDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsDictionaryTests.swift; sourceTree = "<group>"; };
 		71362ABF25A5493300FAA91B /* DefaultsCollectionCustomElementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCollectionCustomElementTests.swift; sourceTree = "<group>"; };
@@ -141,9 +144,6 @@
 		7150D6F325C2968700201966 /* DefaultsMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsMigrationTests.swift; sourceTree = "<group>"; };
 		7152A04C25A5BF6200CC9BA5 /* DefaultsSetAlgebraCustomElementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsSetAlgebraCustomElementTests.swift; sourceTree = "<group>"; };
 		71573E8925A445A100F18D4E /* DefaultsCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsCollectionTests.swift; sourceTree = "<group>"; };
-		7188DAA025DE4838009A294C /* Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
-		7188DAA125DE4838009A294C /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		7188DAA225DE4838009A294C /* UserDefaults+Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Migration.swift"; sourceTree = "<group>"; };
 		718B783225917CCA004FF90D /* Defaults+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Protocol.swift"; sourceTree = "<group>"; };
 		718B783E25917D09004FF90D /* Defaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Defaults+Extensions.swift"; sourceTree = "<group>"; };
 		7191AD862591977700AD472F /* DefaultsArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsArrayTests.swift; sourceTree = "<group>"; };
@@ -261,21 +261,19 @@
 			path = Configs;
 			sourceTree = "<group>";
 		};
-		7188DA9F25DE4838009A294C /* Migration */ = {
+		71056FF025DE6DEF00524EDA /* Migration */ = {
 			isa = PBXGroup;
 			children = (
-				7188DAA025DE4838009A294C /* Protocol.swift */,
-				7188DAA125DE4838009A294C /* Extensions.swift */,
-				7188DAA225DE4838009A294C /* UserDefaults+Migration.swift */,
+				71056FF125DE6DEF00524EDA /* Protocol.swift */,
+				71056FF225DE6DEF00524EDA /* Extensions.swift */,
+				71056FF325DE6DEF00524EDA /* UserDefaults+Migration.swift */,
 			);
-			name = Migration;
-			path = Defaults/Migration;
+			path = Migration;
 			sourceTree = "<group>";
 		};
 		8933C7811EB5B7E0000D00A4 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				7188DA9F25DE4838009A294C /* Migration */,
 				E30E93D822E9425E00530C8F /* Defaults */,
 			);
 			path = Sources;
@@ -325,6 +323,7 @@
 		E30E93D822E9425E00530C8F /* Defaults */ = {
 			isa = PBXGroup;
 			children = (
+				71056FF025DE6DEF00524EDA /* Migration */,
 				8933C7841EB5B820000D00A4 /* Defaults.swift */,
 				E339B3B72449F10D00E7A40A /* UserDefaults.swift */,
 				E339B3B22449ED2000E7A40A /* Reset.swift */,
@@ -726,12 +725,12 @@
 				E339B3B82449F10D00E7A40A /* UserDefaults.swift in Sources */,
 				719F5E20258AFB2F004540F6 /* Defaults+Bridge.swift in Sources */,
 				E3EB3E36216507B50033B089 /* Observation.swift in Sources */,
-				7188DAA325DE4838009A294C /* Protocol.swift in Sources */,
-				7188DAA425DE4838009A294C /* Extensions.swift in Sources */,
+				71056FF425DE6DEF00524EDA /* Protocol.swift in Sources */,
+				71056FF525DE6DEF00524EDA /* Extensions.swift in Sources */,
 				8933C7861EB5B820000D00A4 /* Defaults.swift in Sources */,
 				718B783F25917D09004FF90D /* Defaults+Extensions.swift in Sources */,
 				E339B3B32449ED2000E7A40A /* Reset.swift in Sources */,
-				7188DAA525DE4838009A294C /* UserDefaults+Migration.swift in Sources */,
+				71056FF625DE6DEF00524EDA /* UserDefaults+Migration.swift in Sources */,
 				718B783325917CCA004FF90D /* Defaults+Protocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
