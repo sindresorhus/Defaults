@@ -766,7 +766,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.2.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
@@ -802,7 +802,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -875,7 +875,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-watchOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = watchos;
@@ -901,7 +901,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-watchOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = watchos;
@@ -929,7 +929,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-tvOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = appletvos;
@@ -955,7 +955,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-tvOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = appletvos;
@@ -986,7 +986,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 4.1.0;
+				MARKETING_VERSION = 4.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-macOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = macosx;
@@ -1013,7 +1013,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 4.1.0;
+				MARKETING_VERSION = 4.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-macOS";
 				PRODUCT_NAME = Defaults;
 				SDKROOT = macosx;
