@@ -446,3 +446,11 @@ extension Defaults.ObservationOptions {
 		return options
 	}
 }
+
+@available(macOS 10.13, macOSApplicationExtension 10.13, watchOSApplicationExtension 4.0, *)
+extension Defaults.NSSecureCodingKeyChange: Equatable where Value: Equatable { }
+
+@available(macOS 10.13, macOSApplicationExtension 10.13, watchOSApplicationExtension 4.0, *)
+extension Defaults.NSSecureCodingOptionalKeyChange: Equatable where Value: Equatable { }
+
+extension Defaults.KeyChange: Equatable where Value: Equatable { }
