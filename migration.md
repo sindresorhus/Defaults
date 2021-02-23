@@ -2,8 +2,8 @@
 
 ### From `Codable Array/Dictionary` to `Native Array/Dictionary/Set`(With Native Supported Elements)
 
-Previously(Before v4.X), `Defaults` will store array/dictionary as a json string.
-Now(After v5.X), `Defaults` will store it as a native array/dictionary with native supported elements.
+Before v4.X, `Defaults` will store array/dictionary as a json string.  
+After v5.X, `Defaults` will store it as a native array/dictionary with native supported elements.
 
 Before all, your code should be like this
 ```swift
@@ -14,12 +14,12 @@ extension Defaults.Keys {
 ```
 #### Migration steps
 1. Call `Defaults.migration(key)`.
-2. Now `Defaults[arrayString]` should be readable.
+2. Now `Defaults[arrayString]`, `Defaults[dictionaryStringInt]` should be readable.
 
 ### From `Codable Array/Dictionary` to `Native Array/Dictionary/Set`(With Codable Elements)
 
-Previously(Before v4.X), `Defaults` will store array/dictionary as a json string.
-Now(After v5.X), `Defaults` will store it as a native array/dictionary with codable elements.
+Before v4.X, `Defaults` will store array/dictionary as a json string.  
+After v5.X, `Defaults` will store it as a native array/dictionary with codable elements.
 
 Before all, your code should be like this
 ```swift
@@ -42,7 +42,7 @@ private struct TimeZone: Defaults.Serializable & Codable {
 }
 ```
 1. Call `Defaults.migration(key)`.
-3. Now `Defaults[arrayTimezone]`/`Defaults[dictionaryTimezone]` should be readable.
+3. Now `Defaults[arrayTimezone]`, `Defaults[dictionaryTimezone]` should be readable.
 
 
 ### From `Codable` struct to `Dictionary` (Optional) 
@@ -57,7 +57,10 @@ private struct TimeZone: Codable {
 }
 
 extension Defaults.Keys {
-	static let key = Defaults.Key<TimeZone?>("TimeZone")
+	static let timezone = Defaults.Key<TimeZone?>("TimeZone")
+	static let arrayTimezone = Defaults.Key<[TimeZone]?>("arrayTimezone")
+	static let setTimezone = Defaults.Key<Set<TimeZone>?>("setTimezone")
+	static let dictionaryTimezone = Defaults.Key<[String: TimeZone]?>("setTimezone")
 }
 ```
 #### Migration steps
@@ -123,6 +126,6 @@ private struct TimeZone: Defaults.NativeType, Hashable {
 }
 ```
 5. Call `Defaults.migration(key)`.
-6. Now `Defaults[key]` should be readable.
+6. Now `Defaults[timezone]`, `Defaults[arrayTimezone]` , `Defaults[setTimezone]`, `Defaults[dictionaryTimezone]` should be readable.
 
-**See ([DefaultsMigrationTests.swift](https://github.com/hank121314/Defaults/blob/develop/Tests/DefaultsTests/DefaultsMigrationTests.swift))[] for more example.**
+**See [DefaultsMigrationTests.swift](https://github.com/hank121314/Defaults/blob/develop/Tests/DefaultsTests/DefaultsMigrationTests.swift) for more example.**
