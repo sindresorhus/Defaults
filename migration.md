@@ -5,7 +5,7 @@
 Before v4.X, `Defaults` will store array/dictionary as a json string.  
 After v5.X, `Defaults` will store it as a native array/dictionary with native supported elements.
 
-Before all, your code should be like this
+Before migration, your code should be like this
 ```swift
 extension Defaults.Keys {
 	static let arrayString = Defaults.Key<[String]?>("arrayString")
@@ -21,7 +21,7 @@ extension Defaults.Keys {
 Before v4.X, `Defaults` will store array/dictionary as a json string.  
 After v5.X, `Defaults` will store it as a native array/dictionary with codable elements.
 
-Before all, your code should be like this
+Before migration, your code should be like this
 ```swift
 private struct TimeZone: Codable {
 	var id: String
@@ -49,7 +49,7 @@ private struct TimeZone: Defaults.Serializable & Codable {
 
 This situation happens when you have a struct which is stored as a codable json string before, but now you want it to be store as a dictionary.
 
-Before all, your code should be like this
+Before migration, your code should be like this
 ```swift
 private struct TimeZone: Codable {
 	var id: String
