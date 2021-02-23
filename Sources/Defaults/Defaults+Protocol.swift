@@ -38,4 +38,4 @@ public protocol DefaultsBridge {
 }
 
 /// Convenience protocol for `Codable`
-protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}
+public protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}

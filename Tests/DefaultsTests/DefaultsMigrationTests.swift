@@ -63,17 +63,11 @@ private struct TimeZoneBridge: Defaults.Bridge {
 	}
 }
 
-private struct ChosenTimeZone: Defaults.NativeType, Defaults.CodableType {
-	typealias CodableForm = Self
-
+private struct ChosenTimeZone: Defaults.Serializable & Codable {
 	var id: String
 	var name: String
 
 	static let bridge = ChosenTimeZoneBridge()
-
-	func toNative() -> Self {
-		self
-	}
 }
 
 private struct ChosenTimeZoneBridge: Defaults.Bridge {
@@ -130,6 +124,14 @@ extension BagForm {
 }
 
 private struct MyBag<Element: Defaults.NativeType>: Defaults.CollectionSerializable & Defaults.NativeType, BagForm {
+	var items: [Element]
+
+	init(_ elements: [Element]) {
+		self.items = elements
+	}
+}
+
+private struct CodableBag<Element: Defaults.Serializable & Codable>: Defaults.CollectionSerializable & Codable, BagForm {
 	var items: [Element]
 
 	init(_ elements: [Element]) {
@@ -207,8 +209,8 @@ final class DefaultsMigrationTests: XCTestCase {
 		let answer = "Hello World!"
 		let keyName = "arrayDataToNativeCollectionData"
 		let data = answer.data(using: .utf8)
-		setCodable(forKey: keyName, data: [data])
-		let key = Defaults.Key<MyBag<Data>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([data]))
+		let key = Defaults.Key<CodableBag<Data>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(answer, String(data: Defaults[key]!.first!, encoding: .utf8))
 		let newName = " Hank Chen"
@@ -231,8 +233,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testDateToNativeCollectionDate() {
 		let date = Date()
 		let keyName = "dateToNativeCollectionDate"
-		setCodable(forKey: keyName, data: [date])
-		let key = Defaults.Key<MyBag<Date>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([date]))
+		let key = Defaults.Key<CodableBag<Date>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(date, Defaults[key]!.first)
 		let newDate = Date()
@@ -255,8 +257,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testBoolToNativeCollectionBool() {
 		let bool = false
 		let keyName = "boolToNativeCollectionBool"
-		setCodable(forKey: keyName, data: [bool])
-		let key = Defaults.Key<MyBag<Bool>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([bool]))
+		let key = Defaults.Key<CodableBag<Bool>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], bool)
 		let newBool = true
@@ -279,8 +281,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testIntToNativeCollectionInt() {
 		let int = Int.min
 		let keyName = "intToNativeCollectionInt"
-		setCodable(forKey: keyName, data: [int])
-		let key = Defaults.Key<MyBag<Int>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([int]))
+		let key = Defaults.Key<CodableBag<Int>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], int)
 		let newInt = Int.max
@@ -303,8 +305,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testUIntToNativeCollectionUInt() {
 		let uInt = UInt.min
 		let keyName = "uIntToNativeCollectionUInt"
-		setCodable(forKey: keyName, data: [uInt])
-		let key = Defaults.Key<MyBag<UInt>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([uInt]))
+		let key = Defaults.Key<CodableBag<UInt>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], uInt)
 		let newUInt = UInt.max
@@ -327,8 +329,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testDoubleToNativeCollectionDouble() {
 		let double = Double.zero
 		let keyName = "doubleToNativeCollectionDouble"
-		setCodable(forKey: keyName, data: [double])
-		let key = Defaults.Key<MyBag<Double>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([double]))
+		let key = Defaults.Key<CodableBag<Double>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], double)
 		let newDouble = Double.infinity
@@ -351,8 +353,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testFloatToNativeCollectionFloat() {
 		let float = Float.zero
 		let keyName = "floatToNativeCollectionFloat"
-		setCodable(forKey: keyName, data: [float])
-		let key = Defaults.Key<MyBag<Float>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([float]))
+		let key = Defaults.Key<CodableBag<Float>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], float)
 		let newFloat = Float.infinity
@@ -375,8 +377,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testCGFloatToNativeCollectionCGFloat() {
 		let cgFloat = CGFloat.zero
 		let keyName = "cgFloatToNativeCollectionCGFloat"
-		setCodable(forKey: keyName, data: [cgFloat])
-		let key = Defaults.Key<MyBag<CGFloat>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([cgFloat]))
+		let key = Defaults.Key<CodableBag<CGFloat>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], cgFloat)
 		let newCGFloat = CGFloat.infinity
@@ -399,8 +401,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testInt8ToNativeCollectionInt8() {
 		let int8 = Int8.min
 		let keyName = "int8ToNativeCollectionInt8"
-		setCodable(forKey: keyName, data: [int8])
-		let key = Defaults.Key<MyBag<Int8>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([int8]))
+		let key = Defaults.Key<CodableBag<Int8>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], int8)
 		let newInt8 = Int8.max
@@ -423,8 +425,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testUInt8ToNativeCollectionUInt8() {
 		let uInt8 = UInt8.min
 		let keyName = "uInt8ToNativeCollectionUInt8"
-		setCodable(forKey: keyName, data: [uInt8])
-		let key = Defaults.Key<MyBag<UInt8>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([uInt8]))
+		let key = Defaults.Key<CodableBag<UInt8>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], uInt8)
 		let newUInt8 = UInt8.max
@@ -447,8 +449,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testInt16ToNativeCollectionInt16() {
 		let int16 = Int16.min
 		let keyName = "int16ToNativeCollectionInt16"
-		setCodable(forKey: keyName, data: [int16])
-		let key = Defaults.Key<MyBag<Int16>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([int16]))
+		let key = Defaults.Key<CodableBag<Int16>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], int16)
 		let newInt16 = Int16.max
@@ -471,8 +473,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testUInt16ToNativeCollectionUInt16() {
 		let uInt16 = UInt16.min
 		let keyName = "uInt16ToNativeCollectionUInt16"
-		setCodable(forKey: keyName, data: [uInt16])
-		let key = Defaults.Key<MyBag<UInt16>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([uInt16]))
+		let key = Defaults.Key<CodableBag<UInt16>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], uInt16)
 		let newUInt16 = UInt16.max
@@ -495,8 +497,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testInt32ToNativeCollectionInt32() {
 		let int32 = Int32.min
 		let keyName = "int32ToNativeCollectionInt32"
-		setCodable(forKey: keyName, data: [int32])
-		let key = Defaults.Key<MyBag<Int32>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([int32]))
+		let key = Defaults.Key<CodableBag<Int32>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], int32)
 		let newInt32 = Int32.max
@@ -519,8 +521,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testUInt32ToNativeCollectionUInt32() {
 		let uInt32 = UInt32.min
 		let keyName = "uInt32ToNativeCollectionUInt32"
-		setCodable(forKey: keyName, data: [uInt32])
-		let key = Defaults.Key<MyBag<UInt32>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([uInt32]))
+		let key = Defaults.Key<CodableBag<UInt32>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], uInt32)
 		let newUInt32 = UInt32.max
@@ -543,8 +545,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testInt64ToNativeCollectionInt64() {
 		let int64 = Int64.min
 		let keyName = "int64ToNativeCollectionInt64"
-		setCodable(forKey: keyName, data: [int64])
-		let key = Defaults.Key<MyBag<Int64>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([int64]))
+		let key = Defaults.Key<CodableBag<Int64>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], int64)
 		let newInt64 = Int64.max
@@ -567,8 +569,8 @@ final class DefaultsMigrationTests: XCTestCase {
 	func testUInt64ToNativeCollectionUInt64() {
 		let uInt64 = UInt64.min
 		let keyName = "uInt64ToNativeCollectionUInt64"
-		setCodable(forKey: keyName, data: [uInt64])
-		let key = Defaults.Key<MyBag<UInt64>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag([uInt64]))
+		let key = Defaults.Key<CodableBag<UInt64>?>(keyName)
 		Defaults.migration(key)
 		XCTAssertEqual(Defaults[key]?[0], uInt64)
 		let newUInt64 = UInt64.max
@@ -638,8 +640,8 @@ final class DefaultsMigrationTests: XCTestCase {
 
 	func testArrayToNativeCollectionType() {
 		let keyName = "arrayToNativeCollectionType"
-		setCodable(forKey: keyName, data: ["a", "b", "c"])
-		let key = Defaults.Key<MyBag<String>?>(keyName)
+		setCodable(forKey: keyName, data: CodableBag(["a", "b", "c"]))
+		let key = Defaults.Key<CodableBag<String>?>(keyName)
 		Defaults.migration(key)
 		let newValue = "d"
 		Defaults[key]?.insert(element: newValue, at: 3)

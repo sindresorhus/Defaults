@@ -6,204 +6,6 @@ extension Defaults {
 	public typealias CodableType = DefaultsCodableType
 }
 
-extension Data: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Data: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Date: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Date: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Bool: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Bool: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Int: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Int: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension UInt: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension UInt: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Double: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Double: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Float: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Float: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension String: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension String: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension CGFloat: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension CGFloat: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Int8: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Int8: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension UInt8: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension UInt8: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Int16: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Int16: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension UInt16: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension UInt16: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Int32: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Int32: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension UInt32: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension UInt32: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension Int64: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension Int64: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension UInt64: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension UInt64: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
-extension URL: Defaults.NativeType {
-	public typealias CodableForm = Self
-}
-extension URL: Defaults.CodableType {
-	public typealias NativeForm = Self
-
-	public func toNative() -> Self {
-		self
-	}
-}
-
 extension Optional: Defaults.NativeType where Wrapped: Defaults.NativeType {
 	public typealias CodableForm = Wrapped.CodableForm
 }
@@ -242,6 +44,10 @@ extension Dictionary: Defaults.CodableType where Key == String, Value: Defaults.
 
 
 extension Defaults {
+	public static func migration<Value: Defaults.Serializable & Codable>(_ keys: Key<Value>...) {
+		migration(keys)
+	}
+
 	public static func migration<Value: Defaults.NativeType>(_ keys: Key<Value>...) {
 		migration(keys)
 	}
@@ -263,6 +69,13 @@ extension Defaults {
 	//=> [a, b, c, d]
 	```
 	*/
+	public static func migration<Value: Defaults.Serializable & Codable>(_ keys: [Key<Value>]) {
+		for key in keys {
+			let suite = key.suite
+			suite.migration(forKey: key.name, of: Value.self)
+		}
+	}
+
 	public static func migration<Value: Defaults.NativeType>(_ keys: [Key<Value>]) {
 		for key in keys {
 			let suite = key.suite
