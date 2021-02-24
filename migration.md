@@ -13,7 +13,7 @@ extension Defaults.Keys {
 }
 ```
 #### Migration steps
-1. Call `Defaults.migration(key)`.
+1. Call `Defaults.migration(.arrayString)`, `Defaults.migration(.dictionaryStringInt)`.
 2. Now `Defaults[.arrayString]`, `Defaults[.dictionaryStringInt]` should be readable.
 
 ### From `Codable Array/Dictionary` to `Native Array/Dictionary/Set`(With Codable Elements)
@@ -41,7 +41,7 @@ private struct TimeZone: Defaults.Serializable & Codable {
 	var name: String
 }
 ```
-1. Call `Defaults.migration(key)`.
+2. Call `Defaults.migration(.arrayTimezone)`, `Defaults.migration(.dictionaryTimezone)`.
 3. Now `Defaults[.arrayTimezone]`, `Defaults[.dictionaryTimezone]` should be readable.
 
 
@@ -91,7 +91,7 @@ private struct TimeZoneBridge: Defaults.Bridge {
 	}
 }
 ```
-1. Let `TimeZone` protocol conform to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`(Compiler will complain `TimeZone` is not conform to Defaults.NativeType, will resolve it later).
+2. Let `TimeZone` protocol conform to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`(Compiler will complain `TimeZone` is not conform to Defaults.NativeType, will resolve it later).
 ```swift
 private struct TimeZone: Defaults.NativeType, Hashable {
 
@@ -125,7 +125,7 @@ private struct TimeZone: Defaults.NativeType, Hashable {
 	static let bridge = TimeZoneBridge()
 }
 ```
-5. Call `Defaults.migration(key)`.
+5. Call `Defaults.migration(.timezone)`, `Defaults.migration(.arrayTimezone)`, `Defaults.migration(.setTimezone)`, `Defaults.migration(.dictionaryTimezone)`.
 6. Now `Defaults[.timezone]`, `Defaults[.arrayTimezone]` , `Defaults[.setTimezone]`, `Defaults[.dictionaryTimezone]` should be readable.
 
 **See [DefaultsMigrationTests.swift](https://github.com/hank121314/Defaults/blob/develop/Tests/DefaultsTests/DefaultsMigrationTests.swift) for more example.**
