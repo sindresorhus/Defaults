@@ -447,10 +447,10 @@ extension Defaults.ObservationOptions {
 	}
 }
 
-@available(macOS 10.13, macOSApplicationExtension 10.13, watchOSApplicationExtension 4.0, *)
+@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 extension Defaults.NSSecureCodingKeyChange: Equatable where Value: Equatable { }
 
-@available(macOS 10.13, macOSApplicationExtension 10.13, watchOSApplicationExtension 4.0, *)
+@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 extension Defaults.NSSecureCodingOptionalKeyChange: Equatable where Value: Equatable { }
 
 extension Defaults.KeyChange: Equatable where Value: Equatable { }
