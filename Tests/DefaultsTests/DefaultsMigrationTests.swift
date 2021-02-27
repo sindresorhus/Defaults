@@ -927,6 +927,21 @@ final class DefaultsMigrationTests: XCTestCase {
 		XCTAssertEqual(Defaults[key]?[3], newValue)
 	}
 
+	func testArrayDictionaryStringIntToNativeArray() {
+		let keyName = "arrayDictionaryStringIntToNativeArray"
+		setCodable(forKey: keyName, data: [["a": 0, "b": 1]])
+		let key = Defaults.Key<[[String: Int]]?>(keyName)
+		Defaults.migration(key)
+		let newValue = 2
+		let newDictionary = ["d": 3]
+		Defaults[key]?[0]["c"] = newValue
+		Defaults[key]?.append(newDictionary)
+		XCTAssertEqual(Defaults[key]?[0]["a"], 0)
+		XCTAssertEqual(Defaults[key]?[0]["b"], 1)
+		XCTAssertEqual(Defaults[key]?[0]["c"], newValue)
+		XCTAssertEqual(Defaults[key]?[1]["d"], newDictionary["d"])
+	}
+
 	func testArrayToNativeSet() {
 		let keyName = "arrayToNativeSet"
 		setCodable(forKey: keyName, data: ["a", "b", "c"])
