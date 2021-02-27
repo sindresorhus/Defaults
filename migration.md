@@ -145,7 +145,7 @@ extension Defaults.Keys {
 ```
 
 #### Migration steps
-1. Create `CodablePeriod` and let it protocol conform to `Defaults.CodableType`
+1. Create `CodablePeriod` and let its protocol conform to `Defaults.CodableType`
 ```swift
 private enum CodablePeriod: String, Defaults.CodableType {
 	case tenMinutes = "10 Minutes"
@@ -165,7 +165,7 @@ private enum CodablePeriod: String, Defaults.CodableType {
 	}
 }
 ```
-2. Let `Period` protocol conform to `Defaults.NativeType` and its `CodableForm` is `CodablePeriod`
+2. Let `Period` protocol conform to `Defaults.NativeType` and its `CodableForm` should be `CodablePeriod`
 ```swift
 private enum Period: String, Defaults.NativeType {
 	typealias CodableForm = CodablePeriod
@@ -183,7 +183,7 @@ private enum Period: String, Defaults.NativeType {
 
 ### From `Codable struct` to `Dictionary` (Optional) 
 
-This situation happens when you have a struct which is stored as a codable json string before, but now you want it to be store as a dictionary.
+This situation happens when you have a struct which is stored as a codable json string before, but now you want it to be stored as a dictionary.
 
 #### Before migration, your code should be like this
 ```swift
@@ -227,7 +227,7 @@ private struct TimeZoneBridge: Defaults.Bridge {
 	}
 }
 ```
-2. Let `TimeZone` protocol conform to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`(Compiler will complain `TimeZone` is not conform to `Defaults.NativeType`, will resolve it later).
+2. Let `TimeZone` protocol conform to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`(Compiler will complain that `TimeZone` is not conform to `Defaults.NativeType`, will resolve it later).
 ```swift
 private struct TimeZone: Defaults.NativeType, Hashable {
 
