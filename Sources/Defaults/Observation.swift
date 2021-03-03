@@ -363,3 +363,5 @@ extension Defaults.ObservationOptions {
 		return options
 	}
 }
+
+extension Defaults.KeyChange: Equatable where Value: Equatable { }
