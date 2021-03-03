@@ -3,11 +3,16 @@ on:
   - push
   - pull_request
 jobs:
-  test:
+  macOS-test:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - run: swift test
+  iOS-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: xcodebuild clean test -project Defaults.xcodeproj -scheme Defaults-iOS -destination "platform=iOS Simulator,name=iPhone 8" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
   lint:
     runs-on: ubuntu-latest
     steps:

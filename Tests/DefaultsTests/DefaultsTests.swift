@@ -478,6 +478,62 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testRemoveDuplicatesObserveKeyCombine() {
+		let key = Defaults.Key<Bool>("observeKey", default: false)
+		let expect = expectation(description: "Observation closure being called")
+
+		let inputArray = [true, false, false, false, false, false, false, true]
+		let expectedArray = [true, false, true]
+
+		let cancellable = Defaults
+			.publisher(key, options: [])
+			.removeDuplicates()
+			.map(\.newValue)
+			.collect(expectedArray.count)
+			.sink { result in
+				print("Result array: \(result)")
+				result == expectedArray ? expect.fulfill() : XCTFail("Expected Array is not matched")
+			}
+
+		inputArray.forEach {
+			Defaults[key] = $0
+		}
+
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testRemoveDuplicatesOptionalObserveKeyCombine() {
+		let key = Defaults.Key<Bool?>("observeOptionalKey", default: nil)
+		let expect = expectation(description: "Observation closure being called")
+
+		let inputArray = [true, nil, nil, nil, false, false, false, nil]
+		let expectedArray = [true, nil, false, nil]
+
+		let cancellable = Defaults
+			.publisher(key, options: [])
+			.removeDuplicates()
+			.map(\.newValue)
+			.collect(expectedArray.count)
+			.sink { result in
+				print("Result array: \(result)")
+				result == expectedArray ? expect.fulfill() : XCTFail("Expected Array is not matched")
+			}
+
+		inputArray.forEach {
+			Defaults[key] = $0
+		}
+
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
 	func testResetKey() {
 		let defaultFixture1 = "foo1"
 		let defaultFixture2 = 0

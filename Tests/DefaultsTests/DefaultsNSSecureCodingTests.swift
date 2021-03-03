@@ -336,6 +336,63 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+		func testRemoveDuplicatesObserveNSSecureCodingKeyCombine() {
+			let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
+			let expect = expectation(description: "Observation closure being called")
+
+			let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
+			let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3"]
+
+			let cancellable = Defaults
+				.publisher(key, options: [])
+				.removeDuplicates()
+				.map(\.newValue.value)
+				.collect(expectedArray.count)
+				.sink { result in
+					print("Result array: \(result)")
+					result == expectedArray ? expect.fulfill() : XCTFail("Expected Array is not matched")
+				}
+
+			inputArray.forEach {
+				Defaults[key] = ExamplePersistentHistory(value: $0)
+			}
+
+			Defaults.reset(key)
+			cancellable.cancel()
+
+			waitForExpectations(timeout: 10)
+		}
+
+		@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+		func testRemoveDuplicatesObserveNSSecureCodingOptionalKeyCombine() {
+			let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKey")
+			let expect = expectation(description: "Observation closure being called")
+
+			let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
+			let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3", nil]
+
+			let cancellable = Defaults
+				.publisher(key, options: [])
+				.removeDuplicates()
+				.map(\.newValue)
+				.map { $0?.value }
+				.collect(expectedArray.count)
+				.sink { result in
+					print("Result array: \(result)")
+					result == expectedArray ? expect.fulfill() : XCTFail("Expected Array is not matched")
+				}
+
+			inputArray.forEach {
+				Defaults[key] = ExamplePersistentHistory(value: $0)
+			}
+
+			Defaults.reset(key)
+			cancellable.cancel()
+
+			waitForExpectations(timeout: 10)
+		}
+
 	func testObserveKey() {
 		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: persistentHistoryValue)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")

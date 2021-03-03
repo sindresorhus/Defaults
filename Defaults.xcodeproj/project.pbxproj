@@ -48,6 +48,10 @@
 		719F5E21258AFB2F004540F6 /* Defaults+Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */; };
 		719F5E22258AFB2F004540F6 /* Defaults+Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */; };
 		719F5E23258AFB2F004540F6 /* Defaults+Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719F5E1F258AFB2F004540F6 /* Defaults+Bridge.swift */; };
+		71A7132D260497EE004095EE /* Migration+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF125DE6DEF00524EDA /* Migration+Protocol.swift */; };
+		71A7132E260497EE004095EE /* Migration+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF225DE6DEF00524EDA /* Migration+Extensions.swift */; };
+		71A7132F260497EE004095EE /* Migration+UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF325DE6DEF00524EDA /* Migration+UserDefaults.swift */; };
+		71A71330260497EE004095EE /* Migration+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7168638225E886DB00F55131 /* Migration+Defaults.swift */; };
 		71B96F1E259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
 		71B96F1F259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
 		71B96F20259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
@@ -379,6 +383,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6D9901BEFF229002C0205 /* Build configuration list for PBXNativeTarget "Defaults-iOS" */;
 			buildPhases = (
+				71A71338260497FF004095EE /* SwiftLint */,
 				52D6D9771BEFF229002C0205 /* Sources */,
 				52D6D9781BEFF229002C0205 /* Frameworks */,
 				52D6D9791BEFF229002C0205 /* Headers */,
@@ -623,6 +628,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		71A71338260497FF004095EE /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "swiftlint\n";
+		};
 		E3FD0A4B25BDA35F0011D293 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -648,6 +671,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71A7132D260497EE004095EE /* Migration+Protocol.swift in Sources */,
+				71A7132E260497EE004095EE /* Migration+Extensions.swift in Sources */,
+				71A7132F260497EE004095EE /* Migration+UserDefaults.swift in Sources */,
+				71A71330260497EE004095EE /* Migration+Defaults.swift in Sources */,
 				E286D0C823B8D54C00570D1E /* Observation+Combine.swift in Sources */,
 				E38C9F28244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				8933C7851EB5B820000D00A4 /* Defaults.swift in Sources */,
