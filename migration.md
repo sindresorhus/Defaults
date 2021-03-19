@@ -108,7 +108,7 @@ extension Defaults.Keys {
 }
 ```
 #### Migration steps
-1. Call `Defaults.migration(.arrayString)`, `Defaults.migration(.setString)`, `Defaults.migration(.dictionaryStringInt)`, `Defaults.migration(.dictionaryStringIntInArray)`.
+1. **Call `Defaults.migration(.arrayString)`, `Defaults.migration(.setString)`, `Defaults.migration(.dictionaryStringInt)`, `Defaults.migration(.dictionaryStringIntInArray)`.**
 2. Now `Defaults[.arrayString]`, `Defaults.[.setString]`, `Defaults[.dictionaryStringInt]`, `Defaults[.dictionaryStringIntInArray]` should be readable.
 
 ---
@@ -154,7 +154,7 @@ private enum Period: String, Defaults.Serializable & Codable & Hashable {
 	case oneHour = "1 Hour"
 }
 ```
-2. Call `Defaults.migration(.arrayTimezone)`, `Defaults.migration(.setTimezone)`, `Defaults.migration(.dictionaryTimezone)`, `Defaults.migration(.arrayPeriod)`, `Defaults.migration(.setPeriod)` , `Defaults.migration(.dictionaryPeriod)`.
+2. **Call `Defaults.migration(.arrayTimezone)`, `Defaults.migration(.setTimezone)`, `Defaults.migration(.dictionaryTimezone)`, `Defaults.migration(.arrayPeriod)`, `Defaults.migration(.setPeriod)` , `Defaults.migration(.dictionaryPeriod)`.**
 3. Now `Defaults[.arrayTimezone]`, `Defaults[.setTimezone]`, `Defaults[.dictionaryTimezone]`, `Defaults[.arrayPeriod]`, `Defaults[.setPeriod]` , `Defaults[.dictionaryPeriod]` should be readable.
 
 ---
@@ -209,7 +209,7 @@ private enum Period: String, Defaults.NativeType {
 	case oneHour = "1 Hour"
 }
 ```
-3. Call `Defaults.migration(.period)`
+3. **Call `Defaults.migration(.period)`**
 4. Now `Defaults[.period]` should be readable.
 
 
@@ -295,7 +295,7 @@ private struct TimeZone: Defaults.NativeType, Hashable {
 	static let bridge = TimeZoneBridge()
 }
 ```
-5. Call `Defaults.migration(.timezone)`, `Defaults.migration(.arrayTimezone)`, `Defaults.migration(.setTimezone)`, `Defaults.migration(.dictionaryTimezone)`.
+5. **Call `Defaults.migration(.timezone)`, `Defaults.migration(.arrayTimezone)`, `Defaults.migration(.setTimezone)`, `Defaults.migration(.dictionaryTimezone)`**.
 6. Now `Defaults[.timezone]`, `Defaults[.arrayTimezone]` , `Defaults[.setTimezone]`, `Defaults[.dictionaryTimezone]` should be readable.
 
 **See [DefaultsMigrationTests.swift](https://github.com/hank121314/Defaults/blob/develop/Tests/DefaultsTests/DefaultsMigrationTests.swift) for more example.**
