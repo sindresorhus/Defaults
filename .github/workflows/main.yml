@@ -13,6 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: xcodebuild clean test -project Defaults.xcodeproj -scheme Defaults-iOS -destination "platform=iOS Simulator,name=iPhone 8" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+  tvOS-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: xcodebuild clean test -project Defaults.xcodeproj -scheme Defaults-tvOS -destination "platform=tvOS Simulator,name=Apple TV" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
   lint:
     runs-on: ubuntu-latest
     steps:

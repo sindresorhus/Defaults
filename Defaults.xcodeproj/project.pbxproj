@@ -52,6 +52,14 @@
 		71A7132E260497EE004095EE /* Migration+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF225DE6DEF00524EDA /* Migration+Extensions.swift */; };
 		71A7132F260497EE004095EE /* Migration+UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF325DE6DEF00524EDA /* Migration+UserDefaults.swift */; };
 		71A71330260497EE004095EE /* Migration+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7168638225E886DB00F55131 /* Migration+Defaults.swift */; };
+		71A713482604A084004095EE /* Migration+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF125DE6DEF00524EDA /* Migration+Protocol.swift */; };
+		71A713492604A084004095EE /* Migration+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF225DE6DEF00524EDA /* Migration+Extensions.swift */; };
+		71A7134A2604A084004095EE /* Migration+UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF325DE6DEF00524EDA /* Migration+UserDefaults.swift */; };
+		71A7134B2604A084004095EE /* Migration+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7168638225E886DB00F55131 /* Migration+Defaults.swift */; };
+		71A7135B2604A13B004095EE /* Migration+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF125DE6DEF00524EDA /* Migration+Protocol.swift */; };
+		71A7135C2604A13B004095EE /* Migration+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF225DE6DEF00524EDA /* Migration+Extensions.swift */; };
+		71A7135D2604A13B004095EE /* Migration+UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71056FF325DE6DEF00524EDA /* Migration+UserDefaults.swift */; };
+		71A7135E2604A13B004095EE /* Migration+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7168638225E886DB00F55131 /* Migration+Defaults.swift */; };
 		71B96F1E259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
 		71B96F1F259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
 		71B96F20259986F100079F69 /* DefaultsCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B96F1D259986F100079F69 /* DefaultsCodableTests.swift */; };
@@ -420,6 +428,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6D9E71BEFFF6E002C0205 /* Build configuration list for PBXNativeTarget "Defaults-watchOS" */;
 			buildPhases = (
+				71A713532604A090004095EE /* SwiftLint */,
 				52D6D9DD1BEFFF6E002C0205 /* Sources */,
 				52D6D9DE1BEFFF6E002C0205 /* Frameworks */,
 				52D6D9DF1BEFFF6E002C0205 /* Headers */,
@@ -438,6 +447,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6DA011BEFFFBE002C0205 /* Build configuration list for PBXNativeTarget "Defaults-tvOS" */;
 			buildPhases = (
+				71A713472604A05A004095EE /* SwiftLint */,
 				52D6D9EB1BEFFFBE002C0205 /* Sources */,
 				52D6D9EC1BEFFFBE002C0205 /* Frameworks */,
 				52D6D9ED1BEFFFBE002C0205 /* Headers */,
@@ -646,6 +656,42 @@
 			shellPath = /bin/sh;
 			shellScript = "swiftlint\n";
 		};
+		71A713472604A05A004095EE /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "swiftlint\n";
+		};
+		71A713532604A090004095EE /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "swiftlint\n";
+		};
 		E3FD0A4B25BDA35F0011D293 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -715,6 +761,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71A7135B2604A13B004095EE /* Migration+Protocol.swift in Sources */,
+				71A7135C2604A13B004095EE /* Migration+Extensions.swift in Sources */,
+				71A7135D2604A13B004095EE /* Migration+UserDefaults.swift in Sources */,
+				71A7135E2604A13B004095EE /* Migration+Defaults.swift in Sources */,
 				E286D0CA23B8D54E00570D1E /* Observation+Combine.swift in Sources */,
 				E38C9F2A244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E3A216507C40033B089 /* Utilities.swift in Sources */,
@@ -732,6 +782,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71A713482604A084004095EE /* Migration+Protocol.swift in Sources */,
+				71A713492604A084004095EE /* Migration+Extensions.swift in Sources */,
+				71A7134A2604A084004095EE /* Migration+UserDefaults.swift in Sources */,
+				71A7134B2604A084004095EE /* Migration+Defaults.swift in Sources */,
 				E286D0C923B8D54D00570D1E /* Observation+Combine.swift in Sources */,
 				E38C9F29244ADA2F00A6737A /* SwiftUI.swift in Sources */,
 				E3EB3E3B216507C40033B089 /* Utilities.swift in Sources */,

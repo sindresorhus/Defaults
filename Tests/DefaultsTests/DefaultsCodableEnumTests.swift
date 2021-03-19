@@ -2,7 +2,7 @@ import Foundation
 import Defaults
 import XCTest
 
-private enum FixtureCodableEnum: String, Defaults.Serializable & Codable {
+private enum FixtureCodableEnum: String, Defaults.Serializable & Codable & Hashable {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
