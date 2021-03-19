@@ -1,3 +1,4 @@
+#if !os(macOS)
 import Foundation
 import Defaults
 import XCTest
@@ -304,3 +305,4 @@ final class DefaultsNSColorTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 }
+#endif

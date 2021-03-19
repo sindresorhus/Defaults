@@ -63,6 +63,17 @@ final class DefaultsArrayTests: XCTestCase {
 		XCTAssertEqual(Defaults[key][1]["0"], defaultValue["0"])
 	}
 
+	func testNestedDictionaryKey() {
+		let defaultValue = ["0": [["0": 0]]]
+		let key = Defaults.Key<[[String: [[String: Int]]]]>("independentArrayNestedDictionaryKey", default: [defaultValue])
+		XCTAssertEqual(Defaults[key][0]["0"]![0]["0"], 0)
+		let newValue = 1
+		Defaults[key][0]["0"]![0]["0"] = newValue
+		Defaults[key].append(defaultValue)
+		XCTAssertEqual(Defaults[key][1]["0"]![0]["0"], 0)
+		XCTAssertEqual(Defaults[key][0]["0"]![0]["0"], newValue)
+	}
+
 	func testType() {
 		XCTAssertEqual(Defaults[.array][0], fixtureArray[0])
 		let newName = "Hank121314"
