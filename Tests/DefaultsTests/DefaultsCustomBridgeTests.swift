@@ -10,8 +10,10 @@ public struct User: Defaults.Serializable, Hashable, Equatable {
 }
 
 public final class DefaultsUserBridge: Defaults.Bridge {
-	// swiftlint:disable discouraged_optional_collection
-	public func serialize(_ value: User?) -> [String: String]? {
+	public typealias Value = User
+	public typealias Serializable = [String: String]
+
+	public func serialize(_ value: Value?) -> Serializable? {
 		guard let value = value else {
 			return nil
 		}
@@ -19,8 +21,7 @@ public final class DefaultsUserBridge: Defaults.Bridge {
 		return ["username": value.username, "password": value.password]
 	}
 
-	// swiftlint:disable discouraged_optional_collection
-	public func deserialize(_ object: [String: String]?) -> User? {
+	public func deserialize(_ object: Serializable?) -> Value? {
 		guard
 			let object = object,
 			let username = object["username"],

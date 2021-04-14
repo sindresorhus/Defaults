@@ -278,12 +278,20 @@
 		71056FF025DE6DEF00524EDA /* Migration */ = {
 			isa = PBXGroup;
 			children = (
-				71056FF125DE6DEF00524EDA /* Migration+Protocol.swift */,
-				71056FF225DE6DEF00524EDA /* Migration+Extensions.swift */,
-				71056FF325DE6DEF00524EDA /* Migration+UserDefaults.swift */,
+				7156A8F226205E0C00A1A66E /* v5 */,
 				7168638225E886DB00F55131 /* Migration+Defaults.swift */,
 			);
 			path = Migration;
+			sourceTree = "<group>";
+		};
+		7156A8F226205E0C00A1A66E /* v5 */ = {
+			isa = PBXGroup;
+			children = (
+				71056FF125DE6DEF00524EDA /* Migration+Protocol.swift */,
+				71056FF225DE6DEF00524EDA /* Migration+Extensions.swift */,
+				71056FF325DE6DEF00524EDA /* Migration+UserDefaults.swift */,
+			);
+			path = v5;
 			sourceTree = "<group>";
 		};
 		8933C7811EB5B7E0000D00A4 /* Sources */ = {

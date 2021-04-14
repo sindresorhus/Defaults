@@ -15,7 +15,7 @@ extension UserDefaults {
 	Step3. `String`'s `CodableForm` is `self`,  because `String` is `Codable`.
 	`JSONDecoder().decode([String].self, from: jsonData)`
 	*/
-	func migration<Value: Defaults.Serializable & Codable>(forKey key: String, of type: Value.Type) {
+	func migrateCodableToNative<Value: Defaults.Serializable & Codable>(forKey key: String, of type: Value.Type) {
 		guard
 			let jsonString = string(forKey: key),
 			let jsonData = jsonString.data(using: .utf8),
@@ -27,7 +27,7 @@ extension UserDefaults {
 		_set(key, to: codable)
 	}
 
-	func migration<Value: Defaults.NativeType>(forKey key: String, of type: Value.Type) {
+	func migrateCodableToNative<Value: Defaults.NativeType>(forKey key: String, of type: Value.Type) {
 		guard
 			let jsonString = string(forKey: key),
 			let jsonData = jsonString.data(using: .utf8),

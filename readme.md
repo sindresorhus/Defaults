@@ -19,6 +19,7 @@ For a real-world example, see my [Plash app](https://github.com/sindresorhus/Pla
 - **Publishers:** Combine publishers built-in.
 - **Observation:** Observe changes to keys.
 - **Debuggable:** The data is stored as JSON-serialized values.
+- **Customizable:** You can create your own type.
 
 ## Compatibility
 
@@ -26,6 +27,10 @@ For a real-world example, see my [Plash app](https://github.com/sindresorhus/Pla
 - iOS 10+
 - tvOS 10+
 - watchOS 3+
+
+## Migration Guides
+
+#### [From v4 to v5](./migration.md)
 
 ## Install
 
@@ -92,30 +97,10 @@ The default value is then `nil`.
 
 ---
 
-If you have `NSSecureCoding` classes which you want to save, you can use them as follows:
-
-```swift
-extension Defaults.Keys {
-	static let someSecureCoding = NSSecureCodingKey<SomeNSSecureCodingClass>("someSecureCoding", default: SomeNSSecureCodingClass(string: "Default", int: 5, bool: true))
-	static let someOptionalSecureCoding = NSSecureCodingOptionalKey<Double>("someOptionalSecureCoding")
-}
-
-Defaults[.someSecureCoding].string
-//=> "Default"
-
-Defaults[.someSecureCoding].int
-//=> 5
-
-Defaults[.someSecureCoding].bool
-//=> true
-```
-
-You can use those keys just like in all the other examples. The return value will be your `NSSecureCoding` class.
-
 ### Enum example
 
 ```swift
-enum DurationKeys: String, Codable {
+enum DurationKeys: String {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
@@ -162,8 +147,6 @@ struct ContentView: View {
 Note that it's `@Default`, not `@Defaults`.
 
 You cannot use `@Default` in an `ObservableObject`. It's meant to be used in a `View`.
-
-This is only implemented for `Defaults.Key`. PR welcome for `Defaults.NSSecureCoding` if you need it.
 
 ### Observe changes to a key
 
@@ -317,6 +300,57 @@ print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 //=> true
 ```
 
+### Custom types
+
+Although `Defaults` already support many types internal, there might have some situations that you want to use your own type.
+The guide below will show you how to create your own custom type.
+
+1. Create your own custom type
+```swift
+struct User {
+	var name: String
+	var age: String
+}
+```
+
+2. Create a bridge which protocol conform to `Defaults.Bridge`
+```swift
+struct UserBridge: Defaults.Bridge {
+	typealias Value = User
+	typealias Serializable = [String: String]
+
+	public func serialize(_ value: Value?) -> Serializable? {
+		guard let value = value else {
+			return nil
+		}
+
+		return ["username": value.username, "password": value.password]
+	}
+
+	public func deserialize(_ object: Serializable?) -> Value? {
+		guard
+			let object = object,
+			let username = object["username"],
+			let password = object["password"]
+		else {
+			return nil
+		}
+
+		return User(username: username, password: password)
+	}
+}
+``` 
+
+3. Let your own custom type protocol conform to `Defaults.Serializable` and its static bridge should be the bridge we created above.
+```swift
+struct User: Defaults.Serializable {
+	var name: String
+	var age: String
+
+	static let bridge = UserBridge()
+}
+```
+
 ## API
 
 ### `Defaults`
@@ -339,27 +373,72 @@ Create a key with a default value.
 
 The default value is written to the actual `UserDefaults` and can be used elsewhere. For example, with a Interface Builder binding.
 
-#### `Defaults.NSSecureCodingKey` *(alias `Defaults.Keys.NSSecureCodingKey`)*
+#### `Defaults.Serializable`
 
 ```swift
-Defaults.NSSecureCodingKey<T>(_ key: String, default: T, suite: UserDefaults = .standard)
+public protocol DefaultsSerializable {
+	static var bridge: Defaults.Bridge { get }
+}
 ```
 
-Type: `class`
+Type: `protocol`
 
-Create a NSSecureCoding key with a default value.
+A protocol which can do serialization and de-serialization easily.
 
-The default value is written to the actual `UserDefaults` and can be used elsewhere. For example, with a Interface Builder binding.
+It should have a static variable `bridge` and its protocol should conform to `Defaults.Bridge`.
 
-#### `Defaults.NSSecureCodingOptionalKey` *(alias `Defaults.Keys.NSSecureCodingOptionalKey`)*
+#### `Defaults.CollectionSerializable`
 
 ```swift
-Defaults.NSSecureCodingOptionalKey<T>(_ key: String, suite: UserDefaults = .standard)
+public protocol DefaultsCollectionSerializable: Collection, Defaults.Serializable {
+	init(_ elements: [Element])
+}
 ```
 
-Type: `class`
+Type: `protocol`
 
-Create a NSSecureCoding key with an optional value.
+A `Collection` which can store into the `UserDefaults`.
+
+It should have an initializer `init(_ elements: [Element])` to let `Defaults` do the de-serialization.
+
+#### `Defaults.SetAlgebraSerializable`
+
+```swift
+public protocol DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializable {
+	func toArray() -> [Element]
+}
+```
+
+Type: `protocol`
+
+A `SetAlgebra` which can store into the `UserDefaults`.
+
+It should have a function `func toArray() -> [Element]` to let `Defaults` do the serialization.
+
+#### `Defaults.Bridge`
+
+```swift
+public protocol DefaultsBridge {
+	associatedtype Value
+	associatedtype Serializable
+	func serialize(_ value: Value?) -> Serializable?
+	func deserialize(_ object: Serializable?) -> Value?
+}
+```
+
+Type: `protocol`
+
+A Bridge can do the serialization and de-serialization.
+
+Have two associate types `Value` and `Serializable`.
+
+`Value` is the type user want to use it.
+
+`Serializable` is the type stored in `UserDefaults`.
+
+`serialize` will be executed before storing to the `UserDefaults` .
+
+`deserialize` will be executed after retrieving its value from the `UserDefaults`.
 
 #### `Defaults.reset(keys…)`
 
@@ -378,22 +457,6 @@ Defaults.observe<T: Codable>(
 	_ key: Defaults.Key<T>,
 	options: ObservationOptions = [.initial],
 	handler: @escaping (KeyChange<T>) -> Void
-) -> Defaults.Observation
-```
-
-```swift
-Defaults.observe<T: NSSecureCoding>(
-	_ key: Defaults.NSSecureCodingKey<T>,
-	options: ObservationOptions = [.initial],
-	handler: @escaping (NSSecureCodingKeyChange<T>) -> Void
-) -> Defaults.Observation
-```
-
-```swift
-Defaults.observe<T: NSSecureCoding>(
-	_ key: Defaults.NSSecureCodingOptionalKey<T>,
-	options: ObservationOptions = [.initial],
-	handler: @escaping (NSSecureCodingOptionalKeyChange<T>) -> Void
 ) -> Defaults.Observation
 ```
 
@@ -418,20 +481,6 @@ Defaults.publisher<T: Codable>(
 	_ key: Defaults.Key<T>,
 	options: ObservationOptions = [.initial]
 ) -> AnyPublisher<KeyChange<T>, Never>
-```
-
-```swift
-Defaults.publisher<T: NSSecureCoding>(
-	_ key: Defaults.NSSecureCodingKey<T>,
-	options: ObservationOptions = [.initial]
-) -> AnyPublisher<NSSecureCodingKeyChange<T>, Never>
-```
-
-```swift
-Defaults.publisher<T: NSSecureCoding>(
-	_ key: Defaults.NSSecureCodingOptionalKey<T>,
-	options: ObservationOptions = [.initial]
-) -> AnyPublisher<NSSecureCodingOptionalKeyChange<T>, Never>
 ```
 
 Type: `func`
@@ -509,7 +558,49 @@ Any `Defaults` key changes made within the closure will not propagate to `Defaul
 
 Get/set a `Defaults` item and also have the view be updated when the value changes.
 
-This is only implemented for `Defaults.Key`. PR welcome for `Defaults.NSSecureCoding` if you need it.
+### `Defaults.migration(keys..., to: Version)`
+
+```swift
+Defaults.migration<T: Defaults.Serializable & Codable>(keys..., to: Version)
+Defaults.migration<T: Defaults.NativeType>(keys..., to: Version)
+```
+
+Type: `func`
+
+Migrate the given keys to the specific version.
+
+You can specify up to 10 keys. If you need to specify more, call this method multiple times.
+
+#### `Defaults.NativeType`
+
+```swift
+protocol DefaultsNativeType: Defaults.Serializable {
+	associatedtype CodableForm: Defaults.CodableType
+}
+```
+
+Type: `protocol`
+
+Represents the type after migration.
+
+It should have a associated type name `CodableForm` which protocol conform to `Codable`.
+
+#### `Defaults.CodableType`
+
+```swift
+protocol DefaultsCodableType: Codable {
+	associatedtype NativeForm: Defaults.NativeType
+	func toNative() -> NativeForm
+}
+```
+
+Type: `protocol`
+
+Represents the type before migration.
+
+It should have an associated type name `NativeForm` which is the type we want it to store in `UserDefaults`.
+
+And it also have a `toNative()` function to convert itself into `NativeForm`.
 
 ## FAQ
 
@@ -519,6 +610,8 @@ You cannot store `[String: Any]` directly as it cannot conform to `Codable`. How
 
 ```swift
 import AnyCodable
+
+extension AnyCodable: Defaults.Serializable {}
 
 extension Defaults.Keys {
 	static let magic = Key<[String: AnyCodable]>("magic", default: [:])

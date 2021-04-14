@@ -2,7 +2,7 @@ import Foundation
 
 /**
 `NativeForm` is a type that we want it to store in the `UserDefaults`
-It should have a associated type named `CodableForm` which protocol conform to `Codable` and `Defaults.Serializable`
+It should have a associated type name `CodableForm` which protocol conform to `Codable`.
 So we can convert the json string into `NativeType` like this.
 ```
 guard
