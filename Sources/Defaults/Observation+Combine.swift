@@ -27,7 +27,6 @@ extension Defaults {
 		}
 
 		func cancel() {
-			observation?.invalidate()
 			observation = nil
 			subscriber = nil
 		}
