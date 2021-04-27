@@ -358,7 +358,7 @@ private struct TimeZoneBridge: Defaults.Bridge {
 }
 ```
 
-1. Create an extension of `TimeZone`, let it conform to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`(Compiler will complain that `TimeZone` is not conform to `Defaults.NativeType`, will resolve it later).
+2. Create an extension of `TimeZone`, let it conform to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`(Compiler will complain that `TimeZone` is not conform to `Defaults.NativeType`, will resolve it later).
 
 ```swift
 private struct TimeZone: Hashable {
@@ -371,7 +371,7 @@ extension TimeZone: Defaults.NativeType {
 }
 ```
 
-1. Create an extension of `CodableTimeZone` and let it conform to `Defaults.CodableType`
+3. Create an extension of `CodableTimeZone` and let it conform to `Defaults.CodableType`
 
 ```swift
 private struct CodableTimeZone {
