@@ -2,10 +2,12 @@ import Foundation
 import XCTest
 import Defaults
 
-private struct Item: Defaults.Serializable, Equatable {
+private struct Item: Equatable {
 	let name: String
 	let count: UInt
+}
 
+extension Item: Defaults.Serializable {
 	static let bridge = ItemBridge()
 }
 

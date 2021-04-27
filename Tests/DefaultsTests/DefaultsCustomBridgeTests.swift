@@ -2,10 +2,12 @@ import Foundation
 import Defaults
 import XCTest
 
-public struct User: Defaults.Serializable, Hashable, Equatable {
+public struct User: Hashable, Equatable {
 	var username: String
 	var password: String
+}
 
+extension User: Defaults.Serializable {
 	public static let bridge = DefaultsUserBridge()
 }
 

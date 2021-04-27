@@ -128,7 +128,7 @@ extension Defaults {
 extension Defaults {
 	public struct ArrayBridge<Element: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = [Element]
-		public typealias Serializable = Any
+		public typealias Serializable = [Element.Serializable]
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let array = value as? [Element.Value] else {
@@ -139,7 +139,7 @@ extension Defaults {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			guard let array = object as? [Element.Serializable] else {
+			guard let array = object else {
 				return nil
 			}
 
@@ -151,26 +151,26 @@ extension Defaults {
 extension Defaults {
 	public struct DictionaryBridge<Key: LosslessStringConvertible & Hashable, Element: Defaults.Serializable>: Defaults.Bridge {
 		public typealias Value = [Key: Element.Value]
-		public typealias Serializable = Any
+		public typealias Serializable = [String: Element.Serializable]
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let dictionary = value else {
 				return nil
 			}
 
-			/// `Key` which stored in `UserDefaults` have to be `String`
-			return dictionary.reduce(into: [String: Element.Serializable]()) { memo, tuple in
+			// `Key` which stored in `UserDefaults` have to be `String`
+			return dictionary.reduce(into: Serializable()) { memo, tuple in
 				memo[String(tuple.key)] = Element.bridge.serialize(tuple.value)
 			}
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			guard let dictionary = object as? [String: Element.Serializable] else {
+			guard let dictionary = object else {
 				return nil
 			}
 
 			return dictionary.reduce(into: Value()) { memo, tuple in
-				/// Use `LosslessStringConvertible` to create `Key` instance
+				// Use `LosslessStringConvertible` to create `Key` instance
 				guard let key = Key(tuple.key) else {
 					return
 				}

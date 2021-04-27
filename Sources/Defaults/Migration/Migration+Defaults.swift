@@ -5,31 +5,26 @@ extension Defaults {
 		case v5 = 5
 	}
 
-	public static func migration<Value: Defaults.Serializable & Codable>(_ keys: Key<Value>..., to version: Version) {
-		switch version {
-		case .v5:
-			migration(keys, to: version)
-		}
-	}
-
-	public static func migration<Value: Defaults.NativeType>(_ keys: Key<Value>..., to version: Version) {
-		switch version {
-		case .v5:
-			migration(keys, to: version)
-		}
-	}
-
 	/**
-	 Migration the given key's value from json string to `Value`.
-	 ```
-	 extension Defaults.Keys {
-	 	static let array = Key<Set<String>?>("array")
-	 }
+	Migration the given key's value from json string to `Value`.
 
-	 Defaults.migration(.array, to: .v5)
-	 ```
-	 */
-	public static func migration<Value: Defaults.Serializable & Codable>(_ keys: [Key<Value>], to version: Version) {
+	```
+	extension Defaults.Keys {
+		static let array = Key<Set<String>?>("array")
+	}
+
+	Defaults.migrate(.array, to: .v5)
+	```
+	*/
+	public static func migrate<Value: Defaults.Serializable & Codable>(_ keys: Key<Value>..., to version: Version) {
+		migrate(keys, to: version)
+	}
+
+	public static func migrate<Value: Defaults.NativeType>(_ keys: Key<Value>..., to version: Version) {
+		migrate(keys, to: version)
+	}
+
+	public static func migrate<Value: Defaults.Serializable & Codable>(_ keys: [Key<Value>], to version: Version) {
 		switch version {
 		case .v5:
 			for key in keys {
@@ -39,7 +34,7 @@ extension Defaults {
 		}
 	}
 
-	public static func migration<Value: Defaults.NativeType>(_ keys: [Key<Value>], to version: Version) {
+	public static func migrate<Value: Defaults.NativeType>(_ keys: [Key<Value>], to version: Version) {
 		switch version {
 		case .v5:
 			for key in keys {

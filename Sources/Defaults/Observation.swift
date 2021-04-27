@@ -45,21 +45,7 @@ extension Defaults {
 			return nil
 		}
 
-		if Value.isNativelySupportedType {
-			// This handles the case where the value was a plist value using `isNativelySupportedType`
-			guard let value = value as? Value else {
-				return nil
-			}
-
-			return value
-		}
-
-		// handles custom deserialize
-		guard let object = Value.bridge.deserialize(value as? Value.Serializable) as? Value else {
-			return nil
-		}
-
-		return object
+		return Value.toValue(value)
 	}
 
 	struct BaseChange {

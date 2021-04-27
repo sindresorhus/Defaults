@@ -2,15 +2,11 @@ import Foundation
 import XCTest
 import Defaults
 
-struct Bag<Element: Defaults.Serializable>: Defaults.CollectionSerializable {
+struct Bag<Element: Defaults.Serializable>: Collection {
 	var items: [Element]
 
 	init(items: [Element]) {
 		self.items = items
-	}
-
-	init(_ elements: [Element]) {
-		self.items = elements
 	}
 
 	var startIndex: Int {
@@ -31,6 +27,12 @@ struct Bag<Element: Defaults.Serializable>: Defaults.CollectionSerializable {
 
 	subscript(position: Int) -> Element {
 		items[position]
+	}
+}
+
+extension Bag: Defaults.CollectionSerializable {
+	init(_ elements: [Element]) {
+		self.items = elements
 	}
 }
 

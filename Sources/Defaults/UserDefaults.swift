@@ -2,29 +2,20 @@ import Foundation
 
 extension UserDefaults {
 	func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {
-		let anyObject = object(forKey: key)
-
-		/// Return directly if anyObject can cast to Value, means `Value` is Native supported type.
-		if Value.isNativelySupportedType, let anyObject = anyObject as? Value {
-			return anyObject
-		} else if let value = Value.bridge.deserialize(anyObject as? Value.Serializable) {
-			return value as? Value
+		guard let anyObject = object(forKey: key) else {
+			return nil
 		}
 
-		return nil
+		return Value.toValue(anyObject)
 	}
 
-	func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
+	 func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
 		if (value as? _DefaultsOptionalType)?.isNil == true {
 			removeObject(forKey: key)
 			return
 		}
 
-		if Value.isNativelySupportedType {
-			set(value, forKey: key)
-		} else if let serialized = Value.bridge.serialize(value as? Value.Value) {
-			set(serialized, forKey: key)
-		}
+		set(Value.toSerializable(value), forKey: key)
 	}
 
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {

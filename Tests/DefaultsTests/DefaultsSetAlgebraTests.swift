@@ -2,13 +2,17 @@ import Foundation
 import XCTest
 import Defaults
 
-struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: Defaults.SetAlgebraSerializable {
+struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: SetAlgebra {
 	var store = Set<Element>()
 
 	init() {}
 
-	init(_store: Set<Element>) {
-		store = _store
+	init<S: Sequence>(_ sequence: __owned S) where Element == S.Element {
+		self.store = Set(sequence)
+	}
+
+	init(_ store: Set<Element>) {
+		self.store = store
 	}
 
 	func contains(_ member: Element) -> Bool {
@@ -16,7 +20,7 @@ struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: Defaults.S
 	}
 
 	func union(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
-		DefaultsSetAlgebra(_store: store.union(other.store))
+		DefaultsSetAlgebra(store.union(other.store))
 	}
 
 	func intersection(_ other: DefaultsSetAlgebra)
@@ -58,7 +62,9 @@ struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: Defaults.S
 	mutating func formIntersection(_ other: DefaultsSetAlgebra) {
 		store.formIntersection(other.store)
 	}
+}
 
+extension DefaultsSetAlgebra: Defaults.SetAlgebraSerializable {
 	func toArray() -> [Element] {
 		Array(store)
 	}

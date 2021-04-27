@@ -216,6 +216,12 @@ extension Defaults.SetAlgebraSerializable where Self: Defaults.NativeType, Eleme
 	public typealias CodableForm = [Element.CodableForm]
 }
 
+extension Defaults.CodableType where Self: RawRepresentable, NativeForm: RawRepresentable, Self.RawValue == NativeForm.RawValue {
+	public func toNative() -> NativeForm {
+		NativeForm(rawValue: self.rawValue)!
+	}
+}
+
 extension Set: Defaults.NativeType where Element: Defaults.NativeType {
 	public typealias CodableForm = [Element.CodableForm]
 }
@@ -224,7 +230,9 @@ extension Array: Defaults.NativeType where Element: Defaults.NativeType {
 	public typealias CodableForm = [Element.CodableForm]
 }
 extension Array: Defaults.CodableType where Element: Defaults.CodableType {
-	public func toNative() -> [Element.NativeForm] {
+	public typealias NativeForm = [Element.NativeForm]
+
+	public func toNative() -> NativeForm {
 		map { $0.toNative() }
 	}
 }
@@ -233,8 +241,10 @@ extension Dictionary: Defaults.NativeType where Key: LosslessStringConvertible &
 	public typealias CodableForm = [String: Value.CodableForm]
 }
 extension Dictionary: Defaults.CodableType where Key == String, Value: Defaults.CodableType {
-	public func toNative() -> [String: Value.NativeForm] {
-		reduce(into: [String: Value.NativeForm]()) { memo, tuple in
+	public typealias NativeForm = [String: Value.NativeForm]
+
+	public func toNative() -> NativeForm {
+		reduce(into: NativeForm()) { memo, tuple in
 			memo[tuple.key] = tuple.value.toNative()
 		}
 	}

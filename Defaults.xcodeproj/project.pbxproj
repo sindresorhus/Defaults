@@ -1035,7 +1035,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.2.1;
+				MARKETING_VERSION = 4.2.2;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
@@ -1071,7 +1071,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.2.1;
+				MARKETING_VERSION = 4.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Defaults.Defaults-iOS";
 				PRODUCT_NAME = Defaults;
 				PROVISIONING_PROFILE_SPECIFIER = "";

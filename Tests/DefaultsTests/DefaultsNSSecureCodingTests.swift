@@ -84,6 +84,8 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [persistentHistoryValue]
 		XCTAssertEqual(Defaults[key]?[0].value, persistentHistoryValue.value)
+		Defaults[key] = nil
+		XCTAssertNil(Defaults[key])
 	}
 
 	func testNestedArrayKey() {
