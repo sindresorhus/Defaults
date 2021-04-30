@@ -2,7 +2,7 @@
 
 ## Warning
 
-If the migration is not successful or incomplete. Edit `Defaults.Key` might cause data loss.  
+If the migration is not success or incomplete. Edit `Defaults.Key` might cause data loss.  
 **Please back up your UserDefaults data before migration.**
 
 ## Summary

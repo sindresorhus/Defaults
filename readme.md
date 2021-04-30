@@ -52,23 +52,26 @@ pod 'Defaults'
 
 ## Support types
 
-|    Single Value    |        Array         |            Set            | Dictionary<T: LosslessStringConvertible> |
-| :----------------: | :------------------: | :-----------------------: | :--------------------------------------: |
-| `Int(8/16/32/64)`  | `[Int(8/16/32/64)]`  |  `Set<Int(8/16/32/64)>`   |          `[T: Int(8/16/32/64)]`          |
-| `UInt(8/16/32/64)` | `[UInt(8/16/32/64)]` |  `Set<UInt(8/16/32/64)>`  |         `[T: UInt(8/16/32/64)]`          |
-|      `Double`      |      `[Double]`      |       `Set<Double>`       |              `[T: Double]`               |
-|      `Float`       |      `[Float]`       |       `Set<Float>`        |               `[T: Float]`               |
-|      `String`      |      `[String]`      |       `Set<String>`       |              `[T: String]`               |
-|     `CGFloat`      |     `[CGFloat]`      |      `Set<CGFloat>`       |              `[T: CGFloat]`              |
-|       `Bool`       |       `[Bool]`       |        `Set<Bool>`        |               `[T: Bool]`                |
-|       `Date`       |       `[Date]`       |        `Set<Date>`        |               `[T: Date]`                |
-|       `Data`       |       `[Data]`       |        `Set<Data>`        |               `[T: Data]`                |
-|       `URL`        |       `[URL]`        |        `Set<URL>`         |                `[T: URL]`                |
-| `NSColor` (macOS)  | `[NSColor]` (macOS)  |  `Set<NSColor>` (macOS)   |          `[T: NSColor]` (macOS)          |
-|  `UIColor` (iOS)   |  `[UIColor]` (iOS)   |      `Set<UIColor>`       |           `[T: UIColor]` (iOS)           |
+|    Single Value    |
+|:------------------:|
+|  `Int(8/16/32/64)` |
+| `UInt(8/16/32/64)` |
+|      `Double`      |
+|       `Float`      |
+|      `String`      |
+|      `CGFloat`     |
+|       `Bool`       |
+|       `Date`       |
+|       `Data`       |
+|        `URL`       |
+|  `NSColor` (macOS) |
+|   `UIColor` (iOS)  |
+|      `Codable`     |
 
 The list above only show the type that does not need further more configuration.
+We also support them wrapped in `Array`, `Set`, `Dictionary` even wrapped in nested type. ex. `[[String: Set<[String: Int]>]]`.
 For more types, see [Enum Example](#enum-example), [Codable Example](#codable-example) or [Advanced Usage](#advanced-usage).
+For more examples, see [Tests/DefaultsTests](./Tests/DefaultsTests).
 
 ## Usage
 
