@@ -70,7 +70,7 @@ pod 'Defaults'
 
 The list above only show the type that does not need further more configuration.
 We also support them wrapped in `Array`, `Set`, `Dictionary` even wrapped in nested type. ex. `[[String: Set<[String: Int]>]]`.
-For more types, see [Enum Example](#enum-example), [Codable Example](#codable-example) or [Advanced Usage](#advanced-usage).
+For more types, see [Enum Example](#enum-example), [Codable Example](#codable-example) or [Advanced Usage](#advanced-usage).  
 For more examples, see [Tests/DefaultsTests](./Tests/DefaultsTests).
 
 ## Usage
