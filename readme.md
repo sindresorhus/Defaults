@@ -551,6 +551,7 @@ It's inspired by that package and other solutions. The main difference is that t
 - [Preferences](https://github.com/sindresorhus/Preferences) - Add a preferences window to your macOS app
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) - Add user-customizable global keyboard shortcuts to your macOS app
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) - Add "Launch at Login" functionality to your macOS app
+- [Regex](https://github.com/sindresorhus/Regex) - Swifty regular expressions
 - [DockProgress](https://github.com/sindresorhus/DockProgress) - Show progress in your app's Dock icon
 - [Gifski](https://github.com/sindresorhus/Gifski) - Convert videos to high-quality GIFs on your Mac
 - [More…](https://github.com/search?q=user%3Asindresorhus+language%3Aswift)
