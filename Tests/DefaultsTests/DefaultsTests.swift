@@ -373,7 +373,7 @@ final class DefaultsTests: XCTestCase {
 				XCTAssert(Defaults[key1]! == 4)
 				expect.fulfill()
 			} else {
-				usleep(100_000)
+				usleep(300_000)
 				print("--- Release: \(Thread.isMainThread)")
 			}
 		}
