@@ -34,21 +34,7 @@ For a real-world example, see my [Plash app](https://github.com/sindresorhus/Pla
 
 ## Install
 
-#### Swift Package Manager
-
 Add `https://github.com/sindresorhus/Defaults` in the [“Swift Package Manager” tab in Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app).
-
-#### Carthage
-
-```
-github "sindresorhus/Defaults"
-```
-
-#### CocoaPods
-
-```ruby
-pod 'Defaults'
-```
 
 ## Support types
 
