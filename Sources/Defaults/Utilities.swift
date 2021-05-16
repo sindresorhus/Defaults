@@ -146,3 +146,55 @@ extension DispatchQueue {
 		}
 	}
 }
+
+extension Sequence {
+	/// Returns an array containing the non-nil elements.
+	func compact<T>() -> [T] where Element == T? {
+		// TODO: Make this `compactMap(\.self)` when https://bugs.swift.org/browse/SR-12897 is fixed.
+		compactMap { $0 }
+	}
+}
+
+extension Defaults.Serializable {
+	/**
+	Cast `Serializable` value to `Self`.
+	Convert the native support type from `UserDefaults` into `Self`.
+
+	```
+	guard let anyObject = object(forKey: key) else {
+		return nil
+	}
+
+	return Value.toValue(anyObject)
+	```
+	*/
+	static func toValue(_ anyObject: Any) -> Self? {
+		// Return directly if `anyObject` can cast to Value, means `Value` is Native supported type.
+		if Self.isNativelySupportedType, let anyObject = anyObject as? Self {
+			return anyObject
+		} else if let value = Self.bridge.deserialize(anyObject as? Serializable) {
+			return value as? Self
+		}
+
+		return nil
+	}
+
+	/**
+	Cast `Self` to `Serializable`.
+	Convert `Self` into `UserDefaults` native support type.
+	
+	```
+	set(Value.toSerialize(value), forKey: key)
+	```
+	*/
+	static func toSerializable(_ value: Self) -> Any? {
+		// Return directly if `Self` is native supported type, since it does not need serialization.
+		if Self.isNativelySupportedType {
+			return value
+		} else if let serialized = Self.bridge.serialize(value as? Self.Value) {
+			return serialized
+		}
+
+		return nil
+	}
+}

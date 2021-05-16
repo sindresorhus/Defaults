@@ -5,9 +5,20 @@ on:
 jobs:
   test:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        scheme: [Defaults-macOS, Defaults-iOS, Defaults-tvOS]
+        include:
+        - scheme: Defaults-macOS
+          destination: macOS
+        - scheme: Defaults-iOS
+          destination: iOS Simulator,name=iPhone 8
+        - scheme: Defaults-tvOS
+          destination: tvOS Simulator,name=Apple TV
     steps:
       - uses: actions/checkout@v2
-      - run: swift test
+      - name: Run tests
+        run: xcodebuild clean test -project Defaults.xcodeproj -scheme ${{ matrix.scheme }} -destination "platform=${{ matrix.destination }}" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
   lint:
     runs-on: ubuntu-latest
     steps:

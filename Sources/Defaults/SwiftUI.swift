@@ -4,7 +4,7 @@ import Combine
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Defaults {
-	final class Observable<Value: Codable>: ObservableObject {
+	final class Observable<Value: Serializable>: ObservableObject {
 		let objectWillChange = ObservableObjectPublisher()
 		private var observation: DefaultsObservation?
 		private let key: Defaults.Key<Value>
@@ -40,7 +40,7 @@ extension Defaults {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @propertyWrapper
-public struct Default<Value: Codable>: DynamicProperty {
+public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public typealias Publisher = AnyPublisher<Defaults.KeyChange<Value>, Never>
 
 	private let key: Defaults.Key<Value>
