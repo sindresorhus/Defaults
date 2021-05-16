@@ -37,7 +37,7 @@ extension Defaults {
 
 	public typealias ObservationOptions = Set<ObservationOption>
 
-	private static func deserialize<Value: Decodable>(_ value: Any?, to type: Value.Type) -> Value? {
+	private static func deserialize<Value: Serializable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
 			let value = value,
 			!(value is NSNull)
@@ -45,34 +45,7 @@ extension Defaults {
 			return nil
 		}
 
-		// This handles the case where the value was a plist value using `isNativelySupportedType`
-		if let value = value as? Value {
-			return value
-		}
-
-		// Using the array trick as done below in `UserDefaults#_set()`
-		return [Value].init(jsonString: "\([value])")?.first
-	}
-
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	private static func deserialize<Value: NSSecureCoding>(_ value: Any?, to type: Value.Type) -> Value? {
-		guard
-			let value = value,
-			!(value is NSNull)
-		else {
-			return nil
-		}
-
-		// This handles the case where the value was a plist value using `isNativelySupportedType`
-		if let value = value as? Value {
-			return value
-		}
-
-		guard let dataValue = value as? Data else {
-			return nil
-		}
-
-		return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(dataValue) as? Value
+		return Value.toValue(value)
 	}
 
 	struct BaseChange {
@@ -91,7 +64,7 @@ extension Defaults {
 		}
 	}
 
-	public struct KeyChange<Value: Codable> {
+	public struct KeyChange<Value: Serializable> {
 		public let kind: NSKeyValueChange
 		public let indexes: IndexSet?
 		public let isPrior: Bool
@@ -104,40 +77,6 @@ extension Defaults {
 			self.isPrior = change.isPrior
 			self.oldValue = deserialize(change.oldValue, to: Value.self) ?? defaultValue
 			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
-		}
-	}
-
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public struct NSSecureCodingKeyChange<Value: NSSecureCoding> {
-		public let kind: NSKeyValueChange
-		public let indexes: IndexSet?
-		public let isPrior: Bool
-		public let newValue: Value
-		public let oldValue: Value
-
-		init(change: BaseChange, defaultValue: Value) {
-			self.kind = change.kind
-			self.indexes = change.indexes
-			self.isPrior = change.isPrior
-			self.oldValue = deserialize(change.oldValue, to: Value.self) ?? defaultValue
-			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
-		}
-	}
-
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public struct NSSecureCodingOptionalKeyChange<Value: NSSecureCoding> {
-		public let kind: NSKeyValueChange
-		public let indexes: IndexSet?
-		public let isPrior: Bool
-		public let newValue: Value?
-		public let oldValue: Value?
-
-		init(change: BaseChange) {
-			self.kind = change.kind
-			self.indexes = change.indexes
-			self.isPrior = change.isPrior
-			self.oldValue = deserialize(change.oldValue, to: Value.self)
-			self.newValue = deserialize(change.newValue, to: Value.self)
 		}
 	}
 
@@ -242,7 +181,6 @@ extension Defaults {
 			guard !updatingValuesFlag else {
 				return
 			}
-
 			callback(BaseChange(change: change))
 		}
 	}
@@ -352,7 +290,7 @@ extension Defaults {
 	}
 	```
 	*/
-	public static func observe<Value>(
+	public static func observe<Value: Serializable>(
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial],
 		handler: @escaping (KeyChange<Value>) -> Void
@@ -366,41 +304,6 @@ extension Defaults {
 		return observation
 	}
 
-	/**
-	Observe a defaults key.
-	*/
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func observe<Value>(
-		_ key: NSSecureCodingKey<Value>,
-		options: ObservationOptions = [.initial],
-		handler: @escaping (NSSecureCodingKeyChange<Value>) -> Void
-	) -> Observation {
-		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
-			handler(
-				NSSecureCodingKeyChange(change: change, defaultValue: key.defaultValue)
-			)
-		}
-		observation.start(options: options)
-		return observation
-	}
-
-	/**
-	Observe an optional defaults key.
-	*/
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-	public static func observe<Value>(
-		_ key: NSSecureCodingOptionalKey<Value>,
-		options: ObservationOptions = [.initial],
-		handler: @escaping (NSSecureCodingOptionalKeyChange<Value>) -> Void
-	) -> Observation {
-		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
-			handler(
-				NSSecureCodingOptionalKeyChange(change: change)
-			)
-		}
-		observation.start(options: options)
-		return observation
-	}
 
 	/**
 	Observe multiple keys of any type, but without any information about the changes.
@@ -446,11 +349,5 @@ extension Defaults.ObservationOptions {
 		return options
 	}
 }
-
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-extension Defaults.NSSecureCodingKeyChange: Equatable where Value: Equatable { }
-
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-extension Defaults.NSSecureCodingOptionalKeyChange: Equatable where Value: Equatable { }
 
 extension Defaults.KeyChange: Equatable where Value: Equatable { }
