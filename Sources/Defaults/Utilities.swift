@@ -1,5 +1,6 @@
 import Foundation
 
+
 extension Decodable {
 	init?(jsonData: Data) {
 		guard let value = try? JSONDecoder().decode(Self.self, from: jsonData) else {
@@ -147,6 +148,7 @@ extension DispatchQueue {
 	}
 }
 
+
 extension Sequence {
 	/// Returns an array containing the non-nil elements.
 	func compact<T>() -> [T] where Element == T? {
@@ -155,10 +157,12 @@ extension Sequence {
 	}
 }
 
+
 extension Defaults.Serializable {
 	/**
-	Cast `Serializable` value to `Self`.
-	Convert the native support type from `UserDefaults` into `Self`.
+	Cast a `Serializable` value to `Self`.
+
+	Converts a natively supported type from `UserDefaults` into `Self`.
 
 	```
 	guard let anyObject = object(forKey: key) else {
@@ -169,7 +173,7 @@ extension Defaults.Serializable {
 	```
 	*/
 	static func toValue(_ anyObject: Any) -> Self? {
-		// Return directly if `anyObject` can cast to Value, means `Value` is Native supported type.
+		// Return directly if `anyObject` can cast to Value, since it means `Value` is a natively supported type.
 		if Self.isNativelySupportedType, let anyObject = anyObject as? Self {
 			return anyObject
 		} else if let value = Self.bridge.deserialize(anyObject as? Serializable) {
@@ -181,14 +185,15 @@ extension Defaults.Serializable {
 
 	/**
 	Cast `Self` to `Serializable`.
-	Convert `Self` into `UserDefaults` native support type.
-	
+
+	Converts `Self` into `UserDefaults` native support type.
+
 	```
 	set(Value.toSerialize(value), forKey: key)
 	```
 	*/
 	static func toSerializable(_ value: Self) -> Any? {
-		// Return directly if `Self` is native supported type, since it does not need serialization.
+		// Return directly if `Self` is a natively supported type, since it does not need serialization.
 		if Self.isNativelySupportedType {
 			return value
 		} else if let serialized = Self.bridge.serialize(value as? Self.Value) {

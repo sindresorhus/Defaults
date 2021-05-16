@@ -6,7 +6,6 @@ import Defaults
 let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureFileURL = URL(string: "file://~/icon.png")!
 let fixtureURL2 = URL(string: "https://example.com")!
-
 let fixtureDate = Date()
 
 extension Defaults.Keys {

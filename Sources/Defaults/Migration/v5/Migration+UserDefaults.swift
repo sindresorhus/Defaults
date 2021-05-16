@@ -14,18 +14,27 @@ extension UserDefaults {
 	}
 
 	/**
-	Get json string in `UserDefaults` and decode it into the `NativeForm`.
+	Get a JSON string in `UserDefaults` and decode it into its `NativeForm`.
 
-	How it works?
-	For example:
-	Step1. If `Value` is  `[String]`, `Value.CodableForm` will covert into `[String].CodableForm`.
-	`JSONDecoder().decode([String].CodableForm.self, from: jsonData)`
+	How does it work?
 
-	Step2. `Array`conform to `NativeType`, its `CodableForm` is `[Element.CodableForm]` and `Element` is `String`.
-	`JSONDecoder().decode([String.CodableForm].self, from: jsonData)`
+	1. If `Value` is  `[String]`, `Value.CodableForm` will covert into `[String].CodableForm`.
 
-	Step3. `String`'s `CodableForm` is `self`,  because `String` is `Codable`.
-	`JSONDecoder().decode([String].self, from: jsonData)`
+	```
+	JSONDecoder().decode([String].CodableForm.self, from: jsonData)
+	```
+
+	2. If `Array` conforms to `NativeType`, its `CodableForm` is `[Element.CodableForm]` and `Element` is `String`.
+
+	```
+	JSONDecoder().decode([String.CodableForm].self, from: jsonData)
+	```
+
+	3. `String`'s `CodableForm` is `self`,  because `String` is `Codable`.
+
+	```
+	JSONDecoder().decode([String].self, from: jsonData)
+	```
 	*/
 	func migrateCodableToNative<Value: Defaults.NativeType>(forKey key: String, of type: Value.Type) {
 		guard

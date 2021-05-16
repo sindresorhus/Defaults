@@ -6,7 +6,7 @@ extension Defaults {
 	}
 
 	/**
-	Migration the given key's value from json string to `Value`.
+	Migrate the given key's value from JSON string to `Value`.
 
 	```
 	extension Defaults.Keys {

@@ -1,9 +1,9 @@
 import Foundation
 
 /**
-All type that able to work with `Defaults` should conform this protocol.
+Types that conform to this protocol can be used with `Defaults`.
 
-It should have a static variable bridge which protocol should conform to `Defaults.Bridge`.
+The type should have a static variable `bridge` which should reference an instance of a type that conforms to `Defaults.Bridge`.
 
 ```
 struct User {
@@ -21,27 +21,31 @@ public protocol DefaultsSerializable {
 	typealias Serializable = Bridge.Serializable
 	associatedtype Bridge: DefaultsBridge
 
-	/// Static bridge for the `Value` which cannot store natively
+	/// Static bridge for the `Value` which cannot be stored natively.
 	static var bridge: Bridge { get }
 
-	/// A flag to determine whether `Value` can be store natively or not
+	/// A flag to determine whether `Value` can be stored natively or not.
 	static var isNativelySupportedType: Bool { get }
 }
 
 /**
-A Bridge can do the serialization and de-serialization.
+A `Bridge` is responsible for serialization and deserialization.
 
-Have two associate types `Value` and `Serializable`.
+It has two associated types `Value` and `Serializable`.
 
-- `Value`:  the type user want to use it.
-- `Serializable`:  the type stored in `UserDefaults`.
-- `serialize`: will be executed before storing to the `UserDefaults` .
-- `deserialize`:  will be executed after retrieving its value from the `UserDefaults`.
+- `Value`: The type you want to use.
+- `Serializable`: The type stored in `UserDefaults`.
+- `serialize`: Executed before storing to the `UserDefaults` .
+- `deserialize`: Executed after retrieving its value from the `UserDefaults`.
 
 ```
 struct User {
 	username: String
 	password: String
+}
+
+extension User {
+	static let bridge = UserBridge()
 }
 
 struct UserBridge: Defaults.Bridge {
@@ -53,7 +57,10 @@ struct UserBridge: Defaults.Bridge {
 			return nil
 		}
 
-		return ["username": value.username, "password": value.password]
+		return [
+			"username": value.username,
+			"password": value.password
+		]
 	}
 
 	func deserialize(_ object: Serializable?) -> Value? {
@@ -65,7 +72,10 @@ struct UserBridge: Defaults.Bridge {
 			return nil
 		}
 
-		return User(username: username, password: password)
+		return User(
+			username: username,
+			password: password
+		)
 	}
 }
 ```
@@ -75,12 +85,11 @@ public protocol DefaultsBridge {
 	associatedtype Serializable
 
 	func serialize(_ value: Value?) -> Serializable?
-
 	func deserialize(_ object: Serializable?) -> Value?
 }
 
 public protocol DefaultsCollectionSerializable: Collection, Defaults.Serializable {
-	/// `Collection` does not have initializer, but we need initializer to convert an array into the `Value`
+	/// `Collection` does not have a initializer, but we need a initializer to convert an array into the `Value`.
 	init(_ elements: [Element])
 }
 
@@ -89,5 +98,5 @@ public protocol DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializabl
 	func toArray() -> [Element]
 }
 
-/// Convenience protocol for `Codable`
+/// Convenience protocol for `Codable`.
 public protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}

@@ -33,16 +33,14 @@ extension Defaults.CodableBridge {
 }
 
 /**
-Any `Value` which protocol conforms to `Codable` and `Defaults.Serializable` will use `CodableBridge`
-to do the serialization and deserialization.
+Any `Value` that conforms to `Codable` and `Defaults.Serializable` will use `CodableBridge` to do the serialization and deserialization.
 */
 extension Defaults {
 	public struct TopLevelCodableBridge<Value: Codable>: CodableBridge {}
 }
 
 /**
-`RawRepresentableCodableBridge` is indeed because if `enum SomeEnum: String, Codable, Defaults.Serializable`
-the compiler will confuse between `RawRepresentableBridge` and `TopLevelCodableBridge`.
+`RawRepresentableCodableBridge` is needed because, for example, with `enum SomeEnum: String, Codable, Defaults.Serializable`, the compiler will be confused between `RawRepresentableBridge` and `TopLevelCodableBridge`.
 */
 extension Defaults {
 	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {}
@@ -84,7 +82,7 @@ extension Defaults {
 			}
 
 			// Version below macOS 10.13 and iOS 11.0 does not support `archivedData(withRootObject:requiringSecureCoding:)`.
-			// We need to set `requiresSecureCoding` by ourself.
+			// We need to set `requiresSecureCoding` ourselves.
 			if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
 				return try? NSKeyedArchiver.archivedData(withRootObject: object, requiringSecureCoding: true)
 			} else {
@@ -182,15 +180,7 @@ extension Defaults {
 }
 
 /**
-We need both `SetBridge` and `SetAlgebraBridge`.
-
-Because `Set` conforms to `Sequence` but `SetAlgebra` not.
-
-Set conforms to `Sequence`, so we can convert it into an array with `Array.init<S>(S)` and store it in the `UserDefaults`.
-
-But `SetAlgebra` does not, so it is hard to convert it into an array.
-
-Thats why we need `Defaults.SetAlgebraSerializable` protocol to convert it into an array.
+We need both `SetBridge` and `SetAlgebraBridge` because `Set` conforms to `Sequence` but `SetAlgebra` does not. `Set` conforms to `Sequence`, so we can convert it into an array with `Array.init<S>(S)` and store it in the `UserDefaults`. But `SetAlgebra` does not, so it is hard to convert it into an array. Thats why we need the `Defaults.SetAlgebraSerializable` protocol to convert it into an array.
 */
 extension Defaults {
 	public struct SetBridge<Element: Defaults.Serializable & Hashable>: Defaults.Bridge {

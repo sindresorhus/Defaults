@@ -1,76 +1,68 @@
-# Migration Guide From v4 to v5
+# Migration guide from v4 to v5
 
-## Warning
-
-If the migration is not success or incomplete. Edit `Defaults.Key` might cause data loss.  
-**Please back up your UserDefaults data before migration.**
+**Warning: Test the migration thoroughly in your app. It might cause unintended data loss if you're not careful.**
 
 ## Summary
 
-Before v4, `Defaults` store `Codable` types as a JSON string.  
-After v5, `Defaults` store `Defaults.Serializable` types with `UserDefaults` native supported type.
+We have improved the stored representation of some types. Some types will require migration. Previously, all `Codable` types were serialized to a JSON string and stored as a `UserDefaults` string. `Defaults` is now able to store more types using the appropriate native `UserDefaults` type.
+
+- Primitive types (`Int`, `Double`, `Bool`, `String`, etc) require no changes.
+- Custom types (`struct`, `enum`, etc.) must now conform to `Defaults.Serializable` (in addition to `Codable`).
+- `Array`, `Set`, and `Dictionary` will need to be manually migrated with `Defaults.migrate()`.
+
+---
+
+In v4, `Defaults` stored `Codable` types as a JSON string.\
+In v5, `Defaults` stores many `Codable` types as native `UserDefaults` types.
 
 ```swift
-// Before 
+// v4
 let key = Defaults.Key<[String: Int]>("key", default: ["0": 0])
 
-UserDefaults.standard.string(forKey: "key") //=> "["0": 0]"
-
-// After v5
-let key = Defaults.Key<[String: Int]>("key", default: ["0": 0])
-
-UserDefaults.standard.dictionary(forKey: "key") //=> [0: 0]
+UserDefaults.standard.string(forKey: "key")
+//=> "[\"0\": 0]"
 ```
 
-All types should conform to `Defaults.Serializable` in order to work with `Defaults`.
-So this will require some migrations to resolve **TWO** major issues.
+```swift
+// v5
+let key = Defaults.Key<[String: Int]>("key", default: ["0": 0])
+
+UserDefaults.standard.dictionary(forKey: "key")
+//=> [0: 0]
+```
 
 ## Issues
 
-1. **Compiler complain that `Defaults.Key<Value>` is not conform to `Defaults.Serializable`.**  
-	Since we replace `Codable` with `Defaults.Serializable`, `Key<Value>` will have to conform to `Value: Defaults.Serializable`.  
-	For this situation, please follow the guide below:
+1. **The compiler complains that `Defaults.Key<Value>` does not conform to `Defaults.Serializable`.**
+	Since we replaced `Codable` with `Defaults.Serializable`, `Key<Value>` will have to conform to `Value: Defaults.Serializable`.
+	For this situation, please follow the guides below:
 	- [From `Codable` struct in Defaults v4 to `Codable` struct in Defaults v5](#from-codable-struct-in-defaults-v4-to-codable-struct-in-defaults-v5)
 	- [From `Codable` enum in Defaults v4 to `Codable` enum in Defaults v5](#from-codable-enum-in-defaults-v4-to-codable-enum-in-defaults-v5)
 
-2. **Previous value in UserDefaults is not readable. (ex. `Defaults[.array]` return `null`).**
-	In v5, `Defaults` reads value from `UserDefaults` as a native supported type.
-	But `UserDefaults` only contains JSON string before migration, `Defaults` will not be able to work with it.
-	For this situation, `Defaults` provides `Defaults.migrate` method to automate the migration process.
-	- [From `Codable Array/Dictionary/Set` in Defaults v4 to `Native Array/Dictionary/Set`(With Native Supported Elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionarysetwith-native-supported-elements-in-defaults-v5)
-	- [From `Codable Array/Dictionary/Set` in Defaults v4 to `Native Array/Dictionary/Set`(With Codable Elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionarysetwith-codable-elements-in-defaults-v5)  
-
-	**Caution:**
-	- This is a breaking change, there is no way to convert it back to `Codable Array/Dictionary/Set` so far.
-
-- **Optional migration**
-	`Defaults` also provide a migration guide to let users convert them `Codable` things into the UserDefaults native supported type, but it is optional.
-	- [From `Codable` enum in Defaults v4 to `RawRepresentable` in Defaults v5](#from-codable-enum-in-defaults-v4-to-rawrepresentable-in-defaults-v5-optional)
-	- [From `Codable` struct in Defaults v4 to `Dictionary` in Defaults v5](#from-codable-struct-in-defaults-v4-to-dictionary-in-defaults-v5-optional)
+2. **The previous value in `UserDefaults` is not readable. (for example, `Defaults[.array]` returns `nil`).**
+	In v5, `Defaults` reads value from `UserDefaults` as a natively supported type, but since `UserDefaults` only contains JSON string before migration for `Codable` types, `Defaults` will not be able to work with it. For this situation, `Defaults` provides the `Defaults.migrate()` method to automate the migration process.
+	- [From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set`(with natively supported elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionarysetwith-native-supported-elements-in-defaults-v5)
+	- [From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set` (with codable elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionarysetwith-codable-elements-in-defaults-v5)
 
 ## Testing
 
-We recommend user doing some tests after migration.  
-The most critical issue is the second one (Previous value in UserDefaults is not readable).  
-After migration, there is a need to make sure user can get the same value as before.
-You can try to test it manually or making a test file to test it.
+We recommend doing some manual testing after migrating.
 
-Here is the guide for making a migration test:
-For example you are trying to migrate a `Codable String` array to native array.
+For example, let's say you are trying to migrate an array of `Codable` string to a native array.
 
-1. Get previous value in UserDefaults (using `defaults` command or whatever you want).
+1. Get the previous value in `UserDefaults` (using `defaults` command or whatever you want).
 
 ```swift
 let string = "[\"a\",\"b\",\"c\"]"
 ```
 
-2. Insert the value above into UserDefaults.
+2. Insert the above value into `UserDefaults`.
 
 ```swift
 UserDefaults.standard.set(string, forKey: "testKey")
 ```
 
-3. Call `Defaults.migrate` and then using `Defaults` to get its value
+3. Call `Defaults.migrate()` and then use `Defaults` to get its value.
 
 ```swift
 let key = Defaults.Key<[String]>("testKey", default: [])
@@ -79,15 +71,15 @@ Defaults.migrate(key, to: .v5)
 Defaults[key] //=> [a, b, c]
 ```
 
----
+## Migrations
 
 ### From `Codable` struct in Defaults v4 to `Codable` struct in Defaults v5
 
-Before v4, `struct` have to conform to `Codable` to store it as a JSON string.  
+In v4, `struct` had to conform to `Codable` to store it as a JSON string.
 
-After v5, `struct` have to conform to `Defaults.Serializable & Codable` to store it as a JSON string.  
+In v5, `struct` has to conform to `Codable` and `Defaults.Serializable` to store it as a JSON string.
 
-#### Before migration, your code should be like this
+#### Before migration
 
 ```swift
 private struct TimeZone: Codable {
@@ -102,10 +94,10 @@ extension Defaults.Keys {
 
 #### Migration steps
 
-1. Let `TimeZone` conform to `Defaults.Serializable`.
+1. Make `TimeZone` conform to `Defaults.Serializable`.
 
 ```swift
-private struct TimeZone: Defaults.Serializable, Codable {
+private struct TimeZone: Codable, Defaults.Serializable {
 	var id: String
 	var name: String
 }
@@ -113,15 +105,13 @@ private struct TimeZone: Defaults.Serializable, Codable {
 
 2. Now `Defaults[.timezone]` should be readable.
 
----
-
 ### From `Codable` enum in Defaults v4 to `Codable` enum in Defaults v5
 
-Before v4, `enum` have to conform to `Codable` to store it as a JSON string.  
+In v4, `enum` had to conform to `Codable` to store it as a JSON string.
 
-After v5, struct have to conform to `Defaults.Serializable & Codable` to store it as a JSON string.  
+In v5, `enum` has to conform to `Codable` and `Defaults.Serializable` to store it as a JSON string.
 
-#### Before migration, your code should be like this
+#### Before migration
 
 ```swift
 private enum Period: String, Codable {
@@ -137,7 +127,7 @@ extension Defaults.Keys {
 
 #### Migration steps
 
-1. Let `Period` conform to `Defaults.Serializable`.
+1. Make `Period` conform to `Defaults.Serializable`.
 
 ```swift
 private enum Period: String, Defaults.Serializable, Codable {
@@ -149,15 +139,13 @@ private enum Period: String, Defaults.Serializable, Codable {
 
 2. Now `Defaults[.period]` should be readable.
 
----
+### From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set` (with natively supported elements) in Defaults v5
 
-### From `Codable Array/Dictionary/Set` in Defaults v4 to `Native Array/Dictionary/Set`(With Native Supported Elements) in Defaults v5
+In v4, `Defaults` stored array/dictionary as a JSON string: `["a", "b", "c"]`.
 
-Before v4, `Defaults` will store array/dictionary as a JSON string(`["a", "b", "c"]`).  
+In v5, `Defaults` stores it as a native array/dictionary with natively supported elements: `[a, b, c]`.
 
-After v5, `Defaults` will store it as a native array/dictionary with native supported elements(`[a, b, c]` ). 
-
-#### Before migration, your code should be like this
+#### Before migration
 
 ```swift
 extension Defaults.Keys {
@@ -170,25 +158,24 @@ extension Defaults.Keys {
 
 #### Migration steps
 
-1. **Call `Defaults.migration(.arrayString, to: .v5)`, `Defaults.migration(.setString, to: .v5)`, `Defaults.migration(.dictionaryStringInt, to: .v5)`, `Defaults.migration(.dictionaryStringIntInArray, to: .v5)`.**
+1. **Call `Defaults.migrate(.arrayString, to: .v5)`, `Defaults.migrate(.setString, to: .v5)`, `Defaults.migrate(.dictionaryStringInt, to: .v5)`, `Defaults.migrate(.dictionaryStringIntInArray, to: .v5)`.**
 2. Now `Defaults[.arrayString]`, `Defaults.[.setString]`, `Defaults[.dictionaryStringInt]`, `Defaults[.dictionaryStringIntInArray]` should be readable.
 
----
+### From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set` (with `Codable` elements) in Defaults v5
 
-### From `Codable Array/Dictionary/Set` in Defaults v4 to `Native Array/Dictionary/Set`(With Codable Elements) in Defaults v5
+In v4, `Defaults` would store array/dictionary as a single JSON string: `"{ "id": "0", "name": "Asia/Taipei" }"`, `"["10 Minutes", "30 Minutes"]"`.
 
-Before v4, `Defaults` will store array/dictionary as a JSON string(`"{ "id": "0", "name": "Asia/Taipei" }"`, `"["10 Minutes", "30 Minutes"]"`).    
+In v5, `Defaults` will store it as a native array/dictionary with `Codable` elements: `{ id: 0, name: Asia/Taipei }`, `[10 Minutes, 30 Minutes]`.
 
-After v5, `Defaults` will store it as a native array/dictionary with codable elements(`{ id: 0, name: Asia/Taipei }`, `[10 Minutes, 30 Minutes]`).
-
-#### Before migration, your code should be like this
+#### Before migration
 
 ```swift
-private struct TimeZone: Codable, Hashable {
+private struct TimeZone: Hashable, Codable {
 	var id: String
 	var name: String
 }
-private enum Period: String, Codable, Hashable {
+
+private enum Period: String, Hashable, Codable {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
@@ -206,33 +193,35 @@ extension Defaults.Keys {
 
 #### Migration steps
 
-1. Let `TimeZone` and `Period` conform to `Defaults.Serializable`
+1. Make `TimeZone` and `Period` conform to `Defaults.Serializable`.
 
 ```swift
-private struct TimeZone: Defaults.Serializable, Codable, Hashable {
+private struct TimeZone: Hashable, Codable, Defaults.Serializable {
 	var id: String
 	var name: String
 }
 
-private enum Period: String, Defaults.Serializable, Codable, Hashable {
+private enum Period: String, Hashable, Codable, Defaults.Serializable {
 	case tenMinutes = "10 Minutes"
 	case halfHour = "30 Minutes"
 	case oneHour = "1 Hour"
 }
 ```
 
-2. **Call `Defaults.migration(.arrayTimezone, to: .v5)`, `Defaults.migration(.setTimezone, to: .v5)`, `Defaults.migration(.dictionaryTimezone, to: .v5)`, `Defaults.migration(.arrayPeriod, to: .v5)`, `Defaults.migration(.setPeriod, to: .v5)` , `Defaults.migration(.dictionaryPeriod, to: .v5)`.**
+2. **Call `Defaults.migrate(.arrayTimezone, to: .v5)`, `Defaults.migrate(.setTimezone, to: .v5)`, `Defaults.migrate(.dictionaryTimezone, to: .v5)`, `Defaults.migrate(.arrayPeriod, to: .v5)`, `Defaults.migrate(.setPeriod, to: .v5)` , `Defaults.migrate(.dictionaryPeriod, to: .v5)`.**
 3. Now `Defaults[.arrayTimezone]`, `Defaults[.setTimezone]`, `Defaults[.dictionaryTimezone]`, `Defaults[.arrayPeriod]`, `Defaults[.setPeriod]` , `Defaults[.dictionaryPeriod]` should be readable.
 
 ---
 
-### From `Codable` enum in Defaults v4 to `RawRepresentable` in Defaults v5 (Optional)
+## Optional migrations
 
-Before v4, `Defaults` will store `enum` as a JSON string(`"10 Minutes"`).    
+### From `Codable` enum in Defaults v4 to `RawRepresentable` enum in Defaults v5 *(Optional)*
 
-After v5, `Defaults` will store `enum` as a `RawRepresentable`(`10 Minutes`). 
+In v4, `Defaults` will store `enum` as a JSON string: `"10 Minutes"`.
 
-#### Before migration, your code should be like this
+In v5, `Defaults` can store `enum` as a native string: `10 Minutes`.
+
+#### Before migration
 
 ```swift
 private enum Period: String, Codable {
@@ -248,7 +237,7 @@ extension Defaults.Keys {
 
 #### Migration steps
 
-1. Create an enum call `CodablePeriod` and create an extension of it. Let it conform to `Defaults.CodableType` and associated `NativeForm` to `Period`.
+1. Create another enum called `CodablePeriod` and create an extension of it. Make the extension conform to `Defaults.CodableType` and its associated type `NativeForm` to `Period`.
 
 ```swift
 private enum CodablePeriod: String {
@@ -262,7 +251,7 @@ extension CodablePeriod: Defaults.CodableType {
 }
 ```
 
-2. Remove `Codable`. So `Period` can be stored natively.
+2. Remove `Codable` conformance so `Period` can be stored natively.
 
 ```swift
 private enum Period: String {
@@ -272,7 +261,7 @@ private enum Period: String {
 }
 ```
 
-3. Create an extension of `Period`, let it conform to `Defaults.NativeType` and its `CodableForm` should be `CodablePeriod`.
+3. Create an extension of `Period` that conforms to `Defaults.NativeType`. Its `CodableForm` should be `CodablePeriod`.
 
 ```swift
 extension Period: Defaults.NativeType {
@@ -280,12 +269,10 @@ extension Period: Defaults.NativeType {
 }
 ```
 
-4. **Call `Defaults.migration(.period)`**
+4. **Call `Defaults.migrate(.period)`**
 5. Now `Defaults[.period]` should be readable.
 
-* hints: You can also implement `toNative` function at `Defaults.CodableType` in your own way.
-
-For example
+You can also instead implement the `toNative` function in `Defaults.CodableType` for flexibility:
 
 ```swift
 extension CodablePeriod: Defaults.CodableType {
@@ -304,14 +291,11 @@ extension CodablePeriod: Defaults.CodableType {
 }
 ```
 
+### From `Codable` struct in Defaults v4 to `Dictionary` in Defaults v5 *(Optional)*
 
----
+This happens when you have a struct which is stored as a `Codable` JSON string before, but now you want it to be stored as a native `UserDefaults` dictionary.
 
-### From `Codable` struct in Defaults v4 to `Dictionary` in Defaults v5 (Optional) 
-
-This happens when you have a struct which is stored as a codable JSON string before, but now you want it to be stored as a native UserDefaults dictionary.
-
-#### Before migration, your code should be like this
+#### Before migration
 
 ```swift
 private struct TimeZone: Codable {
@@ -329,7 +313,7 @@ extension Defaults.Keys {
 
 #### Migration steps
 
-1. Create a `TimeZoneBridge` which conform to `Defaults.Bridge` and its `Value` is TimeZone, `Serializable` is `[String: String]`.
+1. Create a `TimeZoneBridge` which conforms to `Defaults.Bridge` and its `Value` is `TimeZone` and `Serializable` is `[String: String]`.
 
 ```swift
 private struct TimeZoneBridge: Defaults.Bridge {
@@ -341,7 +325,10 @@ private struct TimeZoneBridge: Defaults.Bridge {
 			return nil
 		}
 
-		return ["id": value.id, "name": value.name]
+		return [
+			"id": value.id,
+			"name": value.name
+		]
 	}
 
 	func deserialize(_ object: Serializable?) -> TimeZone? {
@@ -353,12 +340,15 @@ private struct TimeZoneBridge: Defaults.Bridge {
 			return nil
 		}
 
-		return TimeZone(id: id, name: name)
+		return TimeZone(
+			id: id,
+			name: name
+		)
 	}
 }
 ```
 
-2. Create an extension of `TimeZone`, let it conform to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`(Compiler will complain that `TimeZone` is not conform to `Defaults.NativeType`, will resolve it later).
+2. Create an extension of `TimeZone` that conforms to `Defaults.NativeType` and its static bridge is `TimeZoneBridge`. The compiler will complain that `TimeZone` does not conform to `Defaults.NativeType`. We will resolve that later.
 
 ```swift
 private struct TimeZone: Hashable {
@@ -371,7 +361,7 @@ extension TimeZone: Defaults.NativeType {
 }
 ```
 
-3. Create an extension of `CodableTimeZone` and let it conform to `Defaults.CodableType`
+3. Create an extension of `CodableTimeZone` that conforms to `Defaults.CodableType`.
 
 ```swift
 private struct CodableTimeZone {
@@ -380,7 +370,7 @@ private struct CodableTimeZone {
 }
 
 extension CodableTimeZone: Defaults.CodableType {
-	/// Convert from `Codable` to `Native`
+	/// Convert from `Codable` to native type.
 	func toNative() -> TimeZone {
 		TimeZone(id: id, name: name)
 	}
@@ -391,14 +381,13 @@ extension CodableTimeZone: Defaults.CodableType {
 
 ```swift
 extension TimeZone: Defaults.NativeType {
-	/// Associated `CodableForm` to `CodableTimeZone`
 	typealias CodableForm = CodableTimeZone
 
 	static let bridge = TimeZoneBridge()
 }
 ```
 
-5. **Call `Defaults.migration(.timezone, to: .v5)`, `Defaults.migration(.arrayTimezone, to: .v5)`, `Defaults.migration(.setTimezone, to: .v5)`, `Defaults.migration(.dictionaryTimezone, to: .v5)`**.
+5. **Call `Defaults.migrate(.timezone, to: .v5)`, `Defaults.migrate(.arrayTimezone, to: .v5)`, `Defaults.migrate(.setTimezone, to: .v5)`, `Defaults.migrate(.dictionaryTimezone, to: .v5)`**.
 6. Now `Defaults[.timezone]`, `Defaults[.arrayTimezone]` , `Defaults[.setTimezone]`, `Defaults[.dictionaryTimezone]` should be readable.
 
 **See [DefaultsMigrationTests.swift](./Tests/DefaultsTests/DefaultsMigrationTests.swift) for more example.**

@@ -12,9 +12,7 @@ extension Data: Defaults.NativeType {
 extension Data: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Date: Defaults.NativeType {
@@ -23,9 +21,7 @@ extension Date: Defaults.NativeType {
 extension Date: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Bool: Defaults.NativeType {
@@ -34,9 +30,7 @@ extension Bool: Defaults.NativeType {
 extension Bool: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Int: Defaults.NativeType {
@@ -45,9 +39,7 @@ extension Int: Defaults.NativeType {
 extension Int: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension UInt: Defaults.NativeType {
@@ -56,9 +48,7 @@ extension UInt: Defaults.NativeType {
 extension UInt: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Double: Defaults.NativeType {
@@ -67,9 +57,7 @@ extension Double: Defaults.NativeType {
 extension Double: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Float: Defaults.NativeType {
@@ -78,9 +66,7 @@ extension Float: Defaults.NativeType {
 extension Float: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension String: Defaults.NativeType {
@@ -89,9 +75,7 @@ extension String: Defaults.NativeType {
 extension String: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension CGFloat: Defaults.NativeType {
@@ -100,9 +84,7 @@ extension CGFloat: Defaults.NativeType {
 extension CGFloat: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Int8: Defaults.NativeType {
@@ -111,9 +93,7 @@ extension Int8: Defaults.NativeType {
 extension Int8: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension UInt8: Defaults.NativeType {
@@ -122,9 +102,7 @@ extension UInt8: Defaults.NativeType {
 extension UInt8: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Int16: Defaults.NativeType {
@@ -133,9 +111,7 @@ extension Int16: Defaults.NativeType {
 extension Int16: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension UInt16: Defaults.NativeType {
@@ -144,9 +120,7 @@ extension UInt16: Defaults.NativeType {
 extension UInt16: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Int32: Defaults.NativeType {
@@ -155,9 +129,7 @@ extension Int32: Defaults.NativeType {
 extension Int32: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension UInt32: Defaults.NativeType {
@@ -166,9 +138,7 @@ extension UInt32: Defaults.NativeType {
 extension UInt32: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Int64: Defaults.NativeType {
@@ -177,9 +147,7 @@ extension Int64: Defaults.NativeType {
 extension Int64: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension UInt64: Defaults.NativeType {
@@ -188,9 +156,7 @@ extension UInt64: Defaults.NativeType {
 extension UInt64: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension URL: Defaults.NativeType {
@@ -199,9 +165,7 @@ extension URL: Defaults.NativeType {
 extension URL: Defaults.CodableType {
 	public typealias NativeForm = Self
 
-	public func toNative() -> Self {
-		self
-	}
+	public func toNative() -> Self { self }
 }
 
 extension Optional: Defaults.NativeType where Wrapped: Defaults.NativeType {

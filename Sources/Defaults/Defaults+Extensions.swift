@@ -115,7 +115,6 @@ extension Set: Defaults.Serializable where Element: Defaults.Serializable {
 	public static var bridge: Defaults.SetBridge<Element> { Defaults.SetBridge() }
 }
 
-
 extension Array: Defaults.Serializable where Element: Defaults.Serializable {
 	public static var isNativelySupportedType: Bool { Element.isNativelySupportedType }
 	public static var bridge: Defaults.ArrayBridge<Element> { Defaults.ArrayBridge() }
@@ -127,9 +126,9 @@ extension Dictionary: Defaults.Serializable where Key: LosslessStringConvertible
 }
 
 #if os(macOS)
-/// `NSColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`
+/// `NSColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`.
 extension NSColor: Defaults.Serializable {}
 #else
-/// `UIColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`
+/// `UIColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`.
 extension UIColor: Defaults.Serializable {}
 #endif

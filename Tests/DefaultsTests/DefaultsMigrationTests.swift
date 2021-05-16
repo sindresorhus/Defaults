@@ -2,7 +2,7 @@ import Defaults
 import Foundation
 import XCTest
 
-// Create an unique id to test whether LosslessStringConvertible works.
+// Create an unique ID to test whether `LosslessStringConvertible` works.
 private struct UniqueID: LosslessStringConvertible, Hashable {
 	var id: Int64
 
@@ -25,7 +25,7 @@ private struct TimeZone: Hashable {
 }
 
 extension TimeZone: Defaults.NativeType {
-	/// Associated `CodableForm` to `CodableTimeZone`
+	/// Associated `CodableForm` to `CodableTimeZone`.
 	typealias CodableForm = CodableTimeZone
 
 	static let bridge = TimeZoneBridge()
@@ -37,7 +37,7 @@ private struct CodableTimeZone {
 }
 
 extension CodableTimeZone: Defaults.CodableType {
-	/// Convert from `Codable` to `Native`
+	/// Convert from `Codable` to `Native`.
 	func toNative() -> TimeZone {
 		TimeZone(id: id, name: name)
 	}

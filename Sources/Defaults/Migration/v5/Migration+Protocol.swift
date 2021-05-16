@@ -1,12 +1,14 @@
 import Foundation
 
 /**
-Only for migration.
+Only exists for migration.
 
 Represents the type after migration and its protocol should conform to `Defaults.Serializable`.
 
-It should have an associated type name `CodableForm` which protocol conform to `Codable`.
-So we can convert the json string into `NativeType` like this.
+It should have an associated type name `CodableForm` where its protocol conform to `Codable`.
+
+So we can convert the JSON string into a `NativeType` like this:
+
 ```
 guard
 	let jsonString = string,
@@ -24,13 +26,11 @@ public protocol DefaultsNativeType: Defaults.Serializable {
 }
 
 /**
-Only for migration.
+Only exists for migration.
 
 Represents the type before migration an its protocol should conform to `Codable`.
 
-The main purposed of `CodableType` is trying to infer the `Codable` type to do `JSONDecoder().decode`
-It should have an associated type name `NativeForm` which is the type we want it to store in `UserDefaults`.
-And it also have a `toNative()` function to convert itself into `NativeForm`.
+The main purposed of `CodableType` is trying to infer the `Codable` type to do `JSONDecoder().decode`. It should have an associated type name `NativeForm` which is the type we want it to store in `UserDefaults`. nd it also have a `toNative()` function to convert itself into `NativeForm`.
 
 ```
 struct User {

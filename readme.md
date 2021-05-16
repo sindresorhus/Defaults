@@ -52,26 +52,25 @@ pod 'Defaults'
 
 ## Support types
 
-|    Single Value    |
-|:------------------:|
-|  `Int(8/16/32/64)` |
-| `UInt(8/16/32/64)` |
-|      `Double`      |
-|       `Float`      |
-|      `String`      |
-|      `CGFloat`     |
-|       `Bool`       |
-|       `Date`       |
-|       `Data`       |
-|        `URL`       |
-|  `NSColor` (macOS) |
-|   `UIColor` (iOS)  |
-|      `Codable`     |
+- `Int(8/16/32/64)`
+- `UInt(8/16/32/64)`
+- `Double`
+- `CGFloat`
+- `Float`
+- `String`
+- `Bool`
+- `Date`
+- `Data`
+- `URL`
+- `NSColor` (macOS)
+- `UIColor` (iOS)
+- `Codable`
 
-The list above only show the type that does not need further more configuration.
-We also support them wrapped in `Array`, `Set`, `Dictionary` even wrapped in nested type. ex. `[[String: Set<[String: Int]>]]`.
-For more types, see [Enum Example](#enum-example), [Codable Example](#codable-example) or [Advanced Usage](#advanced-usage).  
-For more examples, see [Tests/DefaultsTests](./Tests/DefaultsTests).
+Defaults also support the above types wrapped in `Array`, `Set`, `Dictionary`, and even wrapped in nested types. For example, `[[String: Set<[String: Int]>]]`.
+
+For more types, see the [enum example](#enum-example), [`Codable` example](#codable-example), or [advanced Usage](#advanced-usage). For more examples, see [Tests/DefaultsTests](./Tests/DefaultsTests).
+
+You can easily add support for any custom type.
 
 ## Usage
 
@@ -137,7 +136,9 @@ Defaults[.defaultDuration].rawValue
 //=> "1 Hour"
 ```
 
-### Codable Example
+*(This works as long as the raw value of the enum is any of the supported types)*
+
+### Codable example
 
 ```swift
 struct User: Codable, Defaults.Serializable {
@@ -339,217 +340,6 @@ print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 //=> true
 ```
 
-## Advanced Usage
-
-### Serialization of custom types
-
-Although `Defaults` already support many types internal, there might have some situations where you want to use your own type.
-The guide below will show you how to make your own custom type works with `Defaults`.
-
-1. Create your own custom type.
-
-```swift
-struct User {
-	let name: String
-	let age: String
-}
-```
-
-2. Create a bridge which protocol conforms to `Defaults.Bridge`.
-
-```swift
-struct UserBridge: Defaults.Bridge {
-	typealias Value = User
-	typealias Serializable = [String: String]
-
-	public func serialize(_ value: Value?) -> Serializable? {
-		guard let value = value else {
-			return nil
-		}
-
-		return ["name": value.name, "age": value.age]
-	}
-
-	public func deserialize(_ object: Serializable?) -> Value? {
-		guard
-			let object = object,
-			let name = object["name"],
-			let age = object["age"]
-		else {
-			return nil
-		}
-
-		return User(name: name, age: age)
-	}
-}
-```
-
-3. Create an extension of `User`, let its protocol conforms to `Defaults.Serializable` and its static bridge should be the bridge we created above.
-
-```swift
-struct User {
-	let name: String
-	let age: String
-}
-
-extension User: Defaults.Serializable {
-	static let bridge = UserBridge()
-}
-```
-
-4. Create some keys and enjoy it.
-
-```swift
-extension Defaults.Keys {
-	static let user = Defaults.Key<User>("user", default: User(name: "Hello", age: "24"))
-	static let arrayUser = Defaults.Key<[User]>("arrayUser", default: [User(name: "Hello", age: "24")])
-	static let setUser = Defaults.Key<Set<User>>("user", default: Set([User(name: "Hello", age: "24")]))
-	static let dictionaryUser = Defaults.Key<[String: User]>("dictionaryUser", default: ["user": User(name: "Hello", age: "24")])
-}
-
-Defaults[.user].name //=> "Hello"
-Defaults[.arrayUser][0].name //=> "Hello"
-Defaults[.setUser].first?.name //=> "Hello"
-Defaults[.dictionaryUser]["user"]?.name //=> "Hello"
-```
-
-### Serialization of Collection
-
-1. Create your Collection and its element should conforms to `Defaults.Serializable`.
-
-```swift
-struct Bag<Element: Defaults.Serializable>: Collection {
-	var items: [Element]
-
-	var startIndex: Int {
-		items.startIndex
-	}
-
-	var endIndex: Int {
-		items.endIndex
-	}
-
-	mutating func insert(element: Element, at: Int) {
-		items.insert(element, at: at)
-	}
-
-	func index(after index: Int) -> Int {
-		items.index(after: index)
-	}
-
-	subscript(position: Int) -> Element {
-		items[position]
-	}
-}
-```
-
-2. Create an extension of `Bag`. let it conforms to `Defaults.CollectionSerializable`
-
-```swift
-extension Bag: Defaults.CollectionSerializable {
-	init(_ elements: [Element]) {
-		self.items = elements
-	}
-}
-
-```
-
-3. Create some keys and enjoy it.
-
-```swift
-extension Defaults.Keys {
-	static let stringBag = Key<Bag<String>>("stringBag", default: Bag(["Hello", "World!"]))
-}
-
-Defaults[.stringBag][0] //=> "Hello"
-Defaults[.stringBag][1] //=> "World!"
-```
-
-### Serialization of SetAlgebra
-
-1. Create your SetAlgebra and its element should conforms to `Defaults.Serializable & Hashable`
-
-```swift
-struct SetBag<Element: Defaults.Serializable & Hashable>: SetAlgebra {
-	var store = Set<Element>()
-
-	init() {}
-
-	init(_ store: Set<Element>) {
-		self.store = store
-	}
-
-	func contains(_ member: Element) -> Bool {
-		store.contains(member)
-	}
-
-	func union(_ other: SetBag) -> SetBag {
-		SetBag(store.union(other.store))
-	}
-
-	func intersection(_ other: SetBag)
-		-> SetBag {
-		var setBag = SetBag()
-		setBag.store = store.intersection(other.store)
-		return setBag
-	}
-
-	func symmetricDifference(_ other: SetBag)
-		-> SetBag {
-		var setBag = SetBag()
-		setBag.store = store.symmetricDifference(other.store)
-		return setBag
-	}
-
-	@discardableResult
-	mutating func insert(_ newMember: Element)
-		-> (inserted: Bool, memberAfterInsert: Element) {
-		store.insert(newMember)
-	}
-
-	mutating func remove(_ member: Element) -> Element? {
-		store.remove(member)
-	}
-
-	mutating func update(with newMember: Element) -> Element? {
-		store.update(with: newMember)
-	}
-
-	mutating func formUnion(_ other: SetBag) {
-		store.formUnion(other.store)
-	}
-
-	mutating func formSymmetricDifference(_ other: SetBag) {
-		store.formSymmetricDifference(other.store)
-	}
-
-	mutating func formIntersection(_ other: SetBag) {
-		store.formIntersection(other.store)
-	}
-}
-```
-
-2. Create an extension of `SetBag`. Let it conforms to `Defaults.SetAlgebraSerializable`
-
-```swift
-extension SetBag: Defaults.SetAlgebraSerializable {
-	func toArray() -> [Element] {
-		Array(store)
-	}
-}
-```
-
-3. Create some keys and enjoy it.
-
-```swift
-extension Defaults.Keys {
-	static let stringSet = Key<SetBag<String>>("stringSet", default: SetBag(["Hello", "World!"]))
-}
-
-Defaults[.stringSet].contains("Hello") //=> true
-Defaults[.stringSet].contains("World!") //=> true
-```
-
 ## API
 
 ### `Defaults`
@@ -586,9 +376,9 @@ public protocol DefaultsSerializable {
 
 Type: `protocol`
 
-All types conform to this protocol will be able to work with `Defaults`. 
+Types that conform to this protocol can be used with `Defaults`.
 
-It should have a static variable `bridge` which protocol should conform to `Defaults.Bridge`.
+The type should have a static variable `bridge` which should reference an instance of a type that conforms to `Defaults.Bridge`.
 
 #### `Defaults.Bridge`
 
@@ -596,6 +386,7 @@ It should have a static variable `bridge` which protocol should conform to `Defa
 public protocol DefaultsBridge {
 	associatedtype Value
 	associatedtype Serializable
+
 	func serialize(_ value: Value?) -> Serializable?
 	func deserialize(_ object: Serializable?) -> Value?
 }
@@ -603,25 +394,20 @@ public protocol DefaultsBridge {
 
 Type: `protocol`
 
-A Bridge can do serialization and de-serialization.
+A `Bridge` is responsible for serialization and deserialization.
 
-Have two associate types `Value` and `Serializable`.
+It has two associated types `Value` and `Serializable`.
 
-`Value` is the type user want to use it.
-
-`Serializable` is the type stored in `UserDefaults`.
-
-`serialize` will be executed before storing to the `UserDefaults` .
-
-`deserialize` will be executed after retrieving its value from the `UserDefaults`.
+- `Value`: The type you want to use.
+- `Serializable`: The type stored in `UserDefaults`.
+- `serialize`: Executed before storing to the `UserDefaults` .
+- `deserialize`: Executed after retrieving its value from the `UserDefaults`.
 
 #### `Defaults.reset(keys…)`
 
 Type: `func`
 
 Reset the given keys back to their default values.
-
-You can specify up to 10 keys. If you need to specify more, call this method multiple times.
 
 You can also specify string keys, which can be useful if you need to store some keys in a collection, as it's not possible to store `Defaults.Key` in a collection because it's generic.
 
@@ -740,11 +526,9 @@ Type: `func`
 
 Migrate the given keys to the specific version.
 
-You can specify up to 10 keys. If you need to specify more, call this method multiple times.
-
 ### `@Default(_ key:)`
 
-Get/set a `Defaults` item and also have the view be updated when the value changes.
+Get/set a `Defaults` item and also have the SwiftUI view be updated when the value changes.
 
 ### Advanced
 
@@ -776,15 +560,222 @@ A `SetAlgebra` which can store into the native `UserDefaults`.
 
 It should have a function `func toArray() -> [Element]` to let `Defaults` do the serialization.
 
+## Advanced usage
+
+### Custom types
+
+Although `Defaults` already has built-in support for many types, you might need to be able to use your own custom type. The below guide will show you how to make your own custom type work with `Defaults`.
+
+1. Create your own custom type.
+
+```swift
+struct User {
+	let name: String
+	let age: String
+}
+```
+
+2. Create a bridge that conforms to `Defaults.Bridge`, which is responsible for handling serialization and deserialization.
+
+```swift
+struct UserBridge: Defaults.Bridge {
+	typealias Value = User
+	typealias Serializable = [String: String]
+
+	public func serialize(_ value: Value?) -> Serializable? {
+		guard let value = value else {
+			return nil
+		}
+
+		return [
+			"name": value.name,
+			"age": value.age
+		]
+	}
+
+	public func deserialize(_ object: Serializable?) -> Value? {
+		guard
+			let object = object,
+			let name = object["name"],
+			let age = object["age"]
+		else {
+			return nil
+		}
+
+		return User(
+			name: name,
+			age: age
+		)
+	}
+}
+```
+
+3. Create an extension of `User` that conforms to `Defaults.Serializable`. Its static bridge should be the bridge we created above.
+
+```swift
+struct User {
+	let name: String
+	let age: String
+}
+
+extension User: Defaults.Serializable {
+	static let bridge = UserBridge()
+}
+```
+
+4. Create some keys and enjoy it.
+
+```swift
+extension Defaults.Keys {
+	static let user = Defaults.Key<User>("user", default: User(name: "Hello", age: "24"))
+	static let arrayUser = Defaults.Key<[User]>("arrayUser", default: [User(name: "Hello", age: "24")])
+	static let setUser = Defaults.Key<Set<User>>("user", default: Set([User(name: "Hello", age: "24")]))
+	static let dictionaryUser = Defaults.Key<[String: User]>("dictionaryUser", default: ["user": User(name: "Hello", age: "24")])
+}
+
+Defaults[.user].name //=> "Hello"
+Defaults[.arrayUser][0].name //=> "Hello"
+Defaults[.setUser].first?.name //=> "Hello"
+Defaults[.dictionaryUser]["user"]?.name //=> "Hello"
+```
+
+### Custom `Collection` type
+
+1. Create your `Collection` and make its elements conform to `Defaults.Serializable`.
+
+```swift
+struct Bag<Element: Defaults.Serializable>: Collection {
+	var items: [Element]
+
+	var startIndex: Int { items.startIndex }
+	var endIndex: Int { items.endIndex }
+
+	mutating func insert(element: Element, at: Int) {
+		items.insert(element, at: at)
+	}
+
+	func index(after index: Int) -> Int {
+		items.index(after: index)
+	}
+
+	subscript(position: Int) -> Element {
+		items[position]
+	}
+}
+```
+
+2. Create an extension of `Bag` that conforms to `Defaults.CollectionSerializable`.
+
+```swift
+extension Bag: Defaults.CollectionSerializable {
+	init(_ elements: [Element]) {
+		self.items = elements
+	}
+}
+```
+
+3. Create some keys and enjoy it.
+
+```swift
+extension Defaults.Keys {
+	static let stringBag = Key<Bag<String>>("stringBag", default: Bag(["Hello", "World!"]))
+}
+
+Defaults[.stringBag][0] //=> "Hello"
+Defaults[.stringBag][1] //=> "World!"
+```
+
+### Custom `SetAlgebra` type
+
+1. Create your `SetAlgebra` and make its elements conform to `Defaults.Serializable & Hashable`
+
+```swift
+struct SetBag<Element: Defaults.Serializable & Hashable>: SetAlgebra {
+	var store = Set<Element>()
+
+	init() {}
+
+	init(_ store: Set<Element>) {
+		self.store = store
+	}
+
+	func contains(_ member: Element) -> Bool {
+		store.contains(member)
+	}
+
+	func union(_ other: SetBag) -> SetBag {
+		SetBag(store.union(other.store))
+	}
+
+	func intersection(_ other: SetBag) -> SetBag {
+		var setBag = SetBag()
+		setBag.store = store.intersection(other.store)
+		return setBag
+	}
+
+	func symmetricDifference(_ other: SetBag) -> SetBag {
+		var setBag = SetBag()
+		setBag.store = store.symmetricDifference(other.store)
+		return setBag
+	}
+
+	@discardableResult
+	mutating func insert(_ newMember: Element) -> (inserted: Bool, memberAfterInsert: Element) {
+		store.insert(newMember)
+	}
+
+	mutating func remove(_ member: Element) -> Element? {
+		store.remove(member)
+	}
+
+	mutating func update(with newMember: Element) -> Element? {
+		store.update(with: newMember)
+	}
+
+	mutating func formUnion(_ other: SetBag) {
+		store.formUnion(other.store)
+	}
+
+	mutating func formSymmetricDifference(_ other: SetBag) {
+		store.formSymmetricDifference(other.store)
+	}
+
+	mutating func formIntersection(_ other: SetBag) {
+		store.formIntersection(other.store)
+	}
+}
+```
+
+2. Create an extension of `SetBag` that conforms to `Defaults.SetAlgebraSerializable`
+
+```swift
+extension SetBag: Defaults.SetAlgebraSerializable {
+	func toArray() -> [Element] {
+		Array(store)
+	}
+}
+```
+
+3. Create some keys and enjoy it.
+
+```swift
+extension Defaults.Keys {
+	static let stringSet = Key<SetBag<String>>("stringSet", default: SetBag(["Hello", "World!"]))
+}
+
+Defaults[.stringSet].contains("Hello") //=> true
+Defaults[.stringSet].contains("World!") //=> true
+```
+
 ## FAQ
 
 ### How can I store a dictionary of arbitrary values?
 
-After `Defaults` v5, you don't need to use `Codable` to store dictionary, `Defaults` supports storing dictionary natively.  
+After `Defaults` v5, you don't need to use `Codable` to store dictionary, `Defaults` supports storing dictionary natively.
 For `Defaults` support types, see [Support types](#support-types).
 
-There might be situations where you want to use `[String: Any]` directly.  
-Unfortunately, since `Any` can not conform to `Defaults.Serializable`, `Defaults` can not support it.  
+There might be situations where you want to use `[String: Any]` directly.
+Unfortunately, since `Any` can not conform to `Defaults.Serializable`, `Defaults` can not support it.
 
 However, you can use the [`AnyCodable`](https://github.com/Flight-School/AnyCodable) package to work around this `Defaults.Serializable` limitation:
 
