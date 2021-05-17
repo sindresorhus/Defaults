@@ -153,6 +153,8 @@ Defaults[isUnicorn]
 
 ### SwiftUI support
 
+#### `@Default`
+
 You can use the `@Default` property wrapper to get/set a `Defaults` item and also have the view be updated when the value changes. This is similar to `@State`.
 
 ```swift
@@ -165,7 +167,10 @@ struct ContentView: View {
 
 	var body: some View {
 		Text("Has Unicorn: \(hasUnicorn)")
-		Toggle("Toggle Unicorn", isOn: $hasUnicorn)
+		Toggle("Toggle", isOn: $hasUnicorn)
+		Button("Reset") {
+			_hasUnicorn.reset()
+		}
 	}
 }
 ```
@@ -173,6 +178,38 @@ struct ContentView: View {
 Note that it's `@Default`, not `@Defaults`.
 
 You cannot use `@Default` in an `ObservableObject`. It's meant to be used in a `View`.
+
+#### `Toggle`
+
+There's also a `SwiftUI.Toggle` wrapper that makes it easier to create a toggle based on a `Defaults` key with a `Bool` value.
+
+```swift
+extension Defaults.Keys {
+	static let showAllDayEvents = Key<Bool>("showAllDayEvents", default: false)
+}
+
+struct ShowAllDayEventsSetting: View {
+	var body: some View {
+		Defaults.Toggle("Show All-Day Events", key: .showAllDayEvents)
+	}
+}
+```
+
+You can also listen to changes:
+
+```swift
+struct ShowAllDayEventsSetting: View {
+	var body: some View {
+		Defaults.Toggle("Show All-Day Events", key: .showAllDayEvents)
+			// Note that this has to be directly attached to `Defaults.Toggle`. It's not `View#onChange()`.
+			.onChange {
+				print("Value", $0)
+			}
+	}
+}
+```
+
+*Requires at least macOS 11, iOS 14, tvOS 14, watchOS 7.*
 
 ### Observe changes to a key
 
