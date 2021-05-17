@@ -4,31 +4,41 @@
 
 ## Summary
 
-We have improved the stored representation of some types. Some types will require migration. Previously, all `Codable` types were serialized to a JSON string and stored as a `UserDefaults` string. `Defaults` is now able to store more types using the appropriate native `UserDefaults` type.
+We have improved the stored representation of types. Some types will require migration. Previously, all `Codable` types were serialized to a JSON string and stored as a `UserDefaults` string. `Defaults` is now able to store more types using the appropriate native `UserDefaults` type.
 
-- Primitive types (`Int`, `Double`, `Bool`, `String`, etc) require no changes.
+- The following types require no changes:
+	- `Int(8/16/32/64)`
+	- `UInt(8/16/32/64)`
+	- `Double`
+	- `CGFloat`
+	- `Float`
+	- `String`
+	- `Bool`
+	- `Date`
+	- `Data`
+	- `URL`
 - Custom types (`struct`, `enum`, etc.) must now conform to `Defaults.Serializable` (in addition to `Codable`).
 - `Array`, `Set`, and `Dictionary` will need to be manually migrated with `Defaults.migrate()`.
 
 ---
 
-In v4, `Defaults` stored `Codable` types as a JSON string.\
-In v5, `Defaults` stores many `Codable` types as native `UserDefaults` types.
+In v4, `Defaults` stored many types as a JSON string.\
+In v5, `Defaults` stores many types as native `UserDefaults` types.
 
 ```swift
 // v4
-let key = Defaults.Key<[String: Int]>("key", default: ["0": 0])
+let key = Defaults.Key<[Int]>("key", default: [0, 1])
 
 UserDefaults.standard.string(forKey: "key")
-//=> "[\"0\": 0]"
+//=> "[0, 1]"
 ```
 
 ```swift
 // v5
-let key = Defaults.Key<[String: Int]>("key", default: ["0": 0])
+let key = Defaults.Key<[Int]>("key", default: [0, 1])
 
 UserDefaults.standard.dictionary(forKey: "key")
-//=> [0: 0]
+//=> [0, 1]
 ```
 
 ## Issues
@@ -41,8 +51,8 @@ UserDefaults.standard.dictionary(forKey: "key")
 
 2. **The previous value in `UserDefaults` is not readable. (for example, `Defaults[.array]` returns `nil`).**
 	In v5, `Defaults` reads value from `UserDefaults` as a natively supported type, but since `UserDefaults` only contains JSON string before migration for `Codable` types, `Defaults` will not be able to work with it. For this situation, `Defaults` provides the `Defaults.migrate()` method to automate the migration process.
-	- [From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set`(with natively supported elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionarysetwith-native-supported-elements-in-defaults-v5)
-	- [From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set` (with codable elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionarysetwith-codable-elements-in-defaults-v5)
+	- [From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set`(with natively supported elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionaryset-with-natively-supported-elements-in-defaults-v5)
+	- [From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set` (with codable elements) in Defaults v5](#from-codable-arraydictionaryset-in-defaults-v4-to-native-arraydictionaryset-with-codable-elements-in-defaults-v5)
 
 ## Testing
 
@@ -141,9 +151,9 @@ private enum Period: String, Defaults.Serializable, Codable {
 
 ### From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set` (with natively supported elements) in Defaults v5
 
-In v4, `Defaults` stored array/dictionary as a JSON string: `["a", "b", "c"]`.
+In v4, `Defaults` stored array/dictionary as a JSON string: `"[\"a\", \"b\", \"c\"]"`.
 
-In v5, `Defaults` stores it as a native array/dictionary with natively supported elements: `[a, b, c]`.
+In v5, `Defaults` stores it as a native array/dictionary with natively supported elements: `["a", "b", "c"]`.
 
 #### Before migration
 
@@ -163,9 +173,9 @@ extension Defaults.Keys {
 
 ### From `Codable` `Array/Dictionary/Set` in Defaults v4 to native `Array/Dictionary/Set` (with `Codable` elements) in Defaults v5
 
-In v4, `Defaults` would store array/dictionary as a single JSON string: `"{ "id": "0", "name": "Asia/Taipei" }"`, `"["10 Minutes", "30 Minutes"]"`.
+In v4, `Defaults` would store array/dictionary as a single JSON string: `"{\"id\": \"0\", \"name\": \"Asia/Taipei\"}"`, `"[\"10 Minutes\", \"30 Minutes\"]"`.
 
-In v5, `Defaults` will store it as a native array/dictionary with `Codable` elements: `{ id: 0, name: Asia/Taipei }`, `[10 Minutes, 30 Minutes]`.
+In v5, `Defaults` will store it as a native array/dictionary with `Codable` elements: `{id: 0, name: "Asia/Taipei"}`, `["10 Minutes", "30 Minutes"]`.
 
 #### Before migration
 
