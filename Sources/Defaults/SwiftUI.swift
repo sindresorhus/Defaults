@@ -151,11 +151,7 @@ extension Defaults {
 	```
 	*/
 	public struct Toggle<Label, Key>: View where Label: View, Key: Defaults.Key<Bool> {
-		private final class OnChangeHolder {
-			var onChange: ((Bool) -> Void)?
-		}
-
-		@State private var onChangeHolder = OnChangeHolder()
+		@ViewStorage private var onChange: ((Bool) -> Void)?
 
 		private let label: () -> Label
 
@@ -170,7 +166,7 @@ extension Defaults {
 		public var body: some View {
 			SwiftUI.Toggle(isOn: $observable.value, label: label)
 				.onChange(of: observable.value) {
-					onChangeHolder.onChange?($0)
+					onChange?($0)
 				}
 		}
 	}
@@ -188,8 +184,33 @@ extension Defaults.Toggle where Label == Text {
 extension Defaults.Toggle {
 	/// Do something when the value changes to a different value.
 	public func onChange(_ action: @escaping (Bool) -> Void) -> Self {
-		onChangeHolder.onChange = action
+		onChange = action
 		return self
+	}
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@propertyWrapper
+private struct ViewStorage<Value>: DynamicProperty {
+	private final class ValueBox {
+		var value: Value
+
+		init(_ value: Value) {
+			self.value = value
+		}
+	}
+
+	@State private var valueBox: ValueBox
+
+	var wrappedValue: Value {
+		get { valueBox.value }
+		nonmutating set {
+			valueBox.value = newValue
+		}
+	}
+
+	init(wrappedValue value: @autoclosure @escaping () -> Value) {
+		self._valueBox = .init(wrappedValue: ValueBox(value()))
 	}
 }
 #endif
