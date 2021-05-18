@@ -796,6 +796,7 @@ It's inspired by that package and other solutions. The main difference is that t
 
 - [Sindre Sorhus](https://github.com/sindresorhus)
 - [Kacper Rączy](https://github.com/fredyshox)
+- [@hank121314](https://github.com/hank121314)
 
 ## Related
 
