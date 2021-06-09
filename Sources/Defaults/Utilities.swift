@@ -174,9 +174,12 @@ extension Defaults.Serializable {
 	*/
 	static func toValue(_ anyObject: Any) -> Self? {
 		// Return directly if `anyObject` can cast to Value, since it means `Value` is a natively supported type.
-		if Self.isNativelySupportedType, let anyObject = anyObject as? Self {
+		if
+			isNativelySupportedType,
+			let anyObject = anyObject as? Self
+		{
 			return anyObject
-		} else if let value = Self.bridge.deserialize(anyObject as? Serializable) {
+		} else if let value = bridge.deserialize(anyObject as? Serializable) {
 			return value as? Self
 		}
 
@@ -194,9 +197,9 @@ extension Defaults.Serializable {
 	*/
 	static func toSerializable(_ value: Self) -> Any? {
 		// Return directly if `Self` is a natively supported type, since it does not need serialization.
-		if Self.isNativelySupportedType {
+		if isNativelySupportedType {
 			return value
-		} else if let serialized = Self.bridge.serialize(value as? Self.Value) {
+		} else if let serialized = bridge.serialize(value as? Value) {
 			return serialized
 		}
 
