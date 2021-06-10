@@ -5,7 +5,7 @@ import Combine
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Defaults {
 	final class Observable<Value: Serializable>: ObservableObject {
-		private var observation: DefaultsObservation?
+		private var cancellable: AnyCancellable?
 		private let key: Defaults.Key<Value>
 
 		let objectWillChange = ObservableObjectPublisher()
@@ -21,15 +21,16 @@ extension Defaults {
 		init(_ key: Key<Value>) {
 			self.key = key
 
-			self.observation = Defaults.observe(key, options: [.prior]) { [weak self] change in
-				guard change.isPrior else {
-					return
-				}
+			self.cancellable = Defaults.publisher(key, options: [.prior])
+				.sink { [weak self] change in
+					guard change.isPrior else {
+						return
+					}
 
-				DispatchQueue.mainSafeAsync {
-					self?.objectWillChange.send()
+					DispatchQueue.mainSafeAsync {
+						self?.objectWillChange.send()
+					}
 				}
-			}
 		}
 
 		/// Reset the key back to its default value.

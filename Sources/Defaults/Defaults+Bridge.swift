@@ -53,7 +53,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct RawRepresentableBridge<Value: RawRepresentable>: Defaults.Bridge {
+	public struct RawRepresentableBridge<Value: RawRepresentable>: Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Value.RawValue
 
@@ -72,7 +72,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Defaults.Bridge {
+	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Data
 
@@ -109,7 +109,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct OptionalBridge<Wrapped: Defaults.Serializable>: Defaults.Bridge {
+	public struct OptionalBridge<Wrapped: Serializable>: Bridge {
 		public typealias Value = Wrapped.Value
 		public typealias Serializable = Wrapped.Serializable
 
@@ -124,7 +124,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct ArrayBridge<Element: Defaults.Serializable>: Defaults.Bridge {
+	public struct ArrayBridge<Element: Serializable>: Bridge {
 		public typealias Value = [Element]
 		public typealias Serializable = [Element.Serializable]
 
@@ -147,7 +147,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct DictionaryBridge<Key: LosslessStringConvertible & Hashable, Element: Defaults.Serializable>: Defaults.Bridge {
+	public struct DictionaryBridge<Key: LosslessStringConvertible & Hashable, Element: Serializable>: Bridge {
 		public typealias Value = [Key: Element.Value]
 		public typealias Serializable = [String: Element.Serializable]
 
@@ -183,7 +183,7 @@ extension Defaults {
 We need both `SetBridge` and `SetAlgebraBridge` because `Set` conforms to `Sequence` but `SetAlgebra` does not. `Set` conforms to `Sequence`, so we can convert it into an array with `Array.init<S>(S)` and store it in the `UserDefaults`. But `SetAlgebra` does not, so it is hard to convert it into an array. Thats why we need the `Defaults.SetAlgebraSerializable` protocol to convert it into an array.
 */
 extension Defaults {
-	public struct SetBridge<Element: Defaults.Serializable & Hashable>: Defaults.Bridge {
+	public struct SetBridge<Element: Serializable & Hashable>: Bridge {
 		public typealias Value = Set<Element>
 		public typealias Serializable = Any
 
@@ -221,7 +221,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct SetAlgebraBridge<Value: Defaults.SetAlgebraSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
+	public struct SetAlgebraBridge<Value: SetAlgebraSerializable>: Bridge where Value.Element: Serializable {
 		public typealias Value = Value
 		public typealias Element = Value.Element
 		public typealias Serializable = Any
@@ -260,7 +260,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct CollectionBridge<Value: Defaults.CollectionSerializable>: Defaults.Bridge where Value.Element: Defaults.Serializable {
+	public struct CollectionBridge<Value: CollectionSerializable>: Bridge where Value.Element: Serializable {
 		public typealias Value = Value
 		public typealias Element = Value.Element
 		public typealias Serializable = Any

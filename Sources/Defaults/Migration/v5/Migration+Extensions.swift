@@ -180,7 +180,7 @@ extension Defaults.SetAlgebraSerializable where Self: Defaults.NativeType, Eleme
 	public typealias CodableForm = [Element.CodableForm]
 }
 
-extension Defaults.CodableType where Self: RawRepresentable, NativeForm: RawRepresentable, Self.RawValue == NativeForm.RawValue {
+extension Defaults.CodableType where Self: RawRepresentable, NativeForm: RawRepresentable, RawValue == NativeForm.RawValue {
 	public func toNative() -> NativeForm {
 		NativeForm(rawValue: self.rawValue)!
 	}

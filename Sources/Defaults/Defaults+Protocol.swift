@@ -99,4 +99,4 @@ public protocol DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializabl
 }
 
 /// Convenience protocol for `Codable`.
-public protocol DefaultsCodableBridge: DefaultsBridge where Serializable == String, Value: Codable {}
+public protocol DefaultsCodableBridge: Defaults.Bridge where Serializable == String, Value: Codable {}
