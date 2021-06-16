@@ -87,6 +87,9 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 
 	public var projectedValue: Binding<Value> { $observable.value }
 
+	/// The default value of the key.
+	public var defaultValue: Value { key.defaultValue }
+
 	/// Combine publisher that publishes values when the `Defaults` item changes.
 	public var publisher: Publisher { Defaults.publisher(key) }
 
