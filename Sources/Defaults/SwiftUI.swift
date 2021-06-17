@@ -121,6 +121,12 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	}
 }
 
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Default where Value: Equatable {
+	/// Indicates hether the value is the same as the default value.
+	public var isDefaultValue: Bool { wrappedValue == defaultValue }
+}
+
 @available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Defaults {
 	/**

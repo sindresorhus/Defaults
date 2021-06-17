@@ -45,5 +45,6 @@ final class DefaultsSwiftUITests: XCTestCase {
 		XCTAssertEqual(view.user.username, "Chen")
 		XCTAssertEqual(view.setInt, Set(1...4))
 		XCTAssertFalse(Default(.hasUnicorn).defaultValue)
+		XCTAssertFalse(Default(.hasUnicorn).isDefaultValue)
 	}
 }
