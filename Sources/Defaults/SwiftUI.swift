@@ -87,6 +87,9 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 
 	public var projectedValue: Binding<Value> { $observable.value }
 
+	/// The default value of the key.
+	public var defaultValue: Value { key.defaultValue }
+
 	/// Combine publisher that publishes values when the `Defaults` item changes.
 	public var publisher: Publisher { Defaults.publisher(key) }
 
@@ -116,6 +119,12 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public func reset() {
 		key.reset()
 	}
+}
+
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Default where Value: Equatable {
+	/// Indicates whether the value is the same as the default value.
+	public var isDefaultValue: Bool { wrappedValue == defaultValue }
 }
 
 @available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
