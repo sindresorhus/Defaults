@@ -399,8 +399,8 @@ Type: `class`
 
 Type erasure for `Defaults.Serializable`.
 
-- `get<Value: Defaults.Serializable>() -> Value`: Retrieve the value which type is `Value` from the UserDefaults.
-- `get<Value: Defaults.Serializable>(_: Value.Type) -> Value`: Specific the `Value` you want to retrieve, is useful in some ambiguous cases. 
+- `get<Value: Defaults.Serializable>() -> Value?`: Retrieve the value which type is `Value` from the UserDefaults.
+- `get<Value: Defaults.Serializable>(_: Value.Type) -> Value?`: Specific the `Value` you want to retrieve, is useful in some ambiguous cases. 
 - `set<Value: Defaults.Serializable>(_ newValue: Value)`: Set newValue into `Defaults.AnySerializable`.
 
 #### `Defaults.reset(keys…)`
@@ -657,11 +657,11 @@ let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: 1)
 Defaults[any] = "🦄"
 ```
 
-#### Custom type
+#### Other types
 
 ##### Using `get`, `set`
 
-For custom type you will have to assign it like this.
+For other types you will have to assign it like this.
 
 ```swift
 enum mime: String, Defaults.Serializable {
@@ -729,8 +729,6 @@ if let mimeType: mime = Defaults[.magic]["enum"]?.get() {
 ```
 
 For more examples, see [Tests/DefaultsAnySerializableTests](./Tests/DefaultsTests/DefaultsAnySeriliazableTests.swift).
-
-
 
 ### Custom `Collection` type
 
