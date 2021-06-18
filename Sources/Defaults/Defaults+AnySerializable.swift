@@ -30,7 +30,7 @@ extension Defaults {
 	let any = Defaults.Key<Defaults.AnySerializable>("independentAnyKey", default: [mime.JSON])
 	```
 	*/
-	public struct AnySerializable: DefaultsAnySerializableProtocol {
+	public struct AnySerializable: AnySerializableProtocol {
 		var value: Any
 		public static let bridge = AnyBridge()
 
@@ -38,15 +38,15 @@ extension Defaults {
 			self.value = value ?? ()
 		}
 
-		public init<Value: Defaults.Serializable>(_ value: Value) {
+		public init<Value: Serializable>(_ value: Value) {
 			self.value = Value.toSerializable(value) ?? ()
 		}
 
-		public func get<Value: Defaults.Serializable>() -> Value? { Value.toValue(value) }
+		public func get<Value: Serializable>() -> Value? { Value.toValue(value) }
 
-		public func get<Value: Defaults.Serializable>(_: Value.Type) -> Value? { Value.toValue(value) }
+		public func get<Value: Serializable>(_: Value.Type) -> Value? { Value.toValue(value) }
 
-		public mutating func set<Value: Defaults.Serializable>(_ newValue: Value) {
+		public mutating func set<Value: Serializable>(_ newValue: Value) {
 			value = Value.toSerializable(newValue) ?? ()
 		}
 	}
@@ -89,14 +89,14 @@ extension Defaults {
 	print(float) //=> 1_213.14
 	```
 	*/
-	public static subscript<T: Serializable, Value: Defaults.AnySerializableProtocol>(key: Key<Value>) -> T? {
+	public static subscript<T: Serializable, Value: AnySerializableProtocol>(key: Key<Value>) -> T? {
 		get { key.suite[key].get() }
 		set {
 			key.suite[key] = Value(newValue)
 		}
 	}
 
-	public static subscript<T: Serializable, Value: Defaults.AnySerializableProtocol>(key: Key<Value>, type type: T.Type) -> T? {
+	public static subscript<T: Serializable, Value: AnySerializableProtocol>(key: Key<Value>, type type: T.Type) -> T? {
 		get { key.suite[key].get(type) }
 		set {
 			key.suite[key] = Value(newValue)
