@@ -326,37 +326,6 @@ print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 //=> true
 ```
 
-### Dynamic value
-
-There might be situations where you want to use `[String: Any]` directly.
-But `Defaults` need its value conforms to `Defaults.Serializable`, so here is a class `Defaults.AnySerializable` to overcome this limitation.
-
-`Defaults.AnySerializable` only available for `Value` which conforms to `Defaults.Serializable`.
-
-```swift
-extension Defaults.Keys {
-	static let magic = Key<[String: Defaults.AnySerializable]>("magic", default: [:])
-}
-
-enum mime: String, Defaults.Serializable {
-  case JSON = "application/json"
-}
-
-// …
-Defaults[.magic]["unicorn"] = "🦄"
-
-if let value = Defaults[.magic]["unicorn"]?.get(String.self) {
-	print(value)
-	//=> "🦄"
-}
-
-Defaults[.magic]["number"] = 3
-Defaults[.magic]["boolean"] = true
-Defaults[.magic]["enum"] = Defaults.AnySerializable(mime.JSON)
-```
-
-For more examples, see [Tests/DefaultsAnySerializableTests](./Tests/DefaultsTests/DefaultsAnySeriliazableTests.swift).
-
 ## API
 
 ### `Defaults`
@@ -430,8 +399,9 @@ Type: `class`
 
 Type erasure for `Defaults.Serializable`.
 
-You can use `get<Value: Defaults.Serializable>(_: Value.Type)` to retrieve the type you want from the UserDefaults.
-And use `set<Value: Defaults.Serializable>(value: Value)` to configure the value in UserDefaults.
+- `get<Value: Defaults.Serializable>() -> Value`: Retrieve the value which type is `Value` from the UserDefaults.
+- `get<Value: Defaults.Serializable>(_: Value.Type) -> Value`: Specific the `Value` you want to retrieve, is useful in some ambiguous cases. 
+- `set<Value: Defaults.Serializable>(_ newValue: Value)`: Set newValue into `Defaults.AnySerializable`.
 
 #### `Defaults.reset(keys…)`
 
@@ -669,6 +639,99 @@ Defaults[.setUser].first?.name //=> "Hello"
 Defaults[.dictionaryUser]["user"]?.name //=> "Hello"
 ```
 
+### Dynamic value
+
+There might be situations where you want to use `[String: Any]` directly.
+But `Defaults` need its value conforms to `Defaults.Serializable`, so here is a class `Defaults.AnySerializable` to overcome this limitation.
+
+`Defaults.AnySerializable` only available for `Value` which conforms to `Defaults.Serializable`.
+
+#### Primitive type
+
+`Defaults.AnySerializable` conforms to `ExpressibleByStringLiteral`, `ExpressibleByIntegerLiteral`, `ExpressibleByFloatLiteral`, `ExpressibleByBooleanLiteral`, `ExpressibleByNilLiteral`, `ExpressibleByArrayLiteral` and `ExpressibleByDictionaryLiteral`.
+
+So it can assign directly with these primitive types.
+
+```swift
+let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: 1)
+Defaults[any] = "🦄"
+```
+
+#### Custom type
+
+##### Using `get`, `set`
+
+For custom type you will have to assign it like this.
+
+```swift
+enum mime: String, Defaults.Serializable {
+	case JSON = "application/json"
+	case STREAM = "application/octet-stream"
+}
+
+let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: Defaults.AnySerializable(mime.JSON))
+
+Defaults[any].set(mime.STREAM)
+if let mimeType: mime = Defaults[any].get() {
+	print(mimeType.rawValue) //=> "application/json"
+}
+```
+
+##### Convenience subscription
+
+`Defaults` also provide an convenience subscription for `Defaults.Key<Defaults.AnySerializable>`
+By default, `Defaults[any]` will return `Defaults.AnySerializable`.
+With these subscription we can get the internal `value` with `Defaults[any]`.
+
+```swift
+enum mime: String, Defaults.Serializable {
+	case JSON = "application/json"
+	case STREAM = "application/octet-stream"
+}
+
+let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: Defaults.AnySerializable(mime.JSON))
+
+Defaults[any] = mime.STREAM
+if let mimeType: mime = Defaults[any] {
+	XCTAssertEqual(mimeType, mime.STREAM)
+}
+```
+
+#### Wrapped in `Array`, `Set`, `Dictionary`
+
+`Defaults.AnySerializable` also support the above types wrapped in `Array`, `Set`, `Dictionary`
+Here is the example for `[String: Defaults.AnySerializable]`.
+
+```swift
+extension Defaults.Keys {
+	static let magic = Key<[String: Defaults.AnySerializable]>("magic", default: [:])
+}
+
+enum mime: String, Defaults.Serializable {
+	case JSON = "application/json"
+}
+
+// …
+Defaults[.magic]["unicorn"] = "🦄"
+
+if let value: String = Defaults[.magic]["unicorn"]?.get() {
+	print(value)
+	//=> "🦄"
+}
+
+Defaults[.magic]["number"] = 3
+Defaults[.magic]["boolean"] = true
+Defaults[.magic]["enum"] = Defaults.AnySerializable(mime.JSON)
+if let mimeType: mime = Defaults[.magic]["enum"]?.get() {
+	print(mimeType.rawValue)
+	//=> "application/json"
+}
+```
+
+For more examples, see [Tests/DefaultsAnySerializableTests](./Tests/DefaultsTests/DefaultsAnySeriliazableTests.swift).
+
+
+
 ### Custom `Collection` type
 
 1. Create your `Collection` and make its elements conform to `Defaults.Serializable`.
@@ -683,7 +746,7 @@ struct Bag<Element: Defaults.Serializable>: Collection {
 	mutating func insert(element: Element, at: Int) {
 		items.insert(element, at: at)
 	}
-
+P
 	func index(after index: Int) -> Int {
 		items.index(after: index)
 	}
