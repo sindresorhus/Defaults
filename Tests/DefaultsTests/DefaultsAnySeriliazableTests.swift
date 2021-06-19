@@ -66,7 +66,9 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		Defaults[.magic]["enum"] = Defaults.AnySerializable(mime.JSON)
 		XCTAssertEqual(Defaults[.magic]["unicorn"], "🦄")
 		XCTAssertEqual(Defaults[.magic]["number"], 3)
-		XCTAssertEqual(Defaults[.magic]["boolean"], true)
+		if let bool: Bool = Defaults[.magic]["unicorn"]?.get() {
+			XCTAssertTrue(bool)
+		}
 		XCTAssertEqual(Defaults[.magic]["enum"]?.get(), mime.JSON)
 		Defaults[.magic]["enum"]?.set(mime.STREAM)
 		if let value: String = Defaults[.magic]["unicorn"]?.get() {
@@ -242,7 +244,7 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		Defaults[key].insert(bool)
 		XCTAssertTrue(Defaults[key].contains(bool))
 
-		let float = Defaults.AnySerializable(Float(1_213.14))
+		let float = Defaults.AnySerializable(Float(1213.14))
 		Defaults[key].insert(float)
 		XCTAssertTrue(Defaults[key].contains(float))
 
@@ -295,7 +297,9 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		Defaults[key]["number"] = 3
 		Defaults[key]["boolean"] = true
 		XCTAssertEqual(Defaults[key]["number"], 3)
-		XCTAssertEqual(Defaults[key]["boolean"], true)
+		if let bool: Bool = Defaults[.magic]["unicorn"]?.get() {
+			XCTAssertTrue(bool)
+		}
 		Defaults[key]["set"] = Defaults.AnySerializable(Set([1]))
 		XCTAssertEqual(Defaults[key]["set"]!.get(Set<Int>.self)!.first, 1)
 		Defaults[key]["nil"] = nil

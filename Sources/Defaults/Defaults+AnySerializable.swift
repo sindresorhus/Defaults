@@ -56,7 +56,7 @@ extension Optional: Defaults.AnySerializableProtocol where Wrapped: Defaults.Any
 	public init<Value: Defaults.Serializable>(_ value: Value) {
 		self = .some(Wrapped(value))
 	}
-	public func get<Value>() -> Value? where Value : DefaultsSerializable {
+	public func get<Value>() -> Value? where Value: DefaultsSerializable {
 		self?.get()
 	}
 	public func get<Value: Defaults.Serializable>(_: Value.Type) -> Value? {
