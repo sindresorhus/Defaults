@@ -1,14 +1,7 @@
 import CoreGraphics
 import Foundation
 
-public protocol DefaultsAnySerializableProtocol: Defaults.Serializable {
-	init<Value: Defaults.Serializable>(_ value: Value)
-	func get<Value: Defaults.Serializable>() -> Value?
-	func get<Value: Defaults.Serializable>(_: Value.Type) -> Value?
-}
-
 extension Defaults {
-	public typealias AnySerializableProtocol = DefaultsAnySerializableProtocol
 	/**
 	Type-erased wrappers for `Defaults.Serializable` values.
 	It can be used when the user wants to create an `Any` value that conforms to `Defaults.Serializable`.
@@ -32,7 +25,7 @@ extension Defaults {
 	let any = Defaults.Key<Defaults.AnySerializable>("independentAnyKey", default: [mime.JSON])
 	```
 	*/
-	public struct AnySerializable: AnySerializableProtocol {
+	public struct AnySerializable: Defaults.Serializable {
 		var value: Any
 		public static let bridge = AnyBridge()
 
