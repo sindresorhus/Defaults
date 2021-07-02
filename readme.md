@@ -671,13 +671,15 @@ enum mime: String, Defaults.Serializable {
 	case STREAM = "application/octet-stream"
 }
 
-let any = Defaults.Key<[Defaults.AnySerializable]>("anyKey", default: [Defaults.AnySerializable(mime.JSON)])
+let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: [Defaults.AnySerializable(mime.JSON)])
 
-if let mimeType: mime = Defaults[any][0].get() {
+if let mimeType: mime = Defaults[any].get() {
 	print(mimeType.rawValue) //=> "application/json"
 }
-Defaults[any].append(123)
-print(Defaults[any][1].get(Int.self)) //=> 123
+Defaults[any].set(mime.STREAM)
+if let mimeType: mime = Defaults[any].get() {
+	print(mimeType.rawValue) //=> "application/octet-stream"
+}
 ```
 
 #### Wrapped in `Array`, `Set`, `Dictionary`

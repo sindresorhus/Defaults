@@ -77,13 +77,14 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		if let mimeType: mime = Defaults[.magic]["enum"]?.get() {
 			XCTAssertEqual(mimeType, mime.STREAM)
 		}
-		let anyArray = Defaults.Key<[Defaults.AnySerializable]>("anyArrayKey", default: [Defaults.AnySerializable(mime.JSON)])
-
-		if let mimeType: mime = Defaults[anyArray][0].get() {
-			XCTAssertEqual(mimeType, mime.JSON) //=> "application/json"
+		Defaults[any].set(mime.JSON)
+		if let mimeType: mime = Defaults[any].get() {
+			XCTAssertEqual(mime.JSON, mimeType)
 		}
-		Defaults[anyArray].append(123)
-		XCTAssertEqual(Defaults[anyArray][1].get(Int.self), 123)
+		Defaults[any].set(mime.STREAM)
+		if let mimeType: mime = Defaults[any].get() {
+			XCTAssertEqual(mime.STREAM, mimeType)
+		}
 	}
 
 	func testKey() {
