@@ -49,11 +49,11 @@ final class DefaultsAnySerializableTests: XCTestCase {
 
 	func testReadMeExample() {
 		let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: Defaults.AnySerializable(mime.JSON))
-		if let mimeType: mime = Defaults[any] {
+		if let mimeType: mime = Defaults[any].get() {
 			XCTAssertEqual(mimeType, mime.JSON)
 		}
-		Defaults[any] = mime.STREAM
-		if let mimeType: mime = Defaults[any] {
+		Defaults[any].set(mime.STREAM)
+		if let mimeType: mime = Defaults[any].get() {
 			XCTAssertEqual(mimeType, mime.STREAM)
 		}
 		Defaults[any].set(mime.JSON)
@@ -77,6 +77,13 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		if let mimeType: mime = Defaults[.magic]["enum"]?.get() {
 			XCTAssertEqual(mimeType, mime.STREAM)
 		}
+		let anyArray = Defaults.Key<[Defaults.AnySerializable]>("anyArrayKey", default: [Defaults.AnySerializable(mime.JSON)])
+
+		if let mimeType: mime = Defaults[anyArray][0].get() {
+			XCTAssertEqual(mimeType, mime.JSON) //=> "application/json"
+		}
+		Defaults[anyArray].append(123)
+		XCTAssertEqual(Defaults[anyArray][1].get(Int.self), 123)
 	}
 
 	func testKey() {
@@ -85,95 +92,95 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		XCTAssertEqual(Defaults[any], 121_314)
 		// Test Int8
 		let int8 = Int8.max
-		Defaults[any] = int8
-		XCTAssertEqual(Defaults[any], int8)
+		Defaults[any].set(int8)
+		XCTAssertEqual(Defaults[any].get(), int8)
 		// Test Int16
 		let int16 = Int16.max
-		Defaults[any] = int16
-		XCTAssertEqual(Defaults[any], int16)
+		Defaults[any].set(int16)
+		XCTAssertEqual(Defaults[any].get(), int16)
 		// Test Int32
 		let int32 = Int32.max
-		Defaults[any] = int32
-		XCTAssertEqual(Defaults[any], int32)
+		Defaults[any].set(int32)
+		XCTAssertEqual(Defaults[any].get(), int32)
 		// Test Int64
 		let int64 = Int64.max
-		Defaults[any] = int64
-		XCTAssertEqual(Defaults[any], int64)
+		Defaults[any].set(int64)
+		XCTAssertEqual(Defaults[any].get(), int64)
 		// Test UInt
 		let uint = UInt.max
-		Defaults[any] = uint
-		XCTAssertEqual(Defaults[any], uint)
+		Defaults[any].set(uint)
+		XCTAssertEqual(Defaults[any].get(), uint)
 		// Test UInt8
 		let uint8 = UInt8.max
-		Defaults[any] = uint8
-		XCTAssertEqual(Defaults[any], uint8)
+		Defaults[any].set(uint8)
+		XCTAssertEqual(Defaults[any].get(), uint8)
 		// Test UInt16
 		let uint16 = UInt16.max
-		Defaults[any] = uint16
-		XCTAssertEqual(Defaults[any], uint16)
+		Defaults[any].set(uint16)
+		XCTAssertEqual(Defaults[any].get(), uint16)
 		// Test UInt32
 		let uint32 = UInt32.max
-		Defaults[any] = uint32
-		XCTAssertEqual(Defaults[any], uint32)
+		Defaults[any].set(uint32)
+		XCTAssertEqual(Defaults[any].get(), uint32)
 		// Test UInt64
 		let uint64 = UInt64.max
-		Defaults[any] = uint64
-		XCTAssertEqual(Defaults[any], uint64)
+		Defaults[any].set(uint64)
+		XCTAssertEqual(Defaults[any].get(), uint64)
 		// Test Double
 		Defaults[any] = 12_131.4
 		XCTAssertEqual(Defaults[any], 12_131.4)
 		// Test Bool
 		Defaults[any] = true
-		XCTAssertTrue(Defaults[any, type: Bool.self]!)
+		XCTAssertTrue(Defaults[any].get(Bool.self)!)
 		// Test String
 		Defaults[any] = "121314"
 		XCTAssertEqual(Defaults[any], "121314")
 		// Test Float
-		Defaults[any, type: Float.self] = 12_131.456
-		XCTAssertEqual(Defaults[any, type: Float.self], 12_131.456)
+		Defaults[any].set(12_131.456, type: Float.self)
+		XCTAssertEqual(Defaults[any].get(Float.self), 12_131.456)
 		// Test Date
 		let date = Date()
-		Defaults[any] = date
-		XCTAssertEqual(Defaults[any, type: Date.self], date)
+		Defaults[any].set(date)
+		XCTAssertEqual(Defaults[any].get(Date.self), date)
 		// Test Data
 		let data = "121314".data(using: .utf8)
-		Defaults[any] = data
-		XCTAssertEqual(Defaults[any], data)
+		Defaults[any].set(data)
+		XCTAssertEqual(Defaults[any].get(Data.self), data)
 		// Test Array
 		Defaults[any] = [1, 2, 3]
-		if let array: [Int] = Defaults[any] {
+		if let array: [Int] = Defaults[any].get() {
 			XCTAssertEqual(array[0], 1)
 			XCTAssertEqual(array[1], 2)
 			XCTAssertEqual(array[2], 3)
 		}
 		// Test Dictionary
 		Defaults[any] = ["unicorn": "🦄", "boolean": true, "number": 3]
-		if let dictionary = Defaults[any, type: [String: Defaults.AnySerializable].self] {
+		if let dictionary = Defaults[any].get([String: Defaults.AnySerializable].self) {
 			XCTAssertEqual(dictionary["unicorn"], "🦄")
 			XCTAssertTrue(dictionary["boolean"]!.get(Bool.self)!)
 			XCTAssertEqual(dictionary["number"], 3)
 		}
 		// Test Set
-		Defaults[any] = Set([1])
-		XCTAssertEqual(Defaults[any, type: Set<Int>.self]?.first, 1)
+		Defaults[any].set(Set([1]))
+		XCTAssertEqual(Defaults[any].get(Set<Int>.self)?.first, 1)
 		// Test URL
-		Defaults[any] = URL(string: "https://example.com")!
-		XCTAssertEqual(Defaults[any]!, URL(string: "https://example.com")!)
+		Defaults[any].set(URL(string: "https://example.com")!)
+		XCTAssertEqual(Defaults[any].get()!, URL(string: "https://example.com")!)
 		#if os(macOS)
 		// Test NSColor
-		Defaults[any] = NSColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 0.987)
-		XCTAssertEqual(Defaults[any, type: NSColor.self]?.alphaComponent, 0.987)
+		Defaults[any].set(NSColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 0.987))
+		XCTAssertEqual(Defaults[any].get(NSColor.self)?.alphaComponent, 0.987)
 		#else
 		// Test UIColor
-		Defaults[any] = Defaults.AnySerializable(UIColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 0.654))
-		XCTAssertEqual(Defaults[any, type: UIColor.self]?.cgColor.alpha, 0.654)
+		Defaults[any].set(UIColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 0.654))
+		XCTAssertEqual(Defaults[any].get(UIColor.self)?.cgColor.alpha, 0.654)
 		#endif
 		// Test Codable type
-		Defaults[any] = CodableUnicorn(is_missing: false)
-		XCTAssertFalse(Defaults[any, type: CodableUnicorn.self]!.is_missing)
+		Defaults[any].set(CodableUnicorn(is_missing: false))
+		XCTAssertFalse(Defaults[any].get(CodableUnicorn.self)!.is_missing)
 		// Test Custom type
-		Defaults[any] = Unicorn(is_missing: true)
-		XCTAssertTrue(Defaults[any, type: Unicorn.self]!.is_missing)
+		Defaults[any].set(Unicorn(is_missing: true))
+		XCTAssertTrue(Defaults[any].get(Unicorn.self)!.is_missing)
 		// Test nil
 		Defaults[any] = nil
 		XCTAssertEqual(Defaults[any], 121_314)
@@ -184,8 +191,8 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = 12_131.4
 		XCTAssertEqual(Defaults[key], 12_131.4)
-		Defaults[key] = mime.JSON
-		XCTAssertEqual(Defaults[key, type: mime.self], mime.JSON)
+		Defaults[key]?.set(mime.JSON)
+		XCTAssertEqual(Defaults[key]?.get(mime.self), mime.JSON)
 		Defaults[key] = nil
 		XCTAssertNil(Defaults[key])
 	}

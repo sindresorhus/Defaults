@@ -10,16 +10,18 @@ public protocol DefaultsAnySerializableProtocol: Defaults.Serializable {
 extension Defaults {
 	public typealias AnySerializableProtocol = DefaultsAnySerializableProtocol
 	/**
-	Have an internal property `value` which` should always be a UserDefaults native supported type.
+	Type-erased wrappers for `Defaults.Serializable` values.
+	It can be used when the user wants to create an `Any` value that conforms to `Defaults.Serializable`.
+	It will have an internal property `value` which` should always be a UserDefaults native supported type.
 
-	`get` will deserialize internal value to the type user explicit in function parameter.
+	`get` will deserialize internal value to the type user explicit in the function parameter.
 
 	```
 	let any = Defaults.Key<Defaults.AnySerializable>("independentAnyKey", default: 121_314)
 	print(Defaults[any].get(Int.self)) //=> 121_314
 	```
 
-	- Note: the only way to assign non-serializable value is using `ExpressibleByArrayLiteral` or `ExpressibleByDictionaryLiteral` to assign a type which is not UserDefaults native supported type.
+	- Note: the only way to assign a non-serializable value is using `ExpressibleByArrayLiteral` or `ExpressibleByDictionaryLiteral` to assign a type which is not UserDefaults native supported type.
 
 	```
 	private enum mime: String, Defaults.Serializable {
@@ -49,57 +51,9 @@ extension Defaults {
 		public mutating func set<Value: Serializable>(_ newValue: Value) {
 			value = Value.toSerializable(newValue) ?? ()
 		}
-	}
-}
 
-extension Optional: Defaults.AnySerializableProtocol where Wrapped: Defaults.AnySerializableProtocol {
-	public init<Value: Defaults.Serializable>(_ value: Value) {
-		self = .some(Wrapped(value))
-	}
-	public func get<Value>() -> Value? where Value: DefaultsSerializable {
-		self?.get()
-	}
-	public func get<Value: Defaults.Serializable>(_: Value.Type) -> Value? {
-		self?.get(Value.self)
-	}
-}
-
-extension Defaults {
-	/**
-	Here are the subscription for `Defaults.Key<Defaults.AnySerializable>`.
-
-	By default, `Defaults[any]` will return `Defaults.AnySerializable`.
-	With these subscription we can get the internal `value` with `Defaults[any]`.
-
-	```
-	let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: 121_314)
-	let int: Int = Defaults[any]
-	print(int) //=> 121_314
-	Defaults[any] = "🦄"
-	let string: String = Defaults[any]
-	print(string) //=> 🦄
-	```
-
-	For more ambiguous cases,  we also provide second parameter `type` to specify the type of `value`
-
-	```
-	let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: 121_314)
-	Defaults[any, type: Float.self] = 1_213.14
-	let float = Defaults[any, type: Float.self]
-	print(float) //=> 1_213.14
-	```
-	*/
-	public static subscript<T: Serializable, Value: AnySerializableProtocol>(key: Key<Value>) -> T? {
-		get { key.suite[key].get() }
-		set {
-			key.suite[key] = Value(newValue)
-		}
-	}
-
-	public static subscript<T: Serializable, Value: AnySerializableProtocol>(key: Key<Value>, type type: T.Type) -> T? {
-		get { key.suite[key].get(type) }
-		set {
-			key.suite[key] = Value(newValue)
+		public mutating func set<Value: Serializable>(_ newValue: Value, type: Value.Type) {
+			value = Value.toSerializable(newValue) ?? ()
 		}
 	}
 }
@@ -241,6 +195,7 @@ extension Defaults.AnySerializable: ExpressibleByDictionaryLiteral {
 }
 
 extension Defaults.AnySerializable: _DefaultsOptionalType {
+	/// Since nil cannot assign to `Any`, we use `Void` instead of `nil`.
 	public var isNil: Bool { value is Void }
 }
 
