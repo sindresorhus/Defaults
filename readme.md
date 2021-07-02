@@ -397,7 +397,7 @@ Defaults.AnySerializable<Value: Defaults.Serializable>(_ value: Value)
 
 Type: `class`
 
-Type erasure for `Defaults.Serializable`.
+Type-erased wrappers for `Defaults.Serializable` values.
 
 - `get<Value: Defaults.Serializable>() -> Value?`: Retrieve the value which type is `Value` from the UserDefaults.
 - `get<Value: Defaults.Serializable>(_: Value.Type) -> Value?`: Specific the `Value` you want to retrieve, is useful in some ambiguous cases. 
@@ -642,9 +642,11 @@ Defaults[.dictionaryUser]["user"]?.name //=> "Hello"
 ### Dynamic value
 
 There might be situations where you want to use `[String: Any]` directly.
-But `Defaults` need its value conforms to `Defaults.Serializable`, so here is a class `Defaults.AnySerializable` to overcome this limitation.
+But `Defaults` need its value to conform to `Defaults.Serializable`, so here is a class `Defaults.AnySerializable` to overcome this limitation.
 
 `Defaults.AnySerializable` only available for `Value` which conforms to `Defaults.Serializable`.
+
+Warn: The type erasure should only be used when there's no other way to handle it. It has much worse performance.
 
 #### Primitive type
 
@@ -661,7 +663,7 @@ Defaults[any] = "🦄"
 
 ##### Using `get`, `set`
 
-For other types you will have to assign it like this.
+For other types, you will have to assign it like this.
 
 ```swift
 enum mime: String, Defaults.Serializable {
@@ -669,32 +671,13 @@ enum mime: String, Defaults.Serializable {
 	case STREAM = "application/octet-stream"
 }
 
-let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: Defaults.AnySerializable(mime.JSON))
+let any = Defaults.Key<[Defaults.AnySerializable]>("anyKey", default: [Defaults.AnySerializable(mime.JSON)])
 
-Defaults[any].set(mime.STREAM)
-if let mimeType: mime = Defaults[any].get() {
+if let mimeType: mime = Defaults[any][0].get() {
 	print(mimeType.rawValue) //=> "application/json"
 }
-```
-
-##### Convenience subscription
-
-`Defaults` also provide an convenience subscription for `Defaults.Key<Defaults.AnySerializable>`
-By default, `Defaults[any]` will return `Defaults.AnySerializable`.
-With these subscription we can get the internal `value` with `Defaults[any]`.
-
-```swift
-enum mime: String, Defaults.Serializable {
-	case JSON = "application/json"
-	case STREAM = "application/octet-stream"
-}
-
-let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: Defaults.AnySerializable(mime.JSON))
-
-Defaults[any] = mime.STREAM
-if let mimeType: mime = Defaults[any] {
-	XCTAssertEqual(mimeType, mime.STREAM)
-}
+Defaults[any].append(123)
+print(Defaults[any][1].get(Int.self)) //=> 123
 ```
 
 #### Wrapped in `Array`, `Set`, `Dictionary`
@@ -744,7 +727,7 @@ struct Bag<Element: Defaults.Serializable>: Collection {
 	mutating func insert(element: Element, at: Int) {
 		items.insert(element, at: at)
 	}
-P
+
 	func index(after index: Int) -> Int {
 		items.index(after: index)
 	}

@@ -299,16 +299,16 @@ extension Defaults {
 }
 
 extension Defaults {
-  public struct AnyBridge: Defaults.Bridge {
-    public typealias Value = Defaults.AnySerializable
-    public typealias Serializable = Any
+	public struct AnyBridge: Defaults.Bridge {
+		public typealias Value = Defaults.AnySerializable
+		public typealias Serializable = Any
 
-    public func deserialize(_ object: Serializable?) -> Value? {
-      Value(value: object)
+		public func deserialize(_ object: Serializable?) -> Value? {
+			Value(value: object)
     }
 
-    public func serialize(_ value: Value?) -> Serializable? {
-      value?.value
-    }
-  }
+		public func serialize(_ value: Value?) -> Serializable? {
+			value?.value
+		}
+	}
 }
