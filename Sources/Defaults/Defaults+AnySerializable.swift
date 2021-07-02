@@ -12,16 +12,16 @@ extension Defaults {
 	/**
 	Type-erased wrappers for `Defaults.Serializable` values.
 	It can be used when the user wants to create an `Any` value that conforms to `Defaults.Serializable`.
-	It will have an internal property `value` which` should always be a UserDefaults native supported type.
+	It will have an internal property `value` which` should always be a UserDefaults natively supported type.
 
-	`get` will deserialize internal value to the type user explicit in the function parameter.
+	`get` will deserialize internal value to the type that user explicit in the function parameter.
 
 	```
 	let any = Defaults.Key<Defaults.AnySerializable>("independentAnyKey", default: 121_314)
 	print(Defaults[any].get(Int.self)) //=> 121_314
 	```
 
-	- Note: the only way to assign a non-serializable value is using `ExpressibleByArrayLiteral` or `ExpressibleByDictionaryLiteral` to assign a type which is not UserDefaults native supported type.
+	- Note: the only way to assign a non-serializable value is using `ExpressibleByArrayLiteral` or `ExpressibleByDictionaryLiteral` to assign a type that is not UserDefaults natively supported type.
 
 	```
 	private enum mime: String, Defaults.Serializable {

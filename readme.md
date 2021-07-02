@@ -400,7 +400,7 @@ Type: `class`
 Type-erased wrappers for `Defaults.Serializable` values.
 
 - `get<Value: Defaults.Serializable>() -> Value?`: Retrieve the value which type is `Value` from the UserDefaults.
-- `get<Value: Defaults.Serializable>(_: Value.Type) -> Value?`: Specific the `Value` you want to retrieve, is useful in some ambiguous cases. 
+- `get<Value: Defaults.Serializable>(_: Value.Type) -> Value?`: Specific the `Value` that you want to retrieve, this will be useful in some ambiguous cases. 
 - `set<Value: Defaults.Serializable>(_ newValue: Value)`: Set newValue into `Defaults.AnySerializable`.
 
 #### `Defaults.reset(keys…)`
