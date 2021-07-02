@@ -646,7 +646,7 @@ But `Defaults` need its value to conform to `Defaults.Serializable`, so here is 
 
 `Defaults.AnySerializable` only available for `Value` which conforms to `Defaults.Serializable`.
 
-Warn: The type erasure should only be used when there's no other way to handle it. It has much worse performance.
+Warn: The type erasure should only be used when there's no other way to handle it because it has much worse performance. It should only be used in wrapped types. For example, wrapped in `Array`, `Set` or `Dictionary`.
 
 #### Primitive type
 
