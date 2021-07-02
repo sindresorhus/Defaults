@@ -305,7 +305,7 @@ extension Defaults {
 
 		public func deserialize(_ object: Serializable?) -> Value? {
 			Value(value: object)
-    }
+		}
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			value?.value
