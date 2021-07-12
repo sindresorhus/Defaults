@@ -426,6 +426,20 @@ It has two associated types `Value` and `Serializable`.
 - `serialize`: Executed before storing to the `UserDefaults` .
 - `deserialize`: Executed after retrieving its value from the `UserDefaults`.
 
+#### `Defaults.AnySerializable`
+
+```swift
+Defaults.AnySerializable<Value: Defaults.Serializable>(_ value: Value)
+```
+
+Type: `class`
+
+Type-erased wrappers for `Defaults.Serializable` values.
+
+- `get<Value: Defaults.Serializable>() -> Value?`: Retrieve the value which type is `Value` from the UserDefaults.
+- `get<Value: Defaults.Serializable>(_: Value.Type) -> Value?`: Specific the `Value` that you want to retrieve, this will be useful in some ambiguous cases. 
+- `set<Value: Defaults.Serializable>(_ newValue: Value)`: Set newValue into `Defaults.AnySerializable`.
+
 #### `Defaults.reset(keys…)`
 
 Type: `func`
@@ -662,6 +676,82 @@ Defaults[.setUser].first?.name //=> "Hello"
 Defaults[.dictionaryUser]["user"]?.name //=> "Hello"
 ```
 
+### Dynamic value
+
+There might be situations where you want to use `[String: Any]` directly.
+But `Defaults` need its value to conform to `Defaults.Serializable`, so here is a class `Defaults.AnySerializable` to overcome this limitation.
+
+`Defaults.AnySerializable` only available for `Value` which conforms to `Defaults.Serializable`.
+
+Warn: The type erasure should only be used when there's no other way to handle it because it has much worse performance. It should only be used in wrapped types. For example, wrapped in `Array`, `Set` or `Dictionary`.
+
+#### Primitive type
+
+`Defaults.AnySerializable` conforms to `ExpressibleByStringLiteral`, `ExpressibleByIntegerLiteral`, `ExpressibleByFloatLiteral`, `ExpressibleByBooleanLiteral`, `ExpressibleByNilLiteral`, `ExpressibleByArrayLiteral` and `ExpressibleByDictionaryLiteral`.
+
+So it can assign directly with these primitive types.
+
+```swift
+let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: 1)
+Defaults[any] = "🦄"
+```
+
+#### Other types
+
+##### Using `get`, `set`
+
+For other types, you will have to assign it like this.
+
+```swift
+enum mime: String, Defaults.Serializable {
+	case JSON = "application/json"
+	case STREAM = "application/octet-stream"
+}
+
+let any = Defaults.Key<Defaults.AnySerializable>("anyKey", default: [Defaults.AnySerializable(mime.JSON)])
+
+if let mimeType: mime = Defaults[any].get() {
+	print(mimeType.rawValue) //=> "application/json"
+}
+Defaults[any].set(mime.STREAM)
+if let mimeType: mime = Defaults[any].get() {
+	print(mimeType.rawValue) //=> "application/octet-stream"
+}
+```
+
+#### Wrapped in `Array`, `Set`, `Dictionary`
+
+`Defaults.AnySerializable` also support the above types wrapped in `Array`, `Set`, `Dictionary`
+Here is the example for `[String: Defaults.AnySerializable]`.
+
+```swift
+extension Defaults.Keys {
+	static let magic = Key<[String: Defaults.AnySerializable]>("magic", default: [:])
+}
+
+enum mime: String, Defaults.Serializable {
+	case JSON = "application/json"
+}
+
+// …
+Defaults[.magic]["unicorn"] = "🦄"
+
+if let value: String = Defaults[.magic]["unicorn"]?.get() {
+	print(value)
+	//=> "🦄"
+}
+
+Defaults[.magic]["number"] = 3
+Defaults[.magic]["boolean"] = true
+Defaults[.magic]["enum"] = Defaults.AnySerializable(mime.JSON)
+if let mimeType: mime = Defaults[.magic]["enum"]?.get() {
+	print(mimeType.rawValue)
+	//=> "application/json"
+}
+```
+
+For more examples, see [Tests/DefaultsAnySerializableTests](./Tests/DefaultsTests/DefaultsAnySeriliazableTests.swift).
+
 ### Custom `Collection` type
 
 1. Create your `Collection` and make its elements conform to `Defaults.Serializable`.
@@ -796,34 +886,6 @@ Defaults[.stringSet].contains("World!") //=> true
 
 After `Defaults` v5, you don't need to use `Codable` to store dictionary, `Defaults` supports storing dictionary natively.
 For `Defaults` support types, see [Support types](#support-types).
-
-There might be situations where you want to use `[String: Any]` directly.
-Unfortunately, since `Any` can not conform to `Defaults.Serializable`, `Defaults` can not support it.
-
-However, you can use the [`AnyCodable`](https://github.com/Flight-School/AnyCodable) package to work around this `Defaults.Serializable` limitation:
-
-```swift
-import AnyCodable
-
-/// Important: Let AnyCodable conforms to Defaults.Serializable
-extension AnyCodable: Defaults.Serializable {}
-
-extension Defaults.Keys {
-	static let magic = Key<[String: AnyCodable]>("magic", default: [:])
-}
-
-// …
-
-Defaults[.magic]["unicorn"] = "🦄"
-
-if let value = Defaults[.magic]["unicorn"]?.value {
-	print(value)
-	//=> "🦄"
-}
-
-Defaults[.magic]["number"] = 3
-Defaults[.magic]["boolean"] = true
-```
 
 ### How is this different from [`SwiftyUserDefaults`](https://github.com/radex/SwiftyUserDefaults)?
 
