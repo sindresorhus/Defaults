@@ -3,18 +3,22 @@ import Foundation
 
 extension Defaults {
 	/**
-	Type-erased wrappers for `Defaults.Serializable` values.
-	It can be used when the user wants to create an `Any` value that conforms to `Defaults.Serializable`.
-	It will have an internal property `value` which` should always be a UserDefaults natively supported type.
+	Type-erased wrapper for `Defaults.Serializable` values.
 
-	`get` will deserialize internal value to the type that user explicit in the function parameter.
+	It can be useful when you need to create an `Any` value that conforms to `Defaults.Serializable`.
+
+	It will have an internal property `value` which should always be a `UserDefaults` natively supported type.
+
+	`get` will deserialize the internal value to the type that user specify in the function parameter.
 
 	```
 	let any = Defaults.Key<Defaults.AnySerializable>("independentAnyKey", default: 121_314)
-	print(Defaults[any].get(Int.self)) //=> 121_314
+
+	print(Defaults[any].get(Int.self))
+	//=> 121_314
 	```
 
-	- Note: the only way to assign a non-serializable value is using `ExpressibleByArrayLiteral` or `ExpressibleByDictionaryLiteral` to assign a type that is not UserDefaults natively supported type.
+	- Note: The only way to assign a non-serializable value is using `ExpressibleByArrayLiteral` or `ExpressibleByDictionaryLiteral` to assign a type that is not a `UserDefaults` natively supported type.
 
 	```
 	private enum mime: String, Defaults.Serializable {
@@ -25,7 +29,7 @@ extension Defaults {
 	let any = Defaults.Key<Defaults.AnySerializable>("independentAnyKey", default: [mime.JSON])
 	```
 	*/
-	public struct AnySerializable: Defaults.Serializable {
+	public struct AnySerializable: Serializable {
 		var value: Any
 		public static let bridge = AnyBridge()
 
@@ -99,7 +103,7 @@ extension Defaults.AnySerializable: Hashable {
 }
 
 extension Defaults.AnySerializable: Equatable {
-	public static func == (lhs: Defaults.AnySerializable, rhs: Defaults.AnySerializable) -> Bool {
+	public static func == (lhs: Self, rhs: Self) -> Bool {
 		switch (lhs.value, rhs.value) {
 		case let (lhs as Data, rhs as Data):
 			return lhs == rhs
@@ -188,7 +192,7 @@ extension Defaults.AnySerializable: ExpressibleByDictionaryLiteral {
 }
 
 extension Defaults.AnySerializable: _DefaultsOptionalType {
-	/// Since nil cannot assign to `Any`, we use `Void` instead of `nil`.
+	// Since `nil` cannot be assigned to `Any`, we use `Void` instead of `nil`.
 	public var isNil: Bool { value is Void }
 }
 
