@@ -8,7 +8,7 @@ It uses `NSUserDefaults` underneath but exposes a type-safe facade with lots of 
 
 It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gifski), [Dato](https://sindresorhus.com/dato), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter).
 
-For a real-world example, see my [Plash app](https://github.com/sindresorhus/Plash/blob/533dbc888d8ba3bd9581e60320af282a22c53f85/Plash/Constants.swift#L9-L18).
+For a real-world example, see the [Plash app](https://github.com/sindresorhus/Plash/blob/533dbc888d8ba3bd9581e60320af282a22c53f85/Plash/Constants.swift#L9-L18).
 
 ## Highlights
 
@@ -27,6 +27,35 @@ For a real-world example, see my [Plash app](https://github.com/sindresorhus/Pla
 - iOS 10+
 - tvOS 10+
 - watchOS 3+
+
+<br>
+
+---
+
+<div align="center">
+	<p>
+		<p>
+			<sup>
+				<a href="https://github.com/sponsors/sindresorhus">Sindre‘s open source work is supported by the community</a>
+			</sup>
+		</p>
+		<sup>Special thanks to:</sup>
+		<br>
+		<br>
+		<a href="https://keygen.sh">
+			<div>
+				<img src="https://sindresorhus.com/assets/thanks/keygen-logo.svg" width="210" alt="Keygen">
+			</div>
+			<b>A dead-simple software licensing and distribution API built for developers</b>
+		</a>
+		<br>
+		<br>
+	</p>
+</div>
+
+---
+
+<br>
 
 ## Migration Guides
 
