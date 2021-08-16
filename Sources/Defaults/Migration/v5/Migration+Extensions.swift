@@ -9,6 +9,7 @@ extension Defaults {
 extension Data: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Data: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -18,6 +19,7 @@ extension Data: Defaults.CodableType {
 extension Date: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Date: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -27,6 +29,7 @@ extension Date: Defaults.CodableType {
 extension Bool: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Bool: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -36,6 +39,7 @@ extension Bool: Defaults.CodableType {
 extension Int: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Int: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -45,6 +49,7 @@ extension Int: Defaults.CodableType {
 extension UInt: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension UInt: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -54,6 +59,7 @@ extension UInt: Defaults.CodableType {
 extension Double: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Double: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -63,6 +69,7 @@ extension Double: Defaults.CodableType {
 extension Float: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Float: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -72,6 +79,7 @@ extension Float: Defaults.CodableType {
 extension String: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension String: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -81,6 +89,7 @@ extension String: Defaults.CodableType {
 extension CGFloat: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension CGFloat: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -90,6 +99,7 @@ extension CGFloat: Defaults.CodableType {
 extension Int8: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Int8: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -99,6 +109,7 @@ extension Int8: Defaults.CodableType {
 extension UInt8: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension UInt8: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -108,6 +119,7 @@ extension UInt8: Defaults.CodableType {
 extension Int16: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Int16: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -117,6 +129,7 @@ extension Int16: Defaults.CodableType {
 extension UInt16: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension UInt16: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -126,6 +139,7 @@ extension UInt16: Defaults.CodableType {
 extension Int32: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Int32: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -135,6 +149,7 @@ extension Int32: Defaults.CodableType {
 extension UInt32: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension UInt32: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -144,6 +159,7 @@ extension UInt32: Defaults.CodableType {
 extension Int64: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension Int64: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -153,6 +169,7 @@ extension Int64: Defaults.CodableType {
 extension UInt64: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension UInt64: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -162,6 +179,7 @@ extension UInt64: Defaults.CodableType {
 extension URL: Defaults.NativeType {
 	public typealias CodableForm = Self
 }
+
 extension URL: Defaults.CodableType {
 	public typealias NativeForm = Self
 
@@ -182,7 +200,7 @@ extension Defaults.SetAlgebraSerializable where Self: Defaults.NativeType, Eleme
 
 extension Defaults.CodableType where Self: RawRepresentable, NativeForm: RawRepresentable, RawValue == NativeForm.RawValue {
 	public func toNative() -> NativeForm {
-		NativeForm(rawValue: self.rawValue)!
+		NativeForm(rawValue: rawValue)!
 	}
 }
 
@@ -193,6 +211,7 @@ extension Set: Defaults.NativeType where Element: Defaults.NativeType {
 extension Array: Defaults.NativeType where Element: Defaults.NativeType {
 	public typealias CodableForm = [Element.CodableForm]
 }
+
 extension Array: Defaults.CodableType where Element: Defaults.CodableType {
 	public typealias NativeForm = [Element.NativeForm]
 
@@ -204,6 +223,7 @@ extension Array: Defaults.CodableType where Element: Defaults.CodableType {
 extension Dictionary: Defaults.NativeType where Key: LosslessStringConvertible & Hashable, Value: Defaults.NativeType {
 	public typealias CodableForm = [String: Value.CodableForm]
 }
+
 extension Dictionary: Defaults.CodableType where Key == String, Value: Defaults.CodableType {
 	public typealias NativeForm = [String: Value.NativeForm]
 

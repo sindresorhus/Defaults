@@ -159,23 +159,20 @@ extension SetForm {
 		Self(store.union(other.store))
 	}
 
-	func intersection(_ other: Self)
-		-> Self {
+	func intersection(_ other: Self) -> Self {
 		var setForm = Self()
 		setForm.store = store.intersection(other.store)
 		return setForm
 	}
 
-	func symmetricDifference(_ other: Self)
-		-> Self {
+	func symmetricDifference(_ other: Self) -> Self {
 		var setForm = Self()
 		setForm.store = store.symmetricDifference(other.store)
 		return setForm
 	}
 
 	@discardableResult
-	mutating func insert(_ newMember: Element)
-		-> (inserted: Bool, memberAfterInsert: Element) {
+	mutating func insert(_ newMember: Element) -> (inserted: Bool, memberAfterInsert: Element) {
 		store.insert(newMember)
 	}
 
@@ -208,7 +205,7 @@ private struct MySet<Element: Defaults.NativeType & Hashable>: SetForm, Defaults
 	var store: Set<Element>
 
 	init() {
-		store = []
+		self.store = []
 	}
 
 	init(_ elements: [Element]) {
@@ -220,7 +217,7 @@ private struct CodableSet<Element: Defaults.Serializable & Codable & Hashable>: 
 	var store: Set<Element>
 
 	init() {
-		store = []
+		self.store = []
 	}
 
 	init(_ elements: [Element]) {

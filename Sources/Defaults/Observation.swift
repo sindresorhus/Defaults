@@ -350,4 +350,4 @@ extension Defaults.ObservationOptions {
 	}
 }
 
-extension Defaults.KeyChange: Equatable where Value: Equatable { }
+extension Defaults.KeyChange: Equatable where Value: Equatable {}

@@ -53,7 +53,7 @@ public enum Defaults {
 			}
 
 			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
-			suite.register(defaults: [self.name: serialized])
+			suite.register(defaults: [name: serialized])
 		}
 	}
 

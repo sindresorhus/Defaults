@@ -23,23 +23,20 @@ struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: SetAlgebra
 		DefaultsSetAlgebra(store.union(other.store))
 	}
 
-	func intersection(_ other: DefaultsSetAlgebra)
-		-> DefaultsSetAlgebra {
+	func intersection(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
 		var defaultsSetAlgebra = DefaultsSetAlgebra()
 		defaultsSetAlgebra.store = store.intersection(other.store)
 		return defaultsSetAlgebra
 	}
 
-	func symmetricDifference(_ other: DefaultsSetAlgebra)
-		-> DefaultsSetAlgebra {
+	func symmetricDifference(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
 		var defaultedSetAlgebra = DefaultsSetAlgebra()
 		defaultedSetAlgebra.store = store.symmetricDifference(other.store)
 		return defaultedSetAlgebra
 	}
 
 	@discardableResult
-	mutating func insert(_ newMember: Element)
-		-> (inserted: Bool, memberAfterInsert: Element) {
+	mutating func insert(_ newMember: Element) -> (inserted: Bool, memberAfterInsert: Element) {
 		store.insert(newMember)
 	}
 

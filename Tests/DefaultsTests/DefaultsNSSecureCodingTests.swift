@@ -25,8 +25,7 @@ private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults
 }
 
 // NSSecureCoding
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
-private let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
+@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) private let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
 
 @available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 extension Defaults.Keys {
@@ -440,7 +439,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		var observation: Defaults.Observation!
 		observation = Defaults.observe(key, options: []) { change in
 			XCTAssertEqual(change.oldValue[0].value, persistentHistoryValue.value)
-			XCTAssertEqual(change.newValue.map { $0.value }, [persistentHistoryValue, newPersistentHistory].map { $0.value })
+			XCTAssertEqual(change.newValue.map(\.value), [persistentHistoryValue, newPersistentHistory].map(\.value))
 			observation.invalidate()
 			expect.fulfill()
 		}
