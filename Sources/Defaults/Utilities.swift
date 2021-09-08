@@ -130,10 +130,6 @@ extension Optional: _DefaultsOptionalType {
 	public var isNil: Bool { self == nil }
 }
 
-func isOptionalType<T>(_ type: T.Type) -> Bool {
-	type is _DefaultsOptionalType.Type
-}
-
 
 extension DispatchQueue {
 	/**
