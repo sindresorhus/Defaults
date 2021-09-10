@@ -46,6 +46,13 @@ extension Defaults {
 	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {}
 }
 
+/**
+This exists to avoid compiler ambiguity.
+*/
+extension Defaults {
+	public struct CodableNSSecureCodingBridge<Value: Codable & NSSecureCoding>: CodableBridge {}
+}
+
 extension Defaults {
 	public struct URLBridge: CodableBridge {
 		public typealias Value = URL
