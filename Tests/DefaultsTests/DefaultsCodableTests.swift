@@ -8,6 +8,19 @@ private struct Unicorn: Codable, Defaults.Serializable {
 
 private let fixtureCodable = Unicorn(isUnicorn: true)
 
+@objc(UnicornCodableAndNSSecureCoding)
+private final class UnicornCodableAndNSSecureCoding: NSObject, NSSecureCoding, Codable, Defaults.Serializable {
+	static let supportsSecureCoding = true
+
+	func encode(with coder: NSCoder) {}
+
+	init?(coder: NSCoder) {}
+
+	override init() {
+		super.init()
+	}
+}
+
 extension Defaults.Keys {
 	fileprivate static let codable = Key<Unicorn>("codable", default: fixtureCodable)
 	fileprivate static let codableArray = Key<[Unicorn]>("codable", default: [fixtureCodable])
@@ -118,6 +131,11 @@ final class DefaultsCodableTests: XCTestCase {
 		XCTAssertTrue(Defaults[.codableDictionary]["0"]?.isUnicorn ?? false)
 		Defaults[.codableDictionary]["0"] = Unicorn(isUnicorn: false)
 		XCTAssertFalse(Defaults[.codableDictionary]["0"]?.isUnicorn ?? true)
+	}
+
+	func testCodableAndNSSecureCoding() {
+		let fixture = UnicornCodableAndNSSecureCoding()
+		_ = Defaults.Key<UnicornCodableAndNSSecureCoding>("testCodableAndNSSecureCoding", default: fixture)
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
