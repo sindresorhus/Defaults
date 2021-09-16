@@ -118,7 +118,6 @@ extension Optional: Defaults.Serializable where Wrapped: Defaults.Serializable {
 }
 
 extension Defaults.CollectionSerializable where Element: Defaults.Serializable {
-	public static var isCollectionType: Bool { true }
 	public static var bridge: Defaults.CollectionBridge<Self> { Defaults.CollectionBridge() }
 }
 

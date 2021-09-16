@@ -42,6 +42,7 @@ public enum Defaults {
 		/// The `default` parameter can be left out if the `Value` type is an optional.
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard, usingCodable: Bool = true) {
 			self.defaultValue = defaultValue
+
 			super.init(name: key, suite: suite)
 
 			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
