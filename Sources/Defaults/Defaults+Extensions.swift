@@ -10,6 +10,16 @@ extension Defaults.Serializable {
 	public static var isNativelySupportedType: Bool { false }
 }
 
+extension Defaults.Bridge {
+	public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
+		serialize(value)
+	}
+
+	public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
+		deserialize(object)
+	}
+}
+
 extension Data: Defaults.Serializable {
 	public static let isNativelySupportedType = true
 }
@@ -79,23 +89,23 @@ extension UInt64: Defaults.Serializable {
 }
 
 extension URL: Defaults.Serializable {
-	public static let bridge = Defaults.URLBridge()
+	public static var bridge: Defaults.TopLevelCodableBridge<URL> { Defaults.TopLevelCodableBridge() }
 }
 
 extension Defaults.Serializable where Self: Codable {
 	public static var bridge: Defaults.TopLevelCodableBridge<Self> { Defaults.TopLevelCodableBridge() }
 }
 
+extension Defaults.Serializable where Self: RawRepresentable & Codable {
+	public static var bridge: Defaults.AmbiguousCodableBrigde<Self, Defaults.RawRepresentableBridge<Self>> { Defaults.AmbiguousCodableBrigde(bridge: Defaults.RawRepresentableBridge()) }
+}
+
 extension Defaults.Serializable where Self: Codable & NSSecureCoding {
-	public static var bridge: Defaults.CodableNSSecureCodingBridge<Self> { Defaults.CodableNSSecureCodingBridge() }
+	public static var bridge: Defaults.AmbiguousCodableBrigde<Self, Defaults.NSSecureCodingBridge<Self>> { Defaults.AmbiguousCodableBrigde(bridge: Defaults.NSSecureCodingBridge()) }
 }
 
 extension Defaults.Serializable where Self: RawRepresentable {
 	public static var bridge: Defaults.RawRepresentableBridge<Self> { Defaults.RawRepresentableBridge() }
-}
-
-extension Defaults.Serializable where Self: RawRepresentable & Codable {
-	public static var bridge: Defaults.RawRepresentableCodableBridge<Self> { Defaults.RawRepresentableCodableBridge() }
 }
 
 extension Defaults.Serializable where Self: NSSecureCoding {
@@ -108,6 +118,7 @@ extension Optional: Defaults.Serializable where Wrapped: Defaults.Serializable {
 }
 
 extension Defaults.CollectionSerializable where Element: Defaults.Serializable {
+	public static var isCollectionType: Bool { true }
 	public static var bridge: Defaults.CollectionBridge<Self> { Defaults.CollectionBridge() }
 }
 

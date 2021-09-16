@@ -20,7 +20,6 @@ public enum Defaults {
 	public typealias CollectionSerializable = DefaultsCollectionSerializable
 	public typealias SetAlgebraSerializable = DefaultsSetAlgebraSerializable
 	public typealias Bridge = DefaultsBridge
-	typealias CodableBridge = DefaultsCodableBridge
 
 	public class Keys: BaseKey {
 		public typealias Key = Defaults.Key
@@ -36,12 +35,13 @@ public enum Defaults {
 
 	public final class Key<Value: Serializable>: AnyKey {
 		public let defaultValue: Value
+		/// A flag to determine whether CodableBridge is a first-class serializator
+		var usingCodable = true
 
 		/// Create a defaults key.
 		/// The `default` parameter can be left out if the `Value` type is an optional.
-		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard, usingCodable: Bool = true) {
 			self.defaultValue = defaultValue
-
 			super.init(name: key, suite: suite)
 
 			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
@@ -55,9 +55,35 @@ public enum Defaults {
 			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
 			suite.register(defaults: [name: serialized])
 		}
+
+		/// When Value conforms to `Codable` we should use `toCodableSerializable` to serialize it.
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard, usingCodable: Bool = true) where Value: Codable {
+			self.defaultValue = defaultValue
+			self.usingCodable = usingCodable
+
+			super.init(name: key, suite: suite)
+
+			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
+				return
+			}
+
+			guard let serialized = Value.toCodableSerializable(defaultValue, usingCodable: self.usingCodable) else {
+				return
+			}
+
+			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
+			suite.register(defaults: [name: serialized])
+		}
 	}
 
 	public static subscript<Value: Serializable>(key: Key<Value>) -> Value {
+		get { key.suite[key] }
+		set {
+			key.suite[key] = newValue
+		}
+	}
+
+	public static subscript<Value: Serializable & Codable>(key: Key<Value>) -> Value {
 		get { key.suite[key] }
 		set {
 			key.suite[key] = newValue
@@ -77,7 +103,11 @@ extension Defaults {
 }
 
 extension Defaults.Key {
-	public convenience init<T: Defaults.Serializable>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
+	public convenience init<T: Defaults.Serializable>(_ key: String, suite: UserDefaults = .standard, usingCodable: Bool = true) where Value == T? {
 		self.init(key, default: nil, suite: suite)
+	}
+
+	public convenience init<T: Defaults.Serializable & Codable>(_ key: String, suite: UserDefaults = .standard, usingCodable: Bool = true) where Value == T? {
+		self.init(key, default: nil, suite: suite, usingCodable: usingCodable)
 	}
 }

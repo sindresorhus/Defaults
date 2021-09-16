@@ -8,6 +8,11 @@ private enum FixtureCodableEnum: String, Defaults.Serializable & Codable & Hasha
 	case oneHour = "1 Hour"
 }
 
+private enum Foo: Int, CaseIterable, Codable, Defaults.Serializable {
+	case zero
+	case one
+}
+
 extension Defaults.Keys {
 	fileprivate static let codableEnum = Key<FixtureCodableEnum>("codable_enum", default: .oneHour)
 	fileprivate static let codableEnumArray = Key<[FixtureCodableEnum]>("codable_enum", default: [.oneHour])
@@ -116,6 +121,26 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		Defaults[.codableEnumDictionary]["1"] = .halfHour
 		XCTAssertEqual(Defaults[.codableEnumDictionary]["0"], .oneHour)
 		XCTAssertEqual(Defaults[.codableEnumDictionary]["1"], .halfHour)
+	}
+
+	func testCodableEnumWithUsingCodable() {
+		let fixture = Foo.zero
+		let keyName = "testCodableEnumWithUsingCodable"
+		let key = Defaults.Key<Foo>(keyName, default: fixture, usingCodable: true)
+		XCTAssertNotNil(UserDefaults.standard.string(forKey: keyName))
+		let next = Foo.one
+		Defaults[key] = next
+		XCTAssertEqual(Defaults[key], next)
+	}
+
+	func testCodableEnumWithoutUsingCodable() {
+		let fixture = Foo.zero
+		let keyName = "testCodableEnumWithoutUsingCodable"
+		let key = Defaults.Key<Foo>(keyName, default: fixture, usingCodable: false)
+		XCTAssertNotNil(UserDefaults.standard.integer(forKey: keyName))
+		let next = Foo.one
+		Defaults[key] = next
+		XCTAssertEqual(Defaults[key], next)
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)

@@ -5,57 +5,92 @@ import AppKit
 import UIKit
 #endif
 
-extension Defaults.CodableBridge {
-	public func serialize(_ value: Value?) -> Serializable? {
-		guard let value = value else {
-			return nil
+extension Defaults {
+	public struct TopLevelCodableBridge<Value: Serializable & Codable>: Bridge {
+		public typealias Serializable = String
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let value = value else {
+				return nil
+			}
+
+			do {
+				// Some codable values like URL and enum are encoded as a top-level
+				// string which JSON can't handle, so we need to wrap it in an array
+				// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
+				let data = try JSONEncoder().encode([value])
+				return String(String(data: data, encoding: .utf8)!.dropFirst().dropLast())
+			} catch {
+				print(error)
+				return nil
+			}
 		}
 
-		do {
-			// Some codable values like URL and enum are encoded as a top-level
-			// string which JSON can't handle, so we need to wrap it in an array
-			// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
-			let data = try JSONEncoder().encode([value])
-			return String(String(data: data, encoding: .utf8)!.dropFirst().dropLast())
-		} catch {
-			print(error)
-			return nil
+		public func deserialize(_ object: Serializable?) -> Value? {
+			guard let jsonString = object else {
+				return nil
+			}
+
+			return [Value].init(jsonString: "[\(jsonString)]")?.first
 		}
 	}
+}
 
-	public func deserialize(_ object: Serializable?) -> Value? {
-		guard let jsonString = object else {
-			return nil
+extension Defaults {
+	/**
+	An ambiguous bridge for `Value` that conforms to `Codable`
+
+	Unlike the others bridge, ambiguous bridge will have two kinds of serialization.
+	if `usingCodable` is true means the user chooses the `Codable` serialization, otherwise we will use another serialization.
+	*/
+	public struct AmbiguousCodableBrigde<Value: Serializable & Codable, B: Bridge>: Bridge {
+		public typealias Serializable = Any
+		private let bridge: B
+
+		init(bridge: B) {
+			self.bridge = bridge
 		}
 
-		return [Value].init(jsonString: "[\(jsonString)]")?.first
-	}
-}
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let value = value as? B.Value else {
+				return nil
+			}
 
-/**
-Any `Value` that conforms to `Codable` and `Defaults.Serializable` will use `CodableBridge` to do the serialization and deserialization.
-*/
-extension Defaults {
-	public struct TopLevelCodableBridge<Value: Codable>: CodableBridge {}
-}
+			return bridge.serialize(value)
+		}
 
-/**
-`RawRepresentableCodableBridge` is needed because, for example, with `enum SomeEnum: String, Codable, Defaults.Serializable`, the compiler will be confused between `RawRepresentableBridge` and `TopLevelCodableBridge`.
-*/
-extension Defaults {
-	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {}
-}
+		public func deserialize(_ object: Serializable?) -> Value? {
+			guard let object = object as? B.Serializable else {
+				return nil
+			}
 
-/**
-This exists to avoid compiler ambiguity.
-*/
-extension Defaults {
-	public struct CodableNSSecureCodingBridge<Value: Codable & NSSecureCoding>: CodableBridge {}
-}
+			return bridge.deserialize(object) as? Value
+		}
 
-extension Defaults {
-	public struct URLBridge: CodableBridge {
-		public typealias Value = URL
+		public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
+			guard let value = value else {
+				return nil
+			}
+			if usingCodable {
+				return TopLevelCodableBridge().serialize(value)
+			}
+
+			return serialize(value)
+		}
+
+		public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
+			guard let object = object else {
+				return nil
+			}
+			if usingCodable {
+				guard let jsonString = object as? String else {
+					return nil
+				}
+				return TopLevelCodableBridge().deserialize(jsonString)
+			}
+
+			return deserialize(object)
+		}
 	}
 }
 
@@ -121,11 +156,19 @@ extension Defaults {
 		public typealias Serializable = Wrapped.Serializable
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			Wrapped.bridge.serialize(value)
+			serialize(value, usingCodable: false)
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			Wrapped.bridge.deserialize(object)
+			deserialize(object, usingCodable: false)
+		}
+
+		public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
+			Wrapped.bridge.serialize(value, usingCodable: usingCodable)
+		}
+
+		public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
+			Wrapped.bridge.deserialize(object, usingCodable: usingCodable)
 		}
 	}
 }
@@ -136,19 +179,27 @@ extension Defaults {
 		public typealias Serializable = [Element.Serializable]
 
 		public func serialize(_ value: Value?) -> Serializable? {
+			serialize(value, usingCodable: false)
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			deserialize(object, usingCodable: false)
+		}
+
+		public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
 			guard let array = value as? [Element.Value] else {
 				return nil
 			}
 
-			return array.map { Element.bridge.serialize($0) }.compact()
+			return array.map { Element.bridge.serialize($0, usingCodable: usingCodable) }.compact()
 		}
 
-		public func deserialize(_ object: Serializable?) -> Value? {
+		public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
 			guard let array = object else {
 				return nil
 			}
 
-			return array.map { Element.bridge.deserialize($0) }.compact() as? Value
+			return array.map { Element.bridge.deserialize($0, usingCodable: usingCodable) }.compact() as? Value
 		}
 	}
 }
@@ -159,17 +210,25 @@ extension Defaults {
 		public typealias Serializable = [String: Element.Serializable]
 
 		public func serialize(_ value: Value?) -> Serializable? {
+			serialize(value, usingCodable: false)
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			deserialize(object, usingCodable: false)
+		}
+
+		public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
 			guard let dictionary = value else {
 				return nil
 			}
 
 			// `Key` which stored in `UserDefaults` have to be `String`
 			return dictionary.reduce(into: Serializable()) { memo, tuple in
-				memo[String(tuple.key)] = Element.bridge.serialize(tuple.value)
+				memo[String(tuple.key)] = Element.bridge.serialize(tuple.value, usingCodable: usingCodable)
 			}
 		}
 
-		public func deserialize(_ object: Serializable?) -> Value? {
+		public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
 			guard let dictionary = object else {
 				return nil
 			}
@@ -180,7 +239,7 @@ extension Defaults {
 					return
 				}
 
-				memo[key] = Element.bridge.deserialize(tuple.value)
+				memo[key] = Element.bridge.deserialize(tuple.value, usingCodable: usingCodable)
 			}
 		}
 	}
@@ -195,6 +254,14 @@ extension Defaults {
 		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
+			serialize(value, usingCodable: false)
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			deserialize(object, usingCodable: false)
+		}
+
+		public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
 			guard let set = value else {
 				return nil
 			}
@@ -203,10 +270,10 @@ extension Defaults {
 				return Array(set)
 			}
 
-			return set.map { Element.bridge.serialize($0 as? Element.Value) }.compact()
+			return set.map { Element.bridge.serialize($0 as? Element.Value, usingCodable: usingCodable) }.compact()
 		}
 
-		public func deserialize(_ object: Serializable?) -> Value? {
+		public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
 			if Element.isNativelySupportedType {
 				guard let array = object as? [Element] else {
 					return nil
@@ -217,7 +284,7 @@ extension Defaults {
 
 			guard
 				let array = object as? [Element.Serializable],
-				let elements = array.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+				let elements = array.map({ Element.bridge.deserialize($0, usingCodable: usingCodable) }).compact() as? [Element]
 			else {
 				return nil
 			}
@@ -234,6 +301,14 @@ extension Defaults {
 		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
+			serialize(value, usingCodable: false)
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			deserialize(object, usingCodable: false)
+		}
+
+		public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
 			guard let setAlgebra = value else {
 				return nil
 			}
@@ -242,10 +317,10 @@ extension Defaults {
 				return setAlgebra.toArray()
 			}
 
-			return setAlgebra.toArray().map { Element.bridge.serialize($0 as? Element.Value) }.compact()
+			return setAlgebra.toArray().map { Element.bridge.serialize($0 as? Element.Value, usingCodable: usingCodable) }.compact()
 		}
 
-		public func deserialize(_ object: Serializable?) -> Value? {
+		public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
 			if Element.isNativelySupportedType {
 				guard let array = object as? [Element] else {
 					return nil
@@ -256,7 +331,7 @@ extension Defaults {
 
 			guard
 				let array = object as? [Element.Serializable],
-				let elements = array.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+				let elements = array.map({ Element.bridge.deserialize($0, usingCodable: usingCodable) }).compact() as? [Element]
 			else {
 				return nil
 			}
@@ -273,6 +348,14 @@ extension Defaults {
 		public typealias Serializable = Any
 
 		public func serialize(_ value: Value?) -> Serializable? {
+			serialize(value, usingCodable: false)
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			deserialize(object, usingCodable: false)
+		}
+
+		public func serialize(_ value: Value?, usingCodable: Bool) -> Serializable? {
 			guard let collection = value else {
 				return nil
 			}
@@ -281,10 +364,10 @@ extension Defaults {
 				return Array(collection)
 			}
 
-			return collection.map { Element.bridge.serialize($0 as? Element.Value) }.compact()
+			return collection.map { Element.bridge.serialize($0 as? Element.Value, usingCodable: usingCodable) }.compact()
 		}
 
-		public func deserialize(_ object: Serializable?) -> Value? {
+		public func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value? {
 			if Element.isNativelySupportedType {
 				guard let array = object as? [Element] else {
 					return nil
@@ -295,7 +378,7 @@ extension Defaults {
 
 			guard
 				let array = object as? [Element.Serializable],
-				let elements = array.map({ Element.bridge.deserialize($0) }).compact() as? [Element]
+				let elements = array.map({ Element.bridge.deserialize($0, usingCodable: usingCodable) }).compact() as? [Element]
 			else {
 				return nil
 			}

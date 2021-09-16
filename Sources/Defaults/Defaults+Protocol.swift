@@ -86,6 +86,8 @@ public protocol DefaultsBridge {
 
 	func serialize(_ value: Value?) -> Serializable?
 	func deserialize(_ object: Serializable?) -> Value?
+	func serialize(_ value: Value?, usingCodable: Bool) -> Serializable?
+	func deserialize(_ object: Serializable?, usingCodable: Bool) -> Value?
 }
 
 public protocol DefaultsCollectionSerializable: Collection, Defaults.Serializable {
@@ -97,6 +99,3 @@ public protocol DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializabl
 	/// Since `SetAlgebra` protocol does not conform to `Sequence`, we cannot convert a `SetAlgebra` to an `Array` directly.
 	func toArray() -> [Element]
 }
-
-/// Convenience protocol for `Codable`.
-public protocol DefaultsCodableBridge: Defaults.Bridge where Serializable == String, Value: Codable {}

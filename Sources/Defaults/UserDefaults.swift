@@ -9,7 +9,15 @@ extension UserDefaults {
 		return Value.toValue(anyObject)
 	}
 
-	 func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
+	func _get<Value: Defaults.Serializable & Codable>(_ key: String, usingCodable: Bool) -> Value? {
+		guard let anyObject = object(forKey: key) else {
+			return nil
+		}
+
+		return Value.toCodableValue(anyObject, usingCodable: usingCodable)
+	}
+
+	func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
 		if (value as? _DefaultsOptionalType)?.isNil == true {
 			removeObject(forKey: key)
 			return
@@ -18,10 +26,26 @@ extension UserDefaults {
 		set(Value.toSerializable(value), forKey: key)
 	}
 
+	func _set<Value: Defaults.Serializable & Codable>(_ key: String, to value: Value, usingCodable: Bool) {
+		if (value as? _DefaultsOptionalType)?.isNil == true {
+			removeObject(forKey: key)
+			return
+		}
+
+		set(Value.toCodableSerializable(value, usingCodable: usingCodable), forKey: key)
+	}
+
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {
 		get { _get(key.name) ?? key.defaultValue }
 		set {
 			_set(key.name, to: newValue)
+		}
+	}
+
+	public subscript<Value: Defaults.Serializable & Codable>(key: Defaults.Key<Value>) -> Value {
+		get { _get(key.name, usingCodable: key.usingCodable) ?? key.defaultValue }
+		set {
+			_set(key.name, to: newValue, usingCodable: key.usingCodable)
 		}
 	}
 }

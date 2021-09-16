@@ -789,6 +789,26 @@ if let mimeType: mime = Defaults[.magic]["enum"]?.get() {
 
 For more examples, see [Tests/DefaultsAnySerializableTests](./Tests/DefaultsTests/DefaultsAnySeriliazableTests.swift).
 
+### Serialization for ambiguous `Codable` type
+
+Sometimes we might have some type that conforms to `Codable & NSSecureCoding` or a `Codable` enum.  
+By default, `Default` will serialize it into a JSON string.  
+If you still want to serialize it as a NSSecure data or a native enum. You can set `usingCodable` to false.  
+
+```swift
+enum mime: String, Defaults.Serializable, Codable {
+	case JSON = "application/json"
+}
+
+extension Defaults.Keys {
+	static let magic = Key<[String: Defaults.AnySerializable]>("magic", default: [:], usingCodable: false)
+}
+
+print(UserDefaults.standard.string(forKey: "magic")) //=> application/json
+```
+
+For more examples, see [Tests/DefaultsCodableTests](./Tests/DefaultsTests/DefaultsCodableTests.swift).
+
 ### Custom `Collection` type
 
 1. Create your `Collection` and make its elements conform to `Defaults.Serializable`.

@@ -48,6 +48,17 @@ extension Defaults {
 		return Value.toValue(value)
 	}
 
+	private static func deserialize<Value: Serializable & Codable>(_ value: Any?, to type: Value.Type, usingCodable: Bool) -> Value? {
+		guard
+			let value = value,
+			!(value is NSNull)
+		else {
+			return nil
+		}
+
+		return Value.toCodableValue(value, usingCodable: usingCodable)
+	}
+
 	struct BaseChange {
 		let kind: NSKeyValueChange
 		let indexes: IndexSet?
@@ -77,6 +88,14 @@ extension Defaults {
 			self.isPrior = change.isPrior
 			self.oldValue = deserialize(change.oldValue, to: Value.self) ?? defaultValue
 			self.newValue = deserialize(change.newValue, to: Value.self) ?? defaultValue
+		}
+
+		init(change: BaseChange, defaultValue: Value, usingCodable: Bool) where Value: Codable {
+			self.kind = change.kind
+			self.indexes = change.indexes
+			self.isPrior = change.isPrior
+			self.oldValue = deserialize(change.oldValue, to: Value.self, usingCodable: usingCodable) ?? defaultValue
+			self.newValue = deserialize(change.newValue, to: Value.self, usingCodable: usingCodable) ?? defaultValue
 		}
 	}
 
@@ -304,6 +323,19 @@ extension Defaults {
 		return observation
 	}
 
+	public static func observe<Value: Serializable & Codable>(
+		_ key: Key<Value>,
+		options: ObservationOptions = [.initial],
+		handler: @escaping (KeyChange<Value>) -> Void
+	) -> Observation {
+		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
+			handler(
+				KeyChange(change: change, defaultValue: key.defaultValue, usingCodable: key.usingCodable)
+			)
+		}
+		observation.start(options: options)
+		return observation
+	}
 
 	/**
 	Observe multiple keys of any type, but without any information about the changes.

@@ -11,12 +11,23 @@ private let fixtureCodable = Unicorn(isUnicorn: true)
 @objc(UnicornCodableAndNSSecureCoding)
 private final class UnicornCodableAndNSSecureCoding: NSObject, NSSecureCoding, Codable, Defaults.Serializable {
 	static let supportsSecureCoding = true
+	var name: String
 
-	func encode(with coder: NSCoder) {}
+	func encode(with coder: NSCoder) {
+		coder.encode(name, forKey: "name")
+	}
 
-	init?(coder: NSCoder) {}
+	init?(coder: NSCoder) {
+		name = coder.decodeObject(forKey: "name") as! String
+	}
 
 	override init() {
+		name = ""
+		super.init()
+	}
+
+	init(name: String) {
+		self.name = name
 		super.init()
 	}
 }
@@ -133,9 +144,35 @@ final class DefaultsCodableTests: XCTestCase {
 		XCTAssertFalse(Defaults[.codableDictionary]["0"]?.isUnicorn ?? true)
 	}
 
-	func testCodableAndNSSecureCoding() {
-		let fixture = UnicornCodableAndNSSecureCoding()
-		_ = Defaults.Key<UnicornCodableAndNSSecureCoding>("testCodableAndNSSecureCoding", default: fixture)
+	func testCodableAndNSSecureCodingWithUsingCodable() {
+		let fixture = UnicornCodableAndNSSecureCoding(name: "Unicorn")
+		let keyName = "testCodableAndNSSecureCodingWithUsingCodable"
+		let key = Defaults.Key<UnicornCodableAndNSSecureCoding>(keyName, default: fixture, usingCodable: true)
+		XCTAssertNotNil(UserDefaults.standard.string(forKey: keyName))
+		let next = "Unicorn!"
+		Defaults[key] = UnicornCodableAndNSSecureCoding(name: next)
+		XCTAssertEqual(Defaults[key].name, next)
+	}
+
+	func testOptionalCodableAndNSSecureCodingWithUsingCodable() {
+		let fixture = UnicornCodableAndNSSecureCoding(name: "Unicorn")
+		let keyName = "testCodableAndNSSecureCodingWithUsingCodable"
+		let key = Defaults.Key<UnicornCodableAndNSSecureCoding?>(keyName, usingCodable: true)
+		Defaults[key] = fixture
+		XCTAssertNotNil(UserDefaults.standard.string(forKey: keyName))
+		let next = "Unicorn!"
+		Defaults[key] = UnicornCodableAndNSSecureCoding(name: next)
+		XCTAssertEqual(Defaults[key]?.name, next)
+	}
+
+	func testCodableAndNSSecureCodingWithoutUsingCodable() {
+		let fixture = UnicornCodableAndNSSecureCoding(name: "Unicorn")
+		let keyName = "testCodableAndNSSecureCodingWithoutUsingCodable"
+		let key = Defaults.Key<UnicornCodableAndNSSecureCoding>(keyName, default: fixture, usingCodable: false)
+		XCTAssertNotNil(UserDefaults.standard.data(forKey: keyName))
+		let next = "Unicorn!"
+		Defaults[key] = UnicornCodableAndNSSecureCoding(name: next)
+		XCTAssertEqual(Defaults[key].name, next)
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
@@ -158,6 +195,58 @@ final class DefaultsCodableTests: XCTestCase {
 		}
 
 		Defaults[key] = Unicorn(isUnicorn: false)
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveKeyCodableAndNSSecureCodingWithUsingCodable() {
+		let key = Defaults.Key<UnicornCodableAndNSSecureCoding>("observeCodableAndNSSecureCodingWithUsingCodableKey", default: UnicornCodableAndNSSecureCoding(name: "Unicorn"), usingCodable: true)
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [])
+			.map { ($0.oldValue.name, $0.newValue.name) }
+			.collect(2)
+
+		let cancellable = publisher.sink { tuples in
+			for (index, expected) in [("Unicorn", "Unicorn!"), ("Unicorn!", "Unicorn")].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
+			}
+
+			expect.fulfill()
+		}
+
+		Defaults[key] = UnicornCodableAndNSSecureCoding(name: "Unicorn!")
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testObserveKeyCodableAndNSSecureCodingWithoutUsingCodable() {
+		let key = Defaults.Key<UnicornCodableAndNSSecureCoding>("observeCodableAndNSSecureCodingWithoutUsingCodableKey", default: UnicornCodableAndNSSecureCoding(name: "Unicorn"), usingCodable: false)
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [])
+			.map { ($0.oldValue.name, $0.newValue.name) }
+			.collect(2)
+
+		let cancellable = publisher.sink { tuples in
+			for (index, expected) in [("Unicorn", "Unicorn!"), ("Unicorn!", "Unicorn")].enumerated() {
+				XCTAssertEqual(expected.0, tuples[index].0)
+				XCTAssertEqual(expected.1, tuples[index].1)
+			}
+
+			expect.fulfill()
+		}
+
+		Defaults[key] = UnicornCodableAndNSSecureCoding(name: "Unicorn!")
 		Defaults.reset(key)
 		cancellable.cancel()
 
@@ -257,6 +346,42 @@ final class DefaultsCodableTests: XCTestCase {
 		}
 
 		Defaults[key] = Unicorn(isUnicorn: false)
+		observation.invalidate()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	func testObserveCodableAndNSSecureCodingWithUsingCodableKey() {
+		let key = Defaults.Key<UnicornCodableAndNSSecureCoding>("observeCodableAndNSSecureCodingWithUsingCodableKey", default: UnicornCodableAndNSSecureCoding(name: "Unicorn"), usingCodable: true)
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: Defaults.Observation!
+		observation = Defaults.observe(key, options: []) { change in
+			XCTAssertEqual(change.oldValue.name, "Unicorn")
+			XCTAssertEqual(change.newValue.name, "Unicorn!")
+			observation.invalidate()
+			expect.fulfill()
+		}
+
+		Defaults[key] = UnicornCodableAndNSSecureCoding(name: "Unicorn!")
+		observation.invalidate()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	func testObserveCodableAndNSSecureCodingWithoutUsingCodableKey() {
+		let key = Defaults.Key<UnicornCodableAndNSSecureCoding>("observeCodableAndNSSecureCodingWithoutUsingCodableKey", default: UnicornCodableAndNSSecureCoding(name: "Unicorn"), usingCodable: true)
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: Defaults.Observation!
+		observation = Defaults.observe(key, options: []) { change in
+			XCTAssertEqual(change.oldValue.name, "Unicorn")
+			XCTAssertEqual(change.newValue.name, "Unicorn!")
+			observation.invalidate()
+			expect.fulfill()
+		}
+
+		Defaults[key] = UnicornCodableAndNSSecureCoding(name: "Unicorn!")
 		observation.invalidate()
 
 		waitForExpectations(timeout: 10)

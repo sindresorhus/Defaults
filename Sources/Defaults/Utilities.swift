@@ -183,6 +183,33 @@ extension Defaults.Serializable {
 	}
 
 	/**
+	Using ambiguous bridge to cast `Serializable & Codable` to `Self`.
+
+	Converts a natively supported type from `UserDefaults` into `Self`.
+
+	```
+	guard let anyObject = object(forKey: key) else {
+		return nil
+	}
+
+	return Value.toCodableValue(anyObject, usingCodable: true)
+	```
+	*/
+	static func toCodableValue(_ anyObject: Any, usingCodable: Bool) -> Self? where Self: Codable {
+		// Return directly if `anyObject` can cast to Value, since it means `Value` is a natively supported type.
+		if
+			isNativelySupportedType,
+			let anyObject = anyObject as? Self
+		{
+			return anyObject
+		} else if let value = bridge.deserialize(anyObject as? Serializable, usingCodable: usingCodable) {
+			return value as? Self
+		}
+
+		return nil
+	}
+
+	/**
 	Cast `Self` to `Serializable`.
 
 	Converts `Self` into `UserDefaults` native support type.
@@ -196,6 +223,26 @@ extension Defaults.Serializable {
 		if isNativelySupportedType {
 			return value
 		} else if let serialized = bridge.serialize(value as? Value) {
+			return serialized
+		}
+
+		return nil
+	}
+
+	/**
+	Using ambiguous bridge to cast `Self` to `Serializable & Codable`.
+
+	Converts a natively supported type from `UserDefaults` into `Self`.
+
+	```
+	set(Value.toCodableSerialize(value, usingCodable: true), forKey: key)
+	```
+	*/
+	static func toCodableSerializable(_ value: Self, usingCodable: Bool) -> Any? where Self: Codable {
+		// Return directly if `Self` is a natively supported type, since it does not need serialization.
+		if isNativelySupportedType {
+			return value
+		} else if let serialized = bridge.serialize(value as? Value, usingCodable: usingCodable) {
 			return serialized
 		}
 
