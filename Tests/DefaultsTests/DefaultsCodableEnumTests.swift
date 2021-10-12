@@ -8,6 +8,12 @@ private enum FixtureCodableEnum: String, Defaults.Serializable & Codable & Hasha
 	case oneHour = "1 Hour"
 }
 
+private enum FixtureCodableEnumPreferRawRepresentable: Int, Hashable, Codable, Defaults.Serializable, Defaults.PreferRawRepresentable {
+	case tenMinutes = 10
+	case halfHour = 30
+	case oneHour = 60
+}
+
 extension Defaults.Keys {
 	fileprivate static let codableEnum = Key<FixtureCodableEnum>("codable_enum", default: .oneHour)
 	fileprivate static let codableEnumArray = Key<[FixtureCodableEnum]>("codable_enum", default: [.oneHour])
@@ -116,6 +122,13 @@ final class DefaultsCodableEnumTests: XCTestCase {
 		Defaults[.codableEnumDictionary]["1"] = .halfHour
 		XCTAssertEqual(Defaults[.codableEnumDictionary]["0"], .oneHour)
 		XCTAssertEqual(Defaults[.codableEnumDictionary]["1"], .halfHour)
+	}
+
+	func testFixtureCodableEnumPreferRawRepresentable() {
+		let fixture: FixtureCodableEnumPreferRawRepresentable = .tenMinutes
+		let keyName = "testFixtureCodableEnumPreferRawRepresentable"
+		_ = Defaults.Key<FixtureCodableEnumPreferRawRepresentable>(keyName, default: fixture)
+		XCTAssertNotNil(UserDefaults.standard.integer(forKey: keyName))
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)

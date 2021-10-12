@@ -100,3 +100,21 @@ public protocol DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializabl
 
 /// Convenience protocol for `Codable`.
 public protocol DefaultsCodableBridge: Defaults.Bridge where Serializable == String, Value: Codable {}
+
+/**
+Ambiguous bridge selector protocol. This lets you select your preferred bridge when there are multiple possibilities.
+
+For example:
+
+```
+enum Interval: Int, Codable, Defaults.Serializable, Defaults.PreferRawRepresentable {
+	case tenMinutes = 10
+	case halfHour = 30
+	case oneHour = 60
+}
+```
+
+By default, if an `enum` conforms to `Codable` and `Defaults.Serializable`, it will use the `CodableBridge`, but by conforming to `Defaults.PreferRawRepresentable`, we can switch the bridge back to `RawRepresentableBridge`.
+*/
+public protocol DefaultsPreferRawRepresentable: RawRepresentable {}
+public protocol DefaultsPreferNSSecureCoding: NSSecureCoding {}

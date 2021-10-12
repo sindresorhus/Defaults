@@ -21,6 +21,19 @@ private final class UnicornCodableAndNSSecureCoding: NSObject, NSSecureCoding, C
 	}
 }
 
+@objc(UnicornCodableAndPreferNSSecureCoding)
+private final class UnicornCodableAndPreferNSSecureCoding: NSObject, NSSecureCoding, Codable, Defaults.Serializable, Defaults.PreferNSSecureCoding {
+	static let supportsSecureCoding = true
+
+	func encode(with coder: NSCoder) {}
+
+	init?(coder: NSCoder) {}
+
+	override init() {
+		super.init()
+	}
+}
+
 extension Defaults.Keys {
 	fileprivate static let codable = Key<Unicorn>("codable", default: fixtureCodable)
 	fileprivate static let codableArray = Key<[Unicorn]>("codable", default: [fixtureCodable])
@@ -135,7 +148,18 @@ final class DefaultsCodableTests: XCTestCase {
 
 	func testCodableAndNSSecureCoding() {
 		let fixture = UnicornCodableAndNSSecureCoding()
-		_ = Defaults.Key<UnicornCodableAndNSSecureCoding>("testCodableAndNSSecureCoding", default: fixture)
+		let keyName = "testCodableAndNSSecureCoding"
+		_ = Defaults.Key<UnicornCodableAndNSSecureCoding>(keyName, default: fixture)
+		XCTAssertNil(UserDefaults.standard.data(forKey: keyName))
+		XCTAssertNotNil(UserDefaults.standard.string(forKey: keyName))
+	}
+
+	func testCodableAndPreferNSSecureCoding() {
+		let fixture = UnicornCodableAndPreferNSSecureCoding()
+		let keyName = "testCodableAndPreferNSSecureCoding"
+		_ = Defaults.Key<UnicornCodableAndPreferNSSecureCoding>(keyName, default: fixture)
+		XCTAssertNil(UserDefaults.standard.string(forKey: keyName))
+		XCTAssertNotNil(UserDefaults.standard.data(forKey: keyName))
 	}
 
 	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)

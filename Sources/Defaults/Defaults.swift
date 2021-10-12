@@ -19,6 +19,8 @@ public enum Defaults {
 	public typealias Serializable = DefaultsSerializable
 	public typealias CollectionSerializable = DefaultsCollectionSerializable
 	public typealias SetAlgebraSerializable = DefaultsSetAlgebraSerializable
+	public typealias PreferRawRepresentable = DefaultsPreferRawRepresentable
+	public typealias PreferNSSecureCoding = DefaultsPreferNSSecureCoding
 	public typealias Bridge = DefaultsBridge
 	typealias CodableBridge = DefaultsCodableBridge
 

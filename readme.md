@@ -789,6 +789,27 @@ if let mimeType: mime = Defaults[.magic]["enum"]?.get() {
 
 For more examples, see [Tests/DefaultsAnySerializableTests](./Tests/DefaultsTests/DefaultsAnySeriliazableTests.swift).
 
+### Serialization for ambiguous `Codable` type
+
+You may have a type that conforms to `Codable & NSSecureCoding` or a `Codable & RawRepresentable` enum. By default, `Defaults` will prefer the `Codable` conformance and use the `CodableBridge` to serialize it into a JSON string. If you want to serialize it as a `NSSecureCoding` data or use the raw value of the `RawRepresentable` enum, you can conform to `Defaults.PreferNSSecureCoding` or `Defaults.PreferRawRepresentable` to override the default bridge:
+
+```swift
+enum mime: String, Codable, Defaults.Serializable, Defaults.PreferRawRepresentable {
+	case JSON = "application/json"
+}
+
+extension Defaults.Keys {
+	static let magic = Key<[String: Defaults.AnySerializable]>("magic", default: [:])
+}
+
+print(UserDefaults.standard.string(forKey: "magic"))
+//=> application/json
+```
+
+Had we not added `Defaults.PreferRawRepresentable`, the stored representation would have been `"application/json"` instead of `application/json`.
+
+This can also be useful if you conform a type you don't control to `Defaults.Serializable` as the type could receive `Codable` conformance at any time and then the stored representation would change, which could make the value unreadable. By explicitly defining which bridge to use, you ensure the stored representation will always stay the same.
+
 ### Custom `Collection` type
 
 1. Create your `Collection` and make its elements conform to `Defaults.Serializable`.
