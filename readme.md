@@ -23,10 +23,10 @@ For a real-world example, see the [Plash app](https://github.com/sindresorhus/Pl
 
 ## Compatibility
 
-- macOS 10.12+
-- iOS 10+
-- tvOS 10+
-- watchOS 3+
+- macOS 10.13+
+- iOS 12+
+- tvOS 12+
+- watchOS 5+
 
 <br>
 

@@ -88,16 +88,7 @@ extension Defaults {
 				return nil
 			}
 
-			// Version below macOS 10.13 and iOS 11.0 does not support `archivedData(withRootObject:requiringSecureCoding:)`.
-			// We need to set `requiresSecureCoding` ourselves.
-			if #available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) {
-				return try? NSKeyedArchiver.archivedData(withRootObject: object, requiringSecureCoding: true)
-			} else {
-				let keyedArchiver = NSKeyedArchiver()
-				keyedArchiver.requiresSecureCoding = true
-				keyedArchiver.encode(object, forKey: NSKeyedArchiveRootObjectKey)
-				return keyedArchiver.encodedData
-			}
+			return try? NSKeyedArchiver.archivedData(withRootObject: object, requiringSecureCoding: true)
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {

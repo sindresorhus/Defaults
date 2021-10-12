@@ -3,7 +3,6 @@ import CoreData
 import Defaults
 import XCTest
 
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults.Serializable {
 	let value: String
 
@@ -25,16 +24,14 @@ private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults
 }
 
 // NSSecureCoding
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *) private let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
+private let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
 
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 extension Defaults.Keys {
 	fileprivate static let persistentHistory = Key<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
 	fileprivate static let persistentHistoryArray = Key<[ExamplePersistentHistory]>("array_persistentHistory", default: [persistentHistoryValue])
 	fileprivate static let persistentHistoryDictionary = Key<[String: ExamplePersistentHistory]>("dictionary_persistentHistory", default: ["0": persistentHistoryValue])
 }
 
-@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 final class DefaultsNSSecureCodingTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
@@ -313,7 +310,6 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, iOSApplicationExtension 11.0, macOSApplicationExtension 10.13, tvOSApplicationExtension 11.0, watchOSApplicationExtension 4.0, *)
 	func testObserveMultipleNSSecureKeys() {
 		let key1 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
 		let key2 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
