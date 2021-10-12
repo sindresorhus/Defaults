@@ -8,7 +8,7 @@ private enum FixtureCodableEnum: String, Defaults.Serializable & Codable & Hasha
 	case oneHour = "1 Hour"
 }
 
-private enum FixtureCodableEnumPreferRawRepresentable: Int, Defaults.Serializable & Codable & Hashable & Defaults.PreferRawRepresentable {
+private enum FixtureCodableEnumPreferRawRepresentable: Int, Hashable, Codable, Defaults.Serializable, Defaults.PreferRawRepresentable {
 	case tenMinutes = 10
 	case halfHour = 30
 	case oneHour = 60
