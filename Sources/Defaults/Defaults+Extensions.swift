@@ -1,5 +1,6 @@
 import Foundation
 import CoreGraphics
+import SwiftUI
 #if os(macOS)
 import AppKit
 #else
@@ -134,6 +135,12 @@ extension Array: Defaults.Serializable where Element: Defaults.Serializable {
 extension Dictionary: Defaults.Serializable where Key: LosslessStringConvertible & Hashable, Value: Defaults.Serializable {
 	public static var isNativelySupportedType: Bool { Value.isNativelySupportedType }
 	public static var bridge: Defaults.DictionaryBridge<Key, Value> { Defaults.DictionaryBridge() }
+}
+
+
+@available(iOS 15.0, macOS 11.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 11.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *)
+extension Color: Defaults.Serializable {
+	public static let bridge = Defaults.ColorBridge()
 }
 
 #if os(macOS)

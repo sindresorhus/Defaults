@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 #if os(macOS)
 import AppKit
 #else
@@ -292,6 +293,35 @@ extension Defaults {
 			}
 
 			return Value(elements)
+		}
+	}
+}
+
+extension Defaults {
+	@available(iOS 15.0, macOS 11.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 11.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *)
+	public struct ColorBridge: Bridge {
+		public typealias Value = Color
+		public typealias Serializable = Data
+#if os(macOS)
+		typealias NativeColor = NSColor
+#else
+		typealias NativeColor = UIColor
+#endif
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let value = value else {
+				return nil
+			}
+
+			return NativeColor.bridge.serialize(NativeColor(value))
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			guard let nativeColor = NativeColor.bridge.deserialize(object) else {
+				return nil
+			}
+
+			return Value(nativeColor)
 		}
 	}
 }
