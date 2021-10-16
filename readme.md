@@ -79,6 +79,7 @@ Add `https://github.com/sindresorhus/Defaults` in the [â€œSwift Package Managerâ
 - `URL`
 - `NSColor` (macOS)
 - `UIColor` (iOS)
+- `Color` (SwiftUI)
 - `Codable`
 - `NSSecureCoding`
 
