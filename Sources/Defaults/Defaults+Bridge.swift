@@ -302,11 +302,12 @@ extension Defaults {
 	public struct ColorBridge: Bridge {
 		public typealias Value = Color
 		public typealias Serializable = Data
-#if os(macOS)
-		typealias NativeColor = NSColor
-#else
-		typealias NativeColor = UIColor
-#endif
+
+		#if os(macOS)
+		private typealias NativeColor = NSColor
+		#else
+		private typealias NativeColor = UIColor
+		#endif
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let value = value else {
