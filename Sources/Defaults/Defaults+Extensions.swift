@@ -144,9 +144,13 @@ extension Color: Defaults.Serializable {
 }
 
 #if os(macOS)
-/// `NSColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`.
+/**
+`NSColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`.
+*/
 extension NSColor: Defaults.Serializable {}
 #else
-/// `UIColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`.
+/**
+`UIColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`.
+*/
 extension UIColor: Defaults.Serializable {}
 #endif

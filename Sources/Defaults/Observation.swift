@@ -28,10 +28,14 @@ extension Defaults {
 	public typealias Observation = DefaultsObservation
 
 	public enum ObservationOption {
-		/// Whether a notification should be sent to the observer immediately, before the observer registration method even returns.
+		/**
+		Whether a notification should be sent to the observer immediately, before the observer registration method even returns.
+		*/
 		case initial
 
-		/// Whether separate notifications should be sent to the observer before and after each change, instead of a single notification after the change.
+		/**
+		Whether separate notifications should be sent to the observer before and after each change, instead of a single notification after the change.
+		*/
 		case prior
 	}
 

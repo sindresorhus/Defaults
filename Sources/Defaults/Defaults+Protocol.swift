@@ -21,10 +21,14 @@ public protocol DefaultsSerializable {
 	typealias Serializable = Bridge.Serializable
 	associatedtype Bridge: DefaultsBridge
 
-	/// Static bridge for the `Value` which cannot be stored natively.
+	/**
+	Static bridge for the `Value` which cannot be stored natively.
+	*/
 	static var bridge: Bridge { get }
 
-	/// A flag to determine whether `Value` can be stored natively or not.
+	/**
+	A flag to determine whether `Value` can be stored natively or not.
+	*/
 	static var isNativelySupportedType: Bool { get }
 }
 
@@ -89,16 +93,22 @@ public protocol DefaultsBridge {
 }
 
 public protocol DefaultsCollectionSerializable: Collection, Defaults.Serializable {
-	/// `Collection` does not have a initializer, but we need a initializer to convert an array into the `Value`.
+	/**
+	`Collection` does not have a initializer, but we need a initializer to convert an array into the `Value`.
+	*/
 	init(_ elements: [Element])
 }
 
 public protocol DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializable {
-	/// Since `SetAlgebra` protocol does not conform to `Sequence`, we cannot convert a `SetAlgebra` to an `Array` directly.
+	/**
+	Since `SetAlgebra` protocol does not conform to `Sequence`, we cannot convert a `SetAlgebra` to an `Array` directly.
+	*/
 	func toArray() -> [Element]
 }
 
-/// Convenience protocol for `Codable`.
+/**
+Convenience protocol for `Codable`.
+*/
 public protocol DefaultsCodableBridge: Defaults.Bridge where Serializable == String, Value: Codable {}
 
 /**

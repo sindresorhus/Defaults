@@ -7,7 +7,9 @@ public protocol DefaultsBaseKey: Defaults.AnyKey {
 }
 
 extension DefaultsBaseKey {
-	/// Reset the item back to its default value.
+	/**
+	Reset the item back to its default value.
+	*/
 	public func reset() {
 		suite.removeObject(forKey: name)
 	}
@@ -39,8 +41,11 @@ public enum Defaults {
 	public final class Key<Value: Serializable>: AnyKey {
 		public let defaultValue: Value
 
-		/// Create a defaults key.
-		/// The `default` parameter can be left out if the `Value` type is an optional.
+		/**
+		Create a defaults key.
+
+		The `default` parameter can be left out if the `Value` type is an optional.
+		*/
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
 			self.defaultValue = defaultValue
 

@@ -119,10 +119,15 @@ final class LifetimeAssociation {
 }
 
 
-/// A protocol for making generic type constraints of optionals.
-/// - Note: It's intentionally not including `associatedtype Wrapped` as that limits a lot of the use-cases.
+/**
+A protocol for making generic type constraints of optionals.
+
+- Note: It's intentionally not including `associatedtype Wrapped` as that limits a lot of the use-cases.
+*/
 public protocol _DefaultsOptionalType: ExpressibleByNilLiteral {
-	/// This is useful as you can't compare `_OptionalType` to `nil`.
+	/**
+	This is useful as you cannot compare `_OptionalType` to `nil`.
+	*/
 	var isNil: Bool { get }
 }
 
@@ -146,7 +151,9 @@ extension DispatchQueue {
 
 
 extension Sequence {
-	/// Returns an array containing the non-nil elements.
+	/**
+	Returns an array containing the non-nil elements.
+	*/
 	func compact<T>() -> [T] where Element == T? {
 		// TODO: Make this `compactMap(\.self)` when https://bugs.swift.org/browse/SR-12897 is fixed.
 		compactMap { $0 }

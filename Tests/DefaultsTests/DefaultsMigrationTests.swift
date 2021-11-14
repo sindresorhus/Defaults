@@ -25,7 +25,9 @@ private struct TimeZone: Hashable {
 }
 
 extension TimeZone: Defaults.NativeType {
-	/// Associated `CodableForm` to `CodableTimeZone`.
+	/**
+	Associated `CodableForm` to `CodableTimeZone`.
+	*/
 	typealias CodableForm = CodableTimeZone
 
 	static let bridge = TimeZoneBridge()
@@ -37,7 +39,9 @@ private struct CodableTimeZone {
 }
 
 extension CodableTimeZone: Defaults.CodableType {
-	/// Convert from `Codable` to `Native`.
+	/**
+	Convert from `Codable` to `Native`.
+	*/
 	func toNative() -> TimeZone {
 		TimeZone(id: id, name: name)
 	}

@@ -33,7 +33,9 @@ extension Defaults {
 				}
 		}
 
-		/// Reset the key back to its default value.
+		/**
+		Reset the key back to its default value.
+		*/
 		func reset() {
 			key.reset()
 		}
@@ -47,7 +49,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 
 	private let key: Defaults.Key<Value>
 
-	// Intentionally using `@ObservedObjected` over `@StateObject` so that the key can be dynamicaly changed.
+	// Intentionally using `@ObservedObjected` over `@StateObject` so that the key can be dynamically changed.
 	@ObservedObject private var observable: Defaults.Observable<Value>
 
 	/**
@@ -87,10 +89,14 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 
 	public var projectedValue: Binding<Value> { $observable.value }
 
-	/// The default value of the key.
+	/**
+	The default value of the key.
+	*/
 	public var defaultValue: Value { key.defaultValue }
 
-	/// Combine publisher that publishes values when the `Defaults` item changes.
+	/**
+	Combine publisher that publishes values when the `Defaults` item changes.
+	*/
 	public var publisher: Publisher { Defaults.publisher(key) }
 
 	public mutating func update() {
@@ -123,7 +129,9 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Default where Value: Equatable {
-	/// Indicates whether the value is the same as the default value.
+	/**
+	Indicates whether the value is the same as the default value.
+	*/
 	public var isDefaultValue: Bool { wrappedValue == defaultValue }
 }
 
@@ -165,7 +173,7 @@ extension Defaults {
 
 		private let label: () -> Label
 
-		// Intentionally using `@ObservedObjected` over `@StateObject` so that the key can be dynamicaly changed.
+		// Intentionally using `@ObservedObjected` over `@StateObject` so that the key can be dynamically changed.
 		@ObservedObject private var observable: Defaults.Observable<Bool>
 
 		public init(key: Key, @ViewBuilder label: @escaping () -> Label) {
@@ -192,7 +200,9 @@ extension Defaults.Toggle where Label == Text {
 
 @available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Defaults.Toggle {
-	/// Do something when the value changes to a different value.
+	/**
+	Do something when the value changes to a different value.
+	*/
 	public func onChange(_ action: @escaping (Bool) -> Void) -> Self {
 		onChange = action
 		return self

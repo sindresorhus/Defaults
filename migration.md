@@ -380,7 +380,9 @@ private struct CodableTimeZone {
 }
 
 extension CodableTimeZone: Defaults.CodableType {
-	/// Convert from `Codable` to native type.
+	/**
+	Convert from `Codable` to native type.
+	*/
 	func toNative() -> TimeZone {
 		TimeZone(id: id, name: name)
 	}
