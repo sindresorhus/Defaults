@@ -21,6 +21,17 @@ For a real-world example, see the [Plash app](https://github.com/sindresorhus/Pl
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Customizable:** You can serialize and deserialize your own type in your own way.
 
+## Benefits over `@AppStorage`
+
+- You define strongly-typed identifiers in a single place and can use them everywhere.
+- You also define the default values in a single place instead of having to remember what default value you used in other places.
+- You can use it outside of SwiftUI.
+- Comes with Combine publisher.
+- Supports many more types, even `Codable`.
+- Easy to add support for your own custom types.
+- Comes with a convenience SwiftUI `Toggle` component.
+
+
 ## Compatibility
 
 - macOS 10.13+
@@ -36,7 +47,7 @@ For a real-world example, see the [Plash app](https://github.com/sindresorhus/Pl
 	<p>
 		<p>
 			<sup>
-				<a href="https://github.com/sponsors/sindresorhus">Sindre‘s open source work is supported by the community</a>
+				<a href="https://github.com/sponsors/sindresorhus">Sindre's open source work is supported by the community</a>
 			</sup>
 		</p>
 		<sup>Special thanks to:</sup>
