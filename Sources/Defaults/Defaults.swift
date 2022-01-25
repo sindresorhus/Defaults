@@ -1,7 +1,7 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
-public protocol DefaultsBaseKey: Defaults.AnyKey {
+public protocol DefaultsBaseKey {
 	var name: String { get }
 	var suite: UserDefaults { get }
 }
@@ -17,7 +17,7 @@ extension DefaultsBaseKey {
 
 public enum Defaults {
 	public typealias BaseKey = DefaultsBaseKey
-	public typealias AnyKey = Keys
+	public typealias Keys = AnyKey
 	public typealias Serializable = DefaultsSerializable
 	public typealias CollectionSerializable = DefaultsCollectionSerializable
 	public typealias SetAlgebraSerializable = DefaultsSetAlgebraSerializable
@@ -26,7 +26,8 @@ public enum Defaults {
 	public typealias Bridge = DefaultsBridge
 	typealias CodableBridge = DefaultsCodableBridge
 
-	public class Keys: BaseKey {
+	// We cannot use `Key` as the container for keys because of "Static stored properties not supported in generic types".
+	public class AnyKey: BaseKey {
 		public typealias Key = Defaults.Key
 
 		public let name: String
