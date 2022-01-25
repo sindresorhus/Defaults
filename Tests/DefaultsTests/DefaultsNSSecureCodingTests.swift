@@ -3,6 +3,7 @@ import CoreData
 import Defaults
 import XCTest
 
+@objc(ExamplePersistentHistory)
 private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults.Serializable {
 	let value: String
 
