@@ -88,6 +88,7 @@ Add `https://github.com/sindresorhus/Defaults` in the [â€œSwift Package Managerâ
 - `Date`
 - `Data`
 - `URL`
+- `UUID`
 - `NSColor` (macOS)
 - `UIColor` (iOS)
 - `Color` (SwiftUI)

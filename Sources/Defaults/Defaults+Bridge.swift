@@ -298,6 +298,25 @@ extension Defaults {
 }
 
 extension Defaults {
+	public struct UUIDBridge: Bridge {
+		public typealias Value = UUID
+		public typealias Serializable = String
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			value?.uuidString
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			guard let object = object else {
+				return nil
+			}
+
+			return .init(uuidString: object)
+		}
+	}
+}
+
+extension Defaults {
 	@available(iOS 15.0, macOS 11.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 11.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *)
 	public struct ColorBridge: Bridge {
 		public typealias Value = Color
