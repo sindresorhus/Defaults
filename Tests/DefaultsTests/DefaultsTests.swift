@@ -14,6 +14,7 @@ extension Defaults.Keys {
 	static let file = Key<URL>("fileURL", default: fixtureFileURL)
 	static let data = Key<Data>("data", default: Data([]))
 	static let date = Key<Date>("date", default: fixtureDate)
+	static let uuid = Key<UUID?>("uuid")
 }
 
 final class DefaultsTests: XCTestCase {
@@ -101,6 +102,12 @@ final class DefaultsTests: XCTestCase {
 
 	func testFileURLType() {
 		XCTAssertEqual(Defaults[.file], fixtureFileURL)
+	}
+
+	func testUUIDType() {
+		let fixture = UUID()
+		Defaults[.uuid] = fixture
+		XCTAssertEqual(Defaults[.uuid], fixture)
 	}
 
 	func testRemoveAll() {
