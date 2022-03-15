@@ -1,15 +1,17 @@
-## Workaround For Xcode 13.3
+## Workaround for Xcode 13.3
 
-When using `Defaults` with Xcode 13.3 the compiler might complain about `Type 'YourType' does not conform to protocol 'DefaultsSerializable'`.  
+When using `Defaults` with Xcode 13.3, the compiler may complain about `Type 'YourType' does not conform to protocol 'DefaultsSerializable'`.
 
-Try the step below:
+[**This is a Swift bug.**](https://bugs.swift.org/projects/SR/issues/SR-15807)
 
-1. Create `Defaults+Workaround.swift` in the module which is using `Defaults`.
-2. Copy the codes below into `Defaults+Workaround.swift`
+Workaround:
+
+1. Create a file named `Defaults+Workaround.swift` in the project using `Defaults`.
+2. Copy the below code into `Defaults+Workaround.swift`.
 
 ```swift
-import Defaults
 import Foundation
+import Defaults
 
 extension Defaults.Serializable where Self: Codable {
 	public static var bridge: Defaults.TopLevelCodableBridge<Self> { Defaults.TopLevelCodableBridge() }
@@ -46,5 +48,3 @@ extension Defaults.SetAlgebraSerializable where Element: Defaults.Serializable &
 	public static var bridge: Defaults.SetAlgebraBridge<Self> { Defaults.SetAlgebraBridge() }
 }
 ```
-
-This issue is caused by swift compiler. After [SR-15807](https://bugs.swift.org/browse/SR-15807) is fixed this workaround might not be needed.
