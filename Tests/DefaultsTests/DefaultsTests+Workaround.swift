@@ -1,6 +1,6 @@
 // TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
-import Defaults
 import Foundation
+import Defaults
 
 extension Defaults.Serializable where Self: Codable {
 	public static var bridge: Defaults.TopLevelCodableBridge<Self> { Defaults.TopLevelCodableBridge() }
