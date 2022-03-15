@@ -95,7 +95,7 @@ extension Defaults {
 	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Data
-        
+
 		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
 		public init() {}
 
