@@ -37,21 +37,30 @@ extension Defaults.CodableBridge {
 Any `Value` that conforms to `Codable` and `Defaults.Serializable` will use `CodableBridge` to do the serialization and deserialization.
 */
 extension Defaults {
-	public struct TopLevelCodableBridge<Value: Codable>: CodableBridge {}
+	public struct TopLevelCodableBridge<Value: Codable>: CodableBridge {
+		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
+		public init() {}
+	}
 }
 
 /**
 `RawRepresentableCodableBridge` is needed because, for example, with `enum SomeEnum: String, Codable, Defaults.Serializable`, the compiler will be confused between `RawRepresentableBridge` and `TopLevelCodableBridge`.
 */
 extension Defaults {
-	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {}
+	public struct RawRepresentableCodableBridge<Value: RawRepresentable & Codable>: CodableBridge {
+		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
+		public init() {}
+	}
 }
 
 /**
 This exists to avoid compiler ambiguity.
 */
 extension Defaults {
-	public struct CodableNSSecureCodingBridge<Value: Codable & NSSecureCoding>: CodableBridge {}
+	public struct CodableNSSecureCodingBridge<Value: Codable & NSSecureCoding>: CodableBridge {
+		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
+		public init() {}
+	}
 }
 
 extension Defaults {
@@ -64,6 +73,9 @@ extension Defaults {
 	public struct RawRepresentableBridge<Value: RawRepresentable>: Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Value.RawValue
+
+		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
+		public init() {}
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			value?.rawValue
@@ -83,6 +95,9 @@ extension Defaults {
 	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Data
+        
+		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
+		public init() {}
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let object = value else {
@@ -225,6 +240,9 @@ extension Defaults {
 		public typealias Element = Value.Element
 		public typealias Serializable = Any
 
+		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
+		public init() {}
+
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let setAlgebra = value else {
 				return nil
@@ -263,6 +281,9 @@ extension Defaults {
 		public typealias Value = Value
 		public typealias Element = Value.Element
 		public typealias Serializable = Any
+
+		// TODO: A temporary workaround for Xcode 13.3 compiler issue. Should remove after https://bugs.swift.org/browse/SR-15807 is fixed.
+		public init() {}
 
 		public func serialize(_ value: Value?) -> Serializable? {
 			guard let collection = value else {
