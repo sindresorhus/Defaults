@@ -76,6 +76,8 @@ For a real-world example, see the [Plash app](https://github.com/sindresorhus/Pl
 
 Add `https://github.com/sindresorhus/Defaults` in the [“Swift Package Manager” tab in Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app).
 
+**There are some issues running Defaults with Xcode 13.3 because of a Swift bug. [See the workaround](workaround.md).**
+
 ## Support types
 
 - `Int(8/16/32/64)`
@@ -950,12 +952,6 @@ extension Defaults.Keys {
 Defaults[.stringSet].contains("Hello") //=> true
 Defaults[.stringSet].contains("World!") //=> true
 ```
-
-## TroubleShooting
-
-### Cannot use `Defaults` in Xcode 13.3.
-
-Please refer to [workaround.md](./workaround.md).
 
 ## FAQ
 
