@@ -951,6 +951,12 @@ Defaults[.stringSet].contains("Hello") //=> true
 Defaults[.stringSet].contains("World!") //=> true
 ```
 
+## TroubleShooting
+
+### Cannot use `Defaults` in Xcode 13.3.
+
+Please refer to [workaround.md](./workaround.md).
+
 ## FAQ
 
 ### How can I store a dictionary of arbitrary values?
