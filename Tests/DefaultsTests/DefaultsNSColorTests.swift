@@ -1,3 +1,4 @@
+#if canImport(AppKit)
 import Foundation
 import Defaults
 import XCTest
@@ -29,6 +30,16 @@ final class DefaultsNSColorTests: XCTestCase {
 		XCTAssertTrue(Defaults[key].isEqual(fixtureColor))
 		Defaults[key] = fixtureColor1
 		XCTAssertTrue(Defaults[key].isEqual(fixtureColor1))
+	}
+
+	func testPreservesColorSpace() {
+		let fixture = NSColor(displayP3Red: 1, green: 0.3, blue: 0.7, alpha: 1)
+		let key = Defaults.Key<NSColor?>("independentNSColorPreservesColorSpaceKey")
+		Defaults[key] = fixture
+		XCTAssertEqual(Defaults[key]?.colorSpace, fixture.colorSpace)
+		XCTAssertEqual(Defaults[key]?.cgColor.colorSpace, fixture.cgColor.colorSpace)
+		XCTAssertEqual(Defaults[key], fixture)
+		XCTAssertEqual(Defaults[key]?.cgColor, fixture.cgColor)
 	}
 
 	func testOptionalKey() {
@@ -304,3 +315,4 @@ final class DefaultsNSColorTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 }
+#endif

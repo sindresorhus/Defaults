@@ -32,6 +32,15 @@ final class DefaultsNSColorTests: XCTestCase {
 		XCTAssertTrue(Defaults[key].isEqual(fixtureColor1))
 	}
 
+	func testPreservesColorSpace() {
+		let fixture = UIColor(displayP3Red: 1, green: 0.3, blue: 0.7, alpha: 1)
+		let key = Defaults.Key<UIColor?>("independentNSColorPreservesColorSpaceKey")
+		Defaults[key] = fixture
+		XCTAssertEqual(Defaults[key], fixture)
+		XCTAssertEqual(Defaults[key]?.cgColor.colorSpace, fixture.cgColor.colorSpace)
+		XCTAssertEqual(Defaults[key]?.cgColor, fixture.cgColor)
+	}
+
 	func testOptionalKey() {
 		let key = Defaults.Key<UIColor?>("independentNSColorOptionalKey")
 		XCTAssertNil(Defaults[key])
