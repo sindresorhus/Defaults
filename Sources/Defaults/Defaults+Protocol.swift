@@ -131,7 +131,7 @@ public protocol DefaultsPreferNSSecureCoding: NSSecureCoding {}
 
 // Essential properties for serializing and deserializing `ClosedRange` and `Range`.
 public protocol DefaultsRange {
-	associatedtype Bound: Defaults.Serializable, Comparable
+	associatedtype Bound: Comparable, Defaults.Serializable
 
 	var lowerBound: Bound { get }
 	var upperBound: Bound { get }
