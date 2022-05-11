@@ -24,6 +24,7 @@ public enum Defaults {
 	public typealias PreferRawRepresentable = DefaultsPreferRawRepresentable
 	public typealias PreferNSSecureCoding = DefaultsPreferNSSecureCoding
 	public typealias Bridge = DefaultsBridge
+	public typealias RangeSerializable = DefaultsRange & DefaultsSerializable
 	typealias CodableBridge = DefaultsCodableBridge
 
 	// We cannot use `Key` as the container for keys because of "Static stored properties not supported in generic types".

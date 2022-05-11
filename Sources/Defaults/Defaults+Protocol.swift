@@ -128,3 +128,13 @@ By default, if an `enum` conforms to `Codable` and `Defaults.Serializable`, it w
 */
 public protocol DefaultsPreferRawRepresentable: RawRepresentable {}
 public protocol DefaultsPreferNSSecureCoding: NSSecureCoding {}
+
+// Essential properties for serializing and deserializing `ClosedRange` and `Range`.
+public protocol DefaultsRange {
+	associatedtype Bound: Defaults.Serializable, Comparable
+
+	var lowerBound: Bound { get }
+	var upperBound: Bound { get }
+
+	init(uncheckedBounds: (lower: Bound, upper: Bound))
+}

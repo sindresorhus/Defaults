@@ -338,6 +338,57 @@ extension Defaults {
 }
 
 extension Defaults {
+	public struct RangeBridge<T: RangeSerializable>: Bridge {
+		public typealias Value = T
+		public typealias Serializable = [Any]
+		typealias Bound = T.Bound
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let value = value else {
+				return nil
+			}
+			if Bound.isNativelySupportedType {
+				return [value.lowerBound, value.upperBound]
+			}
+
+			guard
+				let lowerBound = Bound.bridge.serialize(value.lowerBound as? Bound.Value),
+				let upperBound = Bound.bridge.serialize(value.upperBound as? Bound.Value)
+			else {
+				return nil
+			}
+
+			return [lowerBound, upperBound]
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			guard let object = object else {
+				return nil
+			}
+			if Bound.isNativelySupportedType {
+				guard
+					let lowerBound = object[safe: 0] as? Bound,
+					let upperBound = object[safe: 1] as? Bound
+				else {
+					return nil
+				}
+
+				return .init(uncheckedBounds: (lower: lowerBound, upper: upperBound))
+			}
+
+			guard
+				let lowerBound = Bound.bridge.deserialize(object[safe: 0] as? Bound.Serializable) as? Bound,
+				let upperBound = Bound.bridge.deserialize(object[safe: 1] as? Bound.Serializable) as? Bound
+			else {
+				return nil
+			}
+
+			return .init(uncheckedBounds: (lower: lowerBound, upper: upperBound))
+		}
+	}
+}
+
+extension Defaults {
 	@available(iOS 15.0, macOS 11.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 11.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *)
 	public struct ColorBridge: Bridge {
 		public typealias Value = Color

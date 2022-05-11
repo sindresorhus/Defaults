@@ -146,6 +146,14 @@ extension Color: Defaults.Serializable {
 	public static let bridge = Defaults.ColorBridge()
 }
 
+extension Range: Defaults.RangeSerializable where Bound: Defaults.Serializable {
+	public static var bridge: Defaults.RangeBridge<Range> { Defaults.RangeBridge() }
+}
+
+extension ClosedRange: Defaults.RangeSerializable where Bound: Defaults.Serializable {
+	public static var bridge: Defaults.RangeBridge<ClosedRange> { Defaults.RangeBridge() }
+}
+
 #if os(macOS)
 /**
 `NSColor` conforms to `NSSecureCoding`, so it goes to `NSSecureCodingBridge`.
