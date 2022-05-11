@@ -155,7 +155,7 @@ extension Sequence {
 	Returns an array containing the non-nil elements.
 	*/
 	func compact<T>() -> [T] where Element == T? {
-		// TODO: Make this `compactMap(\.self)` when https://bugs.swift.org/browse/SR-12897 is fixed.
+		// TODO: Make this `compactMap(\.self)` when https://github.com/apple/swift/issues/55343 is fixed.
 		compactMap { $0 }
 	}
 }

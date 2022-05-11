@@ -59,43 +59,43 @@ extension Defaults.AnySerializable: Hashable {
 	public func hash(into hasher: inout Hasher) {
 		switch value {
 		case let value as Data:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Date:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Bool:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as UInt8:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Int8:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as UInt16:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Int16:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as UInt32:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Int32:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as UInt64:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Int64:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as UInt:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Int:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Float:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as Double:
-			return hasher.combine(value)
-		case let value as CGFloat:
-			return hasher.combine(value)
+			hasher.combine(value)
+		case let value as CGFloat: // swiftlint:disable:this no_cgfloat
+			hasher.combine(value)
 		case let value as String:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as [AnyHashable: AnyHashable]:
-			return hasher.combine(value)
+			hasher.combine(value)
 		case let value as [AnyHashable]:
-			return hasher.combine(value)
+			hasher.combine(value)
 		default:
 			break
 		}
