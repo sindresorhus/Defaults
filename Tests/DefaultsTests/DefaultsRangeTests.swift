@@ -2,15 +2,15 @@ import Foundation
 import Defaults
 import XCTest
 
-private struct Date {
+private struct CustomDate {
 	let year: Int
 	let month: Int
 	let day: Int
 }
 
-extension Date: Defaults.Serializable {
-	public struct DateBridge: Defaults.Bridge {
-		public typealias Value = Date
+extension CustomDate: Defaults.Serializable {
+	public struct CustomDateBridge: Defaults.Bridge {
+		public typealias Value = CustomDate
 		public typealias Serializable = [Int]
 
 		public func serialize(_ value: Value?) -> Serializable? {
@@ -30,11 +30,11 @@ extension Date: Defaults.Serializable {
 		}
 	}
 
-	public static let bridge = DateBridge()
+	public static let bridge = CustomDateBridge()
 }
 
-extension Date: Comparable {
-	static func < (lhs: Date, rhs: Date) -> Bool {
+extension CustomDate: Comparable {
+	static func < (lhs: CustomDate, rhs: CustomDate) -> Bool {
 		if lhs.year != rhs.year {
 				return lhs.year < rhs.year
 		} else if lhs.month != rhs.month {
@@ -44,7 +44,7 @@ extension Date: Comparable {
 		}
 	}
 
-	static func == (lhs: Date, rhs: Date) -> Bool {
+	static func == (lhs: CustomDate, rhs: CustomDate) -> Bool {
 		lhs.year == rhs.year && lhs.month == rhs.month
 				&& lhs.day == rhs.day
 	}
@@ -53,12 +53,12 @@ extension Date: Comparable {
 // Fixtures:
 private let fixtureRange = 0..<10
 private let nextFixtureRange = 1..<20
-private let fixtureDateRange = Date(year: 2022, month: 4, day: 0)..<Date(year: 2022, month: 5, day: 0)
-private let nextFixtureDateRange = Date(year: 2022, month: 6, day: 1)..<Date(year: 2022, month: 7, day: 1)
+private let fixtureDateRange = CustomDate(year: 2022, month: 4, day: 0)..<CustomDate(year: 2022, month: 5, day: 0)
+private let nextFixtureDateRange = CustomDate(year: 2022, month: 6, day: 1)..<CustomDate(year: 2022, month: 7, day: 1)
 private let fixtureClosedRange = 0...10
 private let nextFixtureClosedRange = 1...20
-private let fixtureDateClosedRange = Date(year: 2022, month: 4, day: 0)...Date(year: 2022, month: 5, day: 0)
-private let nextFixtureDateClosedRange = Date(year: 2022, month: 6, day: 1)...Date(year: 2022, month: 7, day: 1)
+private let fixtureDateClosedRange = CustomDate(year: 2022, month: 4, day: 0)...CustomDate(year: 2022, month: 5, day: 0)
+private let nextFixtureDateClosedRange = CustomDate(year: 2022, month: 6, day: 1)...CustomDate(year: 2022, month: 7, day: 1)
 
 final class DefaultsClosedRangeTests: XCTestCase {
 	override func setUp() {
@@ -81,7 +81,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(nextFixtureRange.lowerBound, Defaults[key].lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<Range<Date>>("independentRangeDateKey", default: fixtureDateRange)
+		let dateKey = Defaults.Key<Range<CustomDate>>("independentRangeDateKey", default: fixtureDateRange)
 		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey].upperBound)
 		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey].lowerBound)
 		Defaults[dateKey] = nextFixtureDateRange
@@ -97,7 +97,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(nextFixtureClosedRange.lowerBound, Defaults[closedKey].lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<ClosedRange<Date>>("independentClosedRangeDateKey", default: fixtureDateClosedRange)
+		let closedDateKey = Defaults.Key<ClosedRange<CustomDate>>("independentClosedRangeDateKey", default: fixtureDateClosedRange)
 		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey].upperBound)
 		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey].lowerBound)
 		Defaults[closedDateKey] = nextFixtureDateClosedRange
@@ -114,7 +114,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(fixtureRange.lowerBound, Defaults[key]?.lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<Range<Date>?>("independentRangeDateOptionalKey")
+		let dateKey = Defaults.Key<Range<CustomDate>?>("independentRangeDateOptionalKey")
 		XCTAssertNil(Defaults[dateKey])
 		Defaults[dateKey] = fixtureDateRange
 		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey]?.upperBound)
@@ -128,7 +128,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(fixtureClosedRange.lowerBound, Defaults[closedKey]?.lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<ClosedRange<Date>?>("independentClosedRangeDateOptionalKey")
+		let closedDateKey = Defaults.Key<ClosedRange<CustomDate>?>("independentClosedRangeDateOptionalKey")
 		XCTAssertNil(Defaults[closedDateKey])
 		Defaults[closedDateKey] = fixtureDateClosedRange
 		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey]?.upperBound)
@@ -147,7 +147,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(nextFixtureRange.lowerBound, Defaults[key][1].lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<[Range<Date>]>("independentRangeDateArrayKey", default: [fixtureDateRange])
+		let dateKey = Defaults.Key<[Range<CustomDate>]>("independentRangeDateArrayKey", default: [fixtureDateRange])
 		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey][0].upperBound)
 		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey][0].lowerBound)
 		Defaults[dateKey].append(nextFixtureDateRange)
@@ -167,7 +167,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(nextFixtureClosedRange.lowerBound, Defaults[closedKey][1].lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<[ClosedRange<Date>]>("independentClosedRangeDateArrayKey", default: [fixtureDateClosedRange])
+		let closedDateKey = Defaults.Key<[ClosedRange<CustomDate>]>("independentClosedRangeDateArrayKey", default: [fixtureDateClosedRange])
 		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey][0].upperBound)
 		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey][0].lowerBound)
 		Defaults[closedDateKey].append(nextFixtureDateClosedRange)
@@ -189,7 +189,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(nextFixtureRange.lowerBound, Defaults[key]["1"]?.lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<[String: Range<Date>]>("independentRangeDateDictionaryKey", default: ["0": fixtureDateRange])
+		let dateKey = Defaults.Key<[String: Range<CustomDate>]>("independentRangeDateDictionaryKey", default: ["0": fixtureDateRange])
 		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey]["0"]?.upperBound)
 		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey]["0"]?.lowerBound)
 		Defaults[dateKey]["1"] = nextFixtureDateRange
@@ -209,7 +209,7 @@ final class DefaultsClosedRangeTests: XCTestCase {
 		XCTAssertEqual(nextFixtureClosedRange.lowerBound, Defaults[closedKey]["1"]?.lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<[String: ClosedRange<Date>]>("independentClosedRangeDateDictionaryKey", default: ["0": fixtureDateClosedRange])
+		let closedDateKey = Defaults.Key<[String: ClosedRange<CustomDate>]>("independentClosedRangeDateDictionaryKey", default: ["0": fixtureDateClosedRange])
 		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey]["0"]?.upperBound)
 		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey]["0"]?.lowerBound)
 		Defaults[closedDateKey]["1"] = nextFixtureDateClosedRange
