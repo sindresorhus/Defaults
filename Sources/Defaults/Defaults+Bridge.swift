@@ -347,6 +347,7 @@ extension Defaults {
 			guard let value = value else {
 				return nil
 			}
+
 			if Bound.isNativelySupportedType {
 				return [value.lowerBound, value.upperBound]
 			}
@@ -365,6 +366,7 @@ extension Defaults {
 			guard let object = object else {
 				return nil
 			}
+
 			if Bound.isNativelySupportedType {
 				guard
 					let lowerBound = object[safe: 0] as? Bound,
