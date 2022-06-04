@@ -90,3 +90,17 @@ extension Defaults.Key {
 		self.init(key, default: nil, suite: suite)
 	}
 }
+
+extension Defaults.AnyKey: Equatable {
+	public static func == (lhs: Defaults.AnyKey, rhs: Defaults.AnyKey) -> Bool {
+		lhs.name == rhs.name
+			&& lhs.suite == rhs.suite
+	}
+}
+
+extension Defaults.AnyKey: Hashable {
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(name)
+		hasher.combine(suite)
+	}
+}

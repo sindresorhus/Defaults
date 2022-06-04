@@ -639,4 +639,12 @@ final class DefaultsTests: XCTestCase {
 		cancellable.cancel()
 		waitForExpectations(timeout: 10)
 	}
+
+	func testKeyEquatable() {
+		XCTAssertEqual(Defaults.Key<Bool>("equatableKeyTest", default: false), Defaults.Key<Bool>("equatableKeyTest", default: false))
+	}
+
+	func testKeyHashable() {
+		_ = Set([Defaults.Key<Bool>("hashableKeyTest", default: false)])
+	}
 }
