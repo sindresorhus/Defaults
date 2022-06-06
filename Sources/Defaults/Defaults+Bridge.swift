@@ -446,11 +446,11 @@ extension Defaults {
 			guard let nativeColor = NativeColor(cgColor: cgColor) else {
 				return nil
 			}
-			#else
-			let nativeColor = NativeColor(cgColor: cgColor)
-			#endif
 
 			return Value(nativeColor)
+			#else
+			return Value(cgColor: cgColor)
+			#endif
 		}
 	}
 }
