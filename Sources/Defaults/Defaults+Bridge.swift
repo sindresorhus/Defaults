@@ -394,10 +394,7 @@ extension Defaults {
 	/**
 	The bridge which is responsible for `SwiftUI.Color` serialization and deserialization.
 
-	It is unsafe to convert `SwiftUI.Color` to `UIColor` and use `UIColor.bridge` to serialize it.
-	Because `UIColor` does not hold a color space, but `Swift.Color` does(which means color space might get lost in the conversion).
-	The bridge will always trying to preserve color space whenever `Color.cgColor` exists.
-	Only if `Color.cgColor` is `nil`, it will use `UIColor.bridge` to do serialization and deserialization.
+	It is unsafe to convert `SwiftUI.Color` to `UIColor` and use `UIColor.bridge` to serialize it, because `UIColor` does not hold a color space, but `Swift.Color` does (which means color space might get lost in the conversion). The bridge will always try to preserve the color space whenever `Color#cgColor` exists. Only when `Color#cgColor` is `nil`, will it use `UIColor.bridge` to do the serialization and deserialization.
 	*/
 	@available(iOS 15.0, macOS 11.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 11.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *)
 	public struct ColorBridge: Bridge {
