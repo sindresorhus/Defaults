@@ -394,7 +394,7 @@ extension Defaults {
 	@available(iOS 15.0, macOS 11.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 11.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *)
 	public struct ColorBridge: Bridge {
 		public typealias Value = Color
-		public typealias Serializable = Data
+		public typealias Serializable = Any
 
 		#if os(macOS)
 		private typealias NativeColor = NSColor
@@ -406,14 +406,42 @@ extension Defaults {
 			guard let value = value else {
 				return nil
 			}
+			guard
+				let cgColor = value.cgColor,
+				let colorSpace = cgColor.colorSpace?.name as? String,
+				let components = cgColor.components
+			else {
+				return NativeColor.bridge.serialize(NativeColor(value))
+			}
 
-			return NativeColor.bridge.serialize(NativeColor(value))
+			return [colorSpace, components]
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			guard let nativeColor = NativeColor.bridge.deserialize(object) else {
+			if let object = object as? NativeColor.Serializable {
+				guard let nativeColor = NativeColor.bridge.deserialize(object) else {
+					return nil
+				}
+
+				return Value(nativeColor)
+			}
+
+			guard
+				let object = object as? [Any],
+				let rawColorspace = object[0] as? String,
+				let colorspace = CGColorSpace(name: rawColorspace as CFString),
+				let components = object[1] as? [CGFloat],
+				let cgColor = CGColor(colorSpace: colorspace, components: components)
+			else {
 				return nil
 			}
+			#if os(macOS)
+			guard let nativeColor = NativeColor(cgColor: cgColor) else {
+				return nil
+			}
+			#else
+			let nativeColor = NativeColor(cgColor: cgColor)
+			#endif
 
 			return Value(nativeColor)
 		}
