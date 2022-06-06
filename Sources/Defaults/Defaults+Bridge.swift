@@ -414,6 +414,7 @@ extension Defaults {
 			guard let value = value else {
 				return nil
 			}
+
 			guard
 				let cgColor = value.cgColor,
 				let colorSpace = cgColor.colorSpace?.name as? String,
@@ -443,6 +444,7 @@ extension Defaults {
 			else {
 				return nil
 			}
+
 			#if os(macOS)
 			guard let nativeColor = NativeColor(cgColor: cgColor) else {
 				return nil
