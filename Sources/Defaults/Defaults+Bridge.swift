@@ -443,11 +443,7 @@ extension Defaults {
 			}
 
 			#if os(macOS)
-			guard let nativeColor = NativeColor(cgColor: cgColor) else {
-				return nil
-			}
-
-			return Value(nativeColor)
+			return Value(cgColor)
 			#else
 			return Value(cgColor: cgColor)
 			#endif
