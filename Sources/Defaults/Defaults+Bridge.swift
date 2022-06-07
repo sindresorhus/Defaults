@@ -442,11 +442,11 @@ extension Defaults {
 				return nil
 			}
 
-			#if os(macOS)
-			return Value(cgColor)
-			#else
-			return Value(cgColor: cgColor)
-			#endif
+			if #available(macOS 12.0, macOSApplicationExtension 12.0, *) {
+				return Value(cgColor: cgColor)
+			} else {
+				return Value(cgColor)
+			}
 		}
 	}
 }
