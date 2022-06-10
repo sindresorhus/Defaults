@@ -88,7 +88,7 @@ extension Defaults.AnySerializable: Hashable {
 			hasher.combine(value)
 		case let value as Double:
 			hasher.combine(value)
-		case let value as CGFloat: // swiftlint:disable:this no_cgfloat
+		case let value as CGFloat:
 			hasher.combine(value)
 		case let value as String:
 			hasher.combine(value)

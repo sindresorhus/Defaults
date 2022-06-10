@@ -86,7 +86,7 @@ extension Defaults {
 }
 
 extension Defaults.Key {
-	public convenience init<T: Defaults.Serializable>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
+	public convenience init<T>(_ key: String, suite: UserDefaults = .standard) where Value == T? {
 		self.init(key, default: nil, suite: suite)
 	}
 }
