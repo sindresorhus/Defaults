@@ -3,8 +3,7 @@ import Foundation
 extension UserDefaults {
 	func migrateCodableToNative<Value: Defaults.Serializable & Codable>(forKey key: String, of type: Value.Type) {
 		guard
-			let jsonString = string(forKey: key),
-			let jsonData = jsonString.data(using: .utf8),
+			let jsonData = string(forKey: key)?.data(using: .utf8),
 			let codable = try? JSONDecoder().decode(Value.self, from: jsonData)
 		else {
 			return
@@ -38,8 +37,7 @@ extension UserDefaults {
 	*/
 	func migrateCodableToNative<Value: Defaults.NativeType>(forKey key: String, of type: Value.Type) {
 		guard
-			let jsonString = string(forKey: key),
-			let jsonData = jsonString.data(using: .utf8),
+			let jsonData = string(forKey: key)?.data(using: .utf8),
 			let codable = try? JSONDecoder().decode(Value.CodableForm.self, from: jsonData)
 		else {
 			return

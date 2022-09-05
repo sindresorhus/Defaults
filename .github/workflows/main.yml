@@ -4,12 +4,12 @@ on:
   - pull_request
 jobs:
   test:
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: swift test
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: norio-nomura/action-swiftlint@3.2.1

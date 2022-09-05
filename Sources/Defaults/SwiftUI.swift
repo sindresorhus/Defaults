@@ -168,7 +168,7 @@ extension Defaults {
 	}
 	```
 	*/
-	public struct Toggle<Label, Key>: View where Label: View, Key: Defaults.Key<Bool> {
+	public struct Toggle<Label: View>: View {
 		@ViewStorage private var onChange: ((Bool) -> Void)?
 
 		private let label: () -> Label
@@ -176,7 +176,7 @@ extension Defaults {
 		// Intentionally using `@ObservedObjected` over `@StateObject` so that the key can be dynamically changed.
 		@ObservedObject private var observable: Defaults.Observable<Bool>
 
-		public init(key: Key, @ViewBuilder label: @escaping () -> Label) {
+		public init(key: Defaults.Key<Bool>, @ViewBuilder label: @escaping () -> Label) {
 			self.label = label
 			self.observable = Defaults.Observable(key)
 		}
@@ -191,8 +191,8 @@ extension Defaults {
 }
 
 @available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
-extension Defaults.Toggle where Label == Text {
-	public init<S>(_ title: S, key: Defaults.Key<Bool>) where S: StringProtocol {
+extension Defaults.Toggle<Text> {
+	public init(_ title: some StringProtocol, key: Defaults.Key<Bool>) {
 		self.label = { Text(title) }
 		self.observable = Defaults.Observable(key)
 	}

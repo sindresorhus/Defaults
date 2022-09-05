@@ -104,8 +104,8 @@ final class LifetimeAssociation {
 
 	private func invalidate() {
 		guard
-			let owner = owner,
-			let wrappedObject = wrappedObject,
+			let owner,
+			let wrappedObject,
 			var associatedObjects = Self.associatedObjects[owner],
 			let wrappedObjectAssociationIndex = associatedObjects.firstIndex(where: { $0 === wrappedObject })
 		else {

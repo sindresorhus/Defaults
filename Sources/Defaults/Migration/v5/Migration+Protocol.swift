@@ -11,8 +11,7 @@ So we can convert the JSON string into a `NativeType` like this:
 
 ```
 guard
-	let jsonString = string,
-	let jsonData = jsonString.data(using: .utf8),
+	let jsonData = string?.data(using: .utf8),
 	let codable = try? JSONDecoder().decode(NativeType.CodableForm.self, from: jsonData)
 else {
 	return nil

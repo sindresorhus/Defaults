@@ -52,7 +52,7 @@ private struct TimeZoneBridge: Defaults.Bridge {
 	typealias Serializable = [String: Any]
 
 	func serialize(_ value: TimeZone?) -> Serializable? {
-		guard let value = value else {
+		guard let value else {
 			return nil
 		}
 
@@ -61,9 +61,9 @@ private struct TimeZoneBridge: Defaults.Bridge {
 
 	func deserialize(_ object: Serializable?) -> TimeZone? {
 		guard
-			let dictionary = object,
-			let id = dictionary["id"] as? String,
-			let name = dictionary["name"] as? String
+			let object,
+			let id = object["id"] as? String,
+			let name = object["name"] as? String
 		else {
 			return nil
 		}
@@ -86,7 +86,7 @@ private struct ChosenTimeZoneBridge: Defaults.Bridge {
 	typealias Serializable = [String: Any]
 
 	func serialize(_ value: Value?) -> Serializable? {
-		guard let value = value else {
+		guard let value else {
 			return nil
 		}
 
@@ -95,9 +95,9 @@ private struct ChosenTimeZoneBridge: Defaults.Bridge {
 
 	func deserialize(_ object: Serializable?) -> Value? {
 		guard
-			let dictionary = object,
-			let id = dictionary["id"] as? String,
-			let name = dictionary["name"] as? String
+			let object,
+			let id = object["id"] as? String,
+			let name = object["name"] as? String
 		else {
 			return nil
 		}

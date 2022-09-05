@@ -7,7 +7,7 @@ struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: SetAlgebra
 
 	init() {}
 
-	init<S: Sequence>(_ sequence: __owned S) where Element == S.Element {
+	init(_ sequence: __owned some Sequence<Element>) {
 		self.store = Set(sequence)
 	}
 

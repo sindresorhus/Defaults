@@ -43,7 +43,7 @@ extension Defaults {
 
 	private static func deserialize<Value: Serializable>(_ value: Any?, to type: Value.Type) -> Value? {
 		guard
-			let value = value,
+			let value,
 			!(value is NSNull)
 		else {
 			return nil

@@ -14,7 +14,7 @@ extension CustomDate: Defaults.Serializable {
 		public typealias Serializable = [Int]
 
 		public func serialize(_ value: Value?) -> Serializable? {
-			guard let value = value else {
+			guard let value else {
 				return nil
 			}
 
@@ -22,7 +22,7 @@ extension CustomDate: Defaults.Serializable {
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			guard let object = object else {
+			guard let object else {
 				return nil
 			}
 

@@ -15,7 +15,7 @@ private struct ItemBridge: Defaults.Bridge {
 	typealias Value = Item
 	typealias Serializable = [String: String]
 	func serialize(_ value: Value?) -> Serializable? {
-		guard let value = value else {
+		guard let value else {
 			return nil
 		}
 
@@ -24,7 +24,7 @@ private struct ItemBridge: Defaults.Bridge {
 
 	func deserialize(_ object: Serializable?) -> Value? {
 		guard
-			let object = object,
+			let object,
 			let name = object["name"],
 			let count = UInt(object["count"] ?? "0")
 		else {

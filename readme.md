@@ -31,42 +31,12 @@ For a real-world example, see the [Plash app](https://github.com/sindresorhus/Pl
 - Easy to add support for your own custom types.
 - Comes with a convenience SwiftUI `Toggle` component.
 
-
 ## Compatibility
 
 - macOS 10.13+
 - iOS 12+
 - tvOS 12+
 - watchOS 5+
-
-<br>
-
----
-
-<div align="center">
-	<p>
-		<p>
-			<sup>
-				<a href="https://github.com/sponsors/sindresorhus">Sindre's open source work is supported by the community</a>
-			</sup>
-		</p>
-		<sup>Special thanks to:</sup>
-		<br>
-		<br>
-		<a href="https://keygen.sh">
-			<div>
-				<img src="https://sindresorhus.com/assets/thanks/keygen-logo.svg" width="210" alt="Keygen">
-			</div>
-			<b>A dead-simple software licensing and distribution API built for developers</b>
-		</a>
-		<br>
-		<br>
-	</p>
-</div>
-
----
-
-<br>
 
 ## Migration Guides
 
@@ -76,7 +46,7 @@ For a real-world example, see the [Plash app](https://github.com/sindresorhus/Pl
 
 Add `https://github.com/sindresorhus/Defaults` in the [“Swift Package Manager” tab in Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app).
 
-**There are some issues running Defaults with Xcode 13.3 because of a Swift bug. [See the workaround](workaround.md).**
+**Requires Xcode 14 or later**
 
 ## Support types
 
@@ -670,7 +640,7 @@ struct UserBridge: Defaults.Bridge {
 	typealias Serializable = [String: String]
 
 	public func serialize(_ value: Value?) -> Serializable? {
-		guard let value = value else {
+		guard let value else {
 			return nil
 		}
 
@@ -682,7 +652,7 @@ struct UserBridge: Defaults.Bridge {
 
 	public func deserialize(_ object: Serializable?) -> Value? {
 		guard
-			let object = object,
+			let object,
 			let name = object["name"],
 			let age = object["age"]
 		else {
