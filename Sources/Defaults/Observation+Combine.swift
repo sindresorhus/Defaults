@@ -58,7 +58,7 @@ extension Defaults {
 			self.options = options
 		}
 
-		func receive(subscriber: some Subscriber<Output, Failure>) {
+		func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
 			let subscription = DefaultsSubscription(
 				subscriber: subscriber,
 				suite: suite,
