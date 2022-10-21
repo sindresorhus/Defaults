@@ -53,7 +53,7 @@ public enum Defaults {
 
 			super.init(name: key, suite: suite)
 
-			if (defaultValue as? _DefaultsOptionalType)?.isNil == true {
+			if (defaultValue as? _DefaultsOptionalProtocol)?.isNil == true {
 				return
 			}
 

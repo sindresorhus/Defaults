@@ -499,7 +499,12 @@ final class DefaultsTests: XCTestCase {
 			.collect(expectedArray.count)
 			.sink { result in
 				print("Result array: \(result)")
-				result == expectedArray ? expect.fulfill() : XCTFail("Expected Array is not matched")
+
+				if result == expectedArray {
+					expect.fulfill()
+				} else {
+					XCTFail("Expected Array is not matched")
+				}
 			}
 
 		inputArray.forEach {
@@ -527,7 +532,12 @@ final class DefaultsTests: XCTestCase {
 			.collect(expectedArray.count)
 			.sink { result in
 				print("Result array: \(result)")
-				result == expectedArray ? expect.fulfill() : XCTFail("Expected Array is not matched")
+
+				if result == expectedArray {
+					expect.fulfill()
+				} else {
+					XCTFail("Expected Array is not matched")
+				}
 			}
 
 		inputArray.forEach {

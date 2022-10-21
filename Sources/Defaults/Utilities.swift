@@ -20,7 +20,7 @@ extension Decodable {
 }
 
 
-final class ObjectAssociation<T: Any> {
+final class ObjectAssociation<T> {
 	subscript(index: AnyObject) -> T? {
 		get {
 			objc_getAssociatedObject(index, Unmanaged.passUnretained(self).toOpaque()) as! T?
@@ -124,29 +124,15 @@ A protocol for making generic type constraints of optionals.
 
 - Note: It's intentionally not including `associatedtype Wrapped` as that limits a lot of the use-cases.
 */
-public protocol _DefaultsOptionalType: ExpressibleByNilLiteral {
+public protocol _DefaultsOptionalProtocol: ExpressibleByNilLiteral {
 	/**
 	This is useful as you cannot compare `_OptionalType` to `nil`.
 	*/
 	var isNil: Bool { get }
 }
 
-extension Optional: _DefaultsOptionalType {
+extension Optional: _DefaultsOptionalProtocol {
 	public var isNil: Bool { self == nil }
-}
-
-
-extension DispatchQueue {
-	/**
-	Performs the `execute` closure immediately if we're on the main thread or asynchronously puts it on the main thread otherwise.
-	*/
-	static func mainSafeAsync(execute work: @escaping () -> Void) {
-		if Thread.isMainThread {
-			work()
-		} else {
-			main.async(execute: work)
-		}
-	}
 }
 
 

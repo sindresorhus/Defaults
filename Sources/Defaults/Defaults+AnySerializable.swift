@@ -191,7 +191,7 @@ extension Defaults.AnySerializable: ExpressibleByDictionaryLiteral {
 	}
 }
 
-extension Defaults.AnySerializable: _DefaultsOptionalType {
+extension Defaults.AnySerializable: _DefaultsOptionalProtocol {
 	// Since `nil` cannot be assigned to `Any`, we use `Void` instead of `nil`.
 	public var isNil: Bool { value is Void }
 }

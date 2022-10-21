@@ -1,5 +1,4 @@
 only_rules:
-  - anyobject_protocol
   - array_init
   - block_based_kvo
   - class_delegate_protocol
@@ -10,6 +9,7 @@ only_rules:
   - collection_alignment
   - colon
   - comma
+  - comma_inheritance
   - compiler_protocol_init
   - computed_accessors_order
   - conditional_returns_on_newline
@@ -105,6 +105,7 @@ only_rules:
   - required_enum_case
   - return_arrow_whitespace
   - return_value_from_void_function
+  - self_binding
   - self_in_property_initialization
   - shorthand_operator
   - sorted_first_last
@@ -136,9 +137,9 @@ only_rules:
   - unused_setter_value
   - valid_ibinspectable
   - vertical_parameter_alignment
-  - vertical_parameter_alignment_on_call
   - vertical_whitespace_closing_braces
   - vertical_whitespace_opening_braces
+  - void_function_in_ternary
   - void_return
   - xct_specific_matcher
   - yoda_condition
@@ -192,3 +193,6 @@ custom_rules:
   final_class:
     regex: '^class [a-zA-Z\d]+[^{]+\{'
     message: 'Classes should be marked as final whenever possible. If you actually need it to be subclassable, just add `// swiftlint:disable:next final_class`.'
+  no_alignment_center:
+    regex: '\b\(alignment: .center\b'
+    message: 'This alignment is the default.'
