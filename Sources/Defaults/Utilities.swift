@@ -188,8 +188,9 @@ extension Defaults.Serializable {
 		{
 			return anyObject
 		}
+
 		guard let nextType = T.Serializable.self as? any Defaults.Serializable.Type else {
-			// This is a special case for the types which do not conform to `Defaults.Serializable`(ex. `Any`).
+			// This is a special case for the types which do not conform to `Defaults.Serializable` (for example, `Any`).
 			return T.bridge.deserialize(anyObject as? T.Serializable) as? T
 		}
 
