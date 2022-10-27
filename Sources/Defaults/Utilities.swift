@@ -210,13 +210,16 @@ extension Defaults.Serializable {
 		if T.isNativelySupportedType {
 			return value
 		}
+
 		guard let serialized = T.bridge.serialize(value as? T.Value) else {
 			return nil
 		}
+
 		guard let next = serialized as? any Defaults.Serializable else {
-			// This is a special case for the types which do not conform to `Defaults.Serializable`(ex. `Any`).
+			// This is a special case for the types which do not conform to `Defaults.Serializable` (for example, `Any`).
 			return serialized
 		}
+
 		return toSerializable(next)
 	}
 }
