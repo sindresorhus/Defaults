@@ -38,12 +38,56 @@ public final class DefaultsUserBridge: Defaults.Bridge {
 
 private let fixtureCustomBridge = User(username: "hank121314", password: "123456")
 
+struct PlainHourMinuteTimeRange: Hashable, Codable {
+	var start: PlainHourMinuteTime
+	var end: PlainHourMinuteTime
+}
+
+extension PlainHourMinuteTimeRange: Defaults.Serializable {
+	struct Bridge: Defaults.Bridge {
+		typealias Value = PlainHourMinuteTimeRange
+		typealias Serializable = [PlainHourMinuteTime]
+
+		public func serialize(_ value: Value?) -> Serializable? {
+			guard let value = value else {
+				return nil
+			}
+
+			return [value.start, value.end]
+		}
+
+		public func deserialize(_ object: Serializable?) -> Value? {
+			guard
+				let array = object,
+				let start = array[safe: 0],
+				let end = array[safe: 1]
+			else {
+				return nil
+			}
+
+			return .init(start: start, end: end)
+		}
+	}
+
+	static let bridge = Bridge()
+}
+
+struct PlainHourMinuteTime: Hashable, Codable, Defaults.Serializable {
+	var hour: Int
+	var minute: Int
+}
+
+extension Collection {
+	subscript(safe index: Index) -> Element? {
+		indices.contains(index) ? self[index] : nil
+	}
+}
+
 extension Defaults.Keys {
 	fileprivate static let customBridge = Key<User>("customBridge", default: fixtureCustomBridge)
 	fileprivate static let customBridgeArray = Key<[User]>("array_customBridge", default: [fixtureCustomBridge])
 	fileprivate static let customBridgeDictionary = Key<[String: User]>("dictionary_customBridge", default: ["0": fixtureCustomBridge])
 }
-
 
 final class DefaultsCustomBridge: XCTestCase {
 	override func setUp() {
@@ -146,6 +190,35 @@ final class DefaultsCustomBridge: XCTestCase {
 		XCTAssertEqual(Defaults[key]["0"]?[0], newUser)
 		XCTAssertEqual(Defaults[key]["0"]?[1], fixtureCustomBridge)
 		XCTAssertEqual(Defaults[key]["0"]?[1], fixtureCustomBridge)
+	}
+
+	func testRecursiveKey() {
+		let start = PlainHourMinuteTime(hour: 1, minute: 0)
+		let end = PlainHourMinuteTime(hour: 2, minute: 0)
+		let range = PlainHourMinuteTimeRange(start: start, end: end)
+		let key = Defaults.Key<PlainHourMinuteTimeRange>("independentCustomBridgeRecursiveKey", default: range)
+		XCTAssertEqual(Defaults[key].start.hour, range.start.hour)
+		XCTAssertEqual(Defaults[key].start.minute, range.start.minute)
+		XCTAssertEqual(Defaults[key].end.hour, range.end.hour)
+		XCTAssertEqual(Defaults[key].end.minute, range.end.minute)
+		guard let rawValue = UserDefaults.standard.array(forKey: key.name) as? [String] else {
+			XCTFail("rawValue should not be nil")
+			return
+		}
+		XCTAssertEqual(rawValue, [#"{"minute":0,"hour":1}"#, #"{"minute":0,"hour":2}"#])
+		let next_start = PlainHourMinuteTime(hour: 3, minute: 58)
+		let next_end = PlainHourMinuteTime(hour: 4, minute: 59)
+		let next_range = PlainHourMinuteTimeRange(start: next_start, end: next_end)
+		Defaults[key] = next_range
+		XCTAssertEqual(Defaults[key].start.hour, next_range.start.hour)
+		XCTAssertEqual(Defaults[key].start.minute, next_range.start.minute)
+		XCTAssertEqual(Defaults[key].end.hour, next_range.end.hour)
+		XCTAssertEqual(Defaults[key].end.minute, next_range.end.minute)
+		guard let nextRawValue = UserDefaults.standard.array(forKey: key.name) as? [String] else {
+			XCTFail("nextRawValue should not be nil")
+			return
+		}
+		XCTAssertEqual(nextRawValue, [#"{"minute":58,"hour":3}"#, #"{"minute":59,"hour":4}"#])
 	}
 
 	func testType() {

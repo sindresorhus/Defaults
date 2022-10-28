@@ -167,18 +167,20 @@ extension Defaults.Serializable {
 	return Value.toValue(anyObject)
 	```
 	*/
-	static func toValue(_ anyObject: Any) -> Self? {
-		// Return directly if `anyObject` can cast to Value, since it means `Value` is a natively supported type.
+	static func toValue<T: Defaults.Serializable>(_ anyObject: Any, type: T.Type = Self.self) -> T? {
 		if
-			isNativelySupportedType,
-			let anyObject = anyObject as? Self
+			T.isNativelySupportedType,
+			let anyObject = anyObject as? T
 		{
 			return anyObject
-		} else if let value = bridge.deserialize(anyObject as? Serializable) {
-			return value as? Self
 		}
 
-		return nil
+		guard let nextType = T.Serializable.self as? any Defaults.Serializable.Type else {
+			// This is a special case for the types which do not conform to `Defaults.Serializable` (for example, `Any`).
+			return T.bridge.deserialize(anyObject as? T.Serializable) as? T
+		}
+
+		return T.bridge.deserialize(toValue(anyObject, type: nextType) as? T.Serializable) as? T
 	}
 
 	/**
@@ -190,14 +192,20 @@ extension Defaults.Serializable {
 	set(Value.toSerialize(value), forKey: key)
 	```
 	*/
-	static func toSerializable(_ value: Self) -> Any? {
-		// Return directly if `Self` is a natively supported type, since it does not need serialization.
-		if isNativelySupportedType {
+	static func toSerializable<T: Defaults.Serializable>(_ value: T) -> Any? {
+		if T.isNativelySupportedType {
 			return value
-		} else if let serialized = bridge.serialize(value as? Value) {
+		}
+
+		guard let serialized = T.bridge.serialize(value as? T.Value) else {
+			return nil
+		}
+
+		guard let next = serialized as? any Defaults.Serializable else {
+			// This is a special case for the types which do not conform to `Defaults.Serializable` (for example, `Any`).
 			return serialized
 		}
 
-		return nil
+		return toSerializable(next)
 	}
 }
