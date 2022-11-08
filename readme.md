@@ -80,7 +80,7 @@ If a type conforms to both `NSSecureCoding` and `Codable`, then `Codable` will b
 
 You declare the defaults keys upfront with type and default value.
 
-**Do not use a dot in the key name, because of [this bug](https://github.com/sindresorhus/Defaults/issues/59).**
+**The key name must be ASCII, not start with `@`, and cannot contain a dot (`.`).**
 
 ```swift
 import Cocoa
