@@ -41,24 +41,22 @@ public enum Defaults {
 	}
 
 	public final class Key<Value: Serializable>: AnyKey {
-		public typealias DefaultGetter = () -> Value
 		/**
 		The `defaultGetter` will be executed in these situations:
 
 		- `UserDefaults.object(forKey: string)` return `nil`
 		- `bridge` cannot deserialize `Value` from `UserDefaults`
 		 */
-		private let defaultGetter: DefaultGetter
-		public var defaultValue: Value { defaultGetter() }
+		private let defaultValueGetter: () -> Value
+		public var defaultValue: Value { defaultValueGetter() }
 
 		/**
 		Create a defaults key.
 
 		The `default` parameter can be left out if the `Value` type is an optional.
 		*/
-		public init(_ key: String, default defaultGetter: @autoclosure @escaping DefaultGetter, suite: UserDefaults = .standard) {
-			let defaultValue = defaultGetter()
-			self.defaultGetter = defaultGetter
+		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
+			self.defaultValueGetter = { defaultValue }
 
 			super.init(name: key, suite: suite)
 
@@ -79,8 +77,8 @@ public enum Defaults {
 
 		- NOTE: If using `defaultGetter`, it will not set the default value in the actual UserDefaults.
 		*/
-		public init(_ key: String, default defaultGetter: @escaping DefaultGetter, suite: UserDefaults = .standard) {
-			self.defaultGetter = defaultGetter
+		public init(_ key: String, suite: UserDefaults = .standard, default defaultValueGetter: @escaping () -> Value) {
+			self.defaultValueGetter = defaultValueGetter
 
 			super.init(name: key, suite: suite)
 		}
