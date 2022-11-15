@@ -15,6 +15,8 @@ extension Defaults.Keys {
 	static let data = Key<Data>("data", default: Data([]))
 	static let date = Key<Date>("date", default: fixtureDate)
 	static let uuid = Key<UUID?>("uuid")
+	static let defaultDynamicDate = Key<Date>("defaultDynamicOptionalDate") { Date(timeIntervalSince1970: 0) }
+	static let defaultDynamicOptionalDate = Key<Date?>("defaultDynamicOptionalDate") { Date(timeIntervalSince1970: 1) }
 }
 
 final class DefaultsTests: XCTestCase {
@@ -52,6 +54,17 @@ final class DefaultsTests: XCTestCase {
 		Defaults[url] = fixtureURL2
 		XCTAssertFalse(Defaults[key]!)
 		XCTAssertEqual(Defaults[url], fixtureURL2)
+	}
+
+	func testInitializeDynamicDateKey() {
+		_ = Defaults.Key<Date>("independentInitializeDynamicDateKey") {
+			XCTFail("Init dynamic key should not trigger getter")
+			return Date()
+		}
+		_ = Defaults.Key<Date?>("independentInitializeDynamicOptionalDateKey") {
+			XCTFail("Init dynamic optional key should not trigger getter")
+			return Date()
+		}
 	}
 
 	func testKeyRegistersDefault() {
@@ -98,6 +111,27 @@ final class DefaultsTests: XCTestCase {
 		let newDate = Date()
 		Defaults[.date] = newDate
 		XCTAssertEqual(Defaults[.date], newDate)
+	}
+
+	func testDynamicDateType() {
+		XCTAssertEqual(Defaults[.defaultDynamicDate], Date(timeIntervalSince1970: 0))
+		let next = Date(timeIntervalSince1970: 1)
+		Defaults[.defaultDynamicDate] = next
+		XCTAssertEqual(Defaults[.defaultDynamicDate], next)
+		XCTAssertEqual(UserDefaults.standard.object(forKey: Defaults.Key<Date>.defaultDynamicDate.name) as! Date, next)
+		Defaults.Key<Date>.defaultDynamicDate.reset()
+		XCTAssertEqual(Defaults[.defaultDynamicDate], Date(timeIntervalSince1970: 0))
+	}
+
+	func testDynamicOptionalDateType() {
+		XCTAssertEqual(Defaults[.defaultDynamicOptionalDate], Date(timeIntervalSince1970: 1))
+		let next = Date(timeIntervalSince1970: 2)
+		Defaults[.defaultDynamicOptionalDate] = next
+		XCTAssertEqual(Defaults[.defaultDynamicOptionalDate], next)
+		XCTAssertEqual(UserDefaults.standard.object(forKey: Defaults.Key<Date>.defaultDynamicOptionalDate.name) as! Date, next)
+		Defaults[.defaultDynamicOptionalDate] = nil
+		XCTAssertEqual(Defaults[.defaultDynamicOptionalDate], Date(timeIntervalSince1970: 1))
+		XCTAssertNil(UserDefaults.standard.object(forKey: Defaults.Key<Date>.defaultDynamicOptionalDate.name))
 	}
 
 	func testFileURLType() {
@@ -182,6 +216,38 @@ final class DefaultsTests: XCTestCase {
 
 		Defaults[key] = true
 		Defaults[key] = false
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
+
+	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
+	func testDynamicOptionalDateTypeCombine() {
+		let first = Date(timeIntervalSince1970: 0)
+		let second = Date(timeIntervalSince1970: 1)
+		let third = Date(timeIntervalSince1970: 2)
+		let key = Defaults.Key<Date?>("combineDynamicOptionalDateKey") { first }
+		let expect = expectation(description: "Observation closure being called")
+
+		let publisher = Defaults
+			.publisher(key, options: [])
+			.map { ($0.oldValue, $0.newValue) }
+			.collect(3)
+
+		let expectedValues: [(Date?, Date?)] = [(first, second), (second, third), (third, first)]
+
+		let cancellable = publisher.sink { actualValues in
+			for (expected, actual) in zip(expectedValues, actualValues) {
+				XCTAssertEqual(expected.0, actual.0)
+				XCTAssertEqual(expected.1, actual.1)
+			}
+
+			expect.fulfill()
+		}
+
+		Defaults[key] = second
+		Defaults[key] = third
 		Defaults.reset(key)
 		cancellable.cancel()
 
@@ -317,6 +383,26 @@ final class DefaultsTests: XCTestCase {
 		}
 
 		Defaults[key] = fixtureURL2
+
+		waitForExpectations(timeout: 10)
+	}
+
+	func testObserveDynamicOptionalDateKey() {
+		let first = Date(timeIntervalSince1970: 0)
+		let second = Date(timeIntervalSince1970: 1)
+		let key = Defaults.Key<Date?>("observeDynamicOptionalDate") { first }
+
+		let expect = expectation(description: "Observation closure being called")
+
+		var observation: Defaults.Observation!
+		observation = Defaults.observe(key, options: []) { change in
+			XCTAssertEqual(change.oldValue, first)
+			XCTAssertEqual(change.newValue, second)
+			observation.invalidate()
+			expect.fulfill()
+		}
+
+		Defaults[key] = second
 
 		waitForExpectations(timeout: 10)
 	}
