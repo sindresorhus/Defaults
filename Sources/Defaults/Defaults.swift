@@ -42,7 +42,7 @@ public enum Defaults {
 
 	public final class Key<Value: Serializable>: AnyKey {
 		/**
-		The `defaultGetter` will be executed in these situations:
+		The `defaultValueGetter` will be executed in these situations:
 
 		- `UserDefaults.object(forKey: string)` return `nil`
 		- `bridge` cannot deserialize `Value` from `UserDefaults`
@@ -75,7 +75,7 @@ public enum Defaults {
 		/**
 		Create a defaults key with dynamic getter.
 
-		- NOTE: If using `defaultGetter`, it will not set the default value in the actual UserDefaults.
+		- NOTE: If using `defaultValueGetter`, it will not set the default value in the actual UserDefaults.
 		*/
 		public init(_ key: String, suite: UserDefaults = .standard, default defaultValueGetter: @escaping () -> Value) {
 			self.defaultValueGetter = defaultValueGetter
