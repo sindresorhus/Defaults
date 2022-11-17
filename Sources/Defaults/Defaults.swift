@@ -42,12 +42,13 @@ public enum Defaults {
 
 	public final class Key<Value: Serializable>: AnyKey {
 		/**
-		The `defaultValueGetter` will be executed in these situations:
+		It will be executed in these situations:
 
 		- `UserDefaults.object(forKey: string)` return `nil`
 		- `bridge` cannot deserialize `Value` from `UserDefaults`
-		 */
+		*/
 		private let defaultValueGetter: () -> Value
+
 		public var defaultValue: Value { defaultValueGetter() }
 
 		/**
@@ -73,9 +74,17 @@ public enum Defaults {
 		}
 
 		/**
-		Create a defaults key with dynamic getter.
+		Create a defaults key with a dynamic default value.
+		
+		This can be useful in cases where you cannot define a static default value as it may change during the lifetime of the app.
 
-		- NOTE: If using `defaultValueGetter`, it will not set the default value in the actual UserDefaults.
+		```swift
+		extension Defaults.Keys {
+			static let camera = Key<AVCaptureDevice?>("camera") { .default(for: .video) }
+		}
+		```
+
+		- Note: This initializer will not set the default value in the actual `UserDefaults`. This should not matter much though. It's only really useful if you use legacy KVO bindings.
 		*/
 		public init(_ key: String, suite: UserDefaults = .standard, default defaultValueGetter: @escaping () -> Value) {
 			self.defaultValueGetter = defaultValueGetter
