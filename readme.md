@@ -123,8 +123,7 @@ if let name = Defaults[.name] {
 
 The default value is then `nil`.
 
-Sometimes you cannot define a static default value as it may change during the lifetime of the app.
-`Defaults.Key` also support dynamic default value.
+You can also specify a dynamic default value. This can be useful when the default value may change during the lifetime of the app:
 
 ```swift
 extension Defaults.Keys {
@@ -393,7 +392,7 @@ print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 ```
 
 > **Note** 
-> `Defaults.Key` with dynamic default value will not register the `default` value in `UserDefaults`.
+> A `Defaults.Key` with a dynamic default value will not register the default value in `UserDefaults`.
 
 ## API
 
