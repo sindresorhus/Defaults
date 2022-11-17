@@ -123,6 +123,14 @@ if let name = Defaults[.name] {
 
 The default value is then `nil`.
 
+You can also specify a dynamic default value. This can be useful when the default value may change during the lifetime of the app:
+
+```swift
+extension Defaults.Keys {
+	static let camera = Key<AVCaptureDevice?>("camera") { .default(for: .video) }
+}
+```
+
 ---
 
 ### Enum example
@@ -382,6 +390,9 @@ extension Defaults.Keys {
 print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 //=> true
 ```
+
+> **Note** 
+> A `Defaults.Key` with a dynamic default value will not register the default value in `UserDefaults`.
 
 ## API
 

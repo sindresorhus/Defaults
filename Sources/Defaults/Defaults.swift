@@ -41,7 +41,15 @@ public enum Defaults {
 	}
 
 	public final class Key<Value: Serializable>: AnyKey {
-		public let defaultValue: Value
+		/**
+		It will be executed in these situations:
+
+		- `UserDefaults.object(forKey: string)` returns `nil`
+		- A `bridge` cannot deserialize `Value` from `UserDefaults`
+		*/
+		private let defaultValueGetter: () -> Value
+
+		public var defaultValue: Value { defaultValueGetter() }
 
 		/**
 		Create a defaults key.
@@ -51,7 +59,7 @@ public enum Defaults {
 		The `default` parameter should not be used if the `Value` type is an optional.
 		*/
 		public init(_ key: String, default defaultValue: Value, suite: UserDefaults = .standard) {
-			self.defaultValue = defaultValue
+			self.defaultValueGetter = { defaultValue }
 
 			super.init(name: key, suite: suite)
 
@@ -65,6 +73,25 @@ public enum Defaults {
 
 			// Sets the default value in the actual UserDefaults, so it can be used in other contexts, like binding.
 			suite.register(defaults: [name: serialized])
+		}
+
+		/**
+		Create a defaults key with a dynamic default value.
+		
+		This can be useful in cases where you cannot define a static default value as it may change during the lifetime of the app.
+
+		```swift
+		extension Defaults.Keys {
+			static let camera = Key<AVCaptureDevice?>("camera") { .default(for: .video) }
+		}
+		```
+
+		- Note: This initializer will not set the default value in the actual `UserDefaults`. This should not matter much though. It's only really useful if you use legacy KVO bindings.
+		*/
+		public init(_ key: String, suite: UserDefaults = .standard, default defaultValueGetter: @escaping () -> Value) {
+			self.defaultValueGetter = defaultValueGetter
+
+			super.init(name: key, suite: suite)
 		}
 	}
 
