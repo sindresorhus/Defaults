@@ -1,22 +1,7 @@
 // MIT License © Sindre Sorhus
 import Foundation
 
-public protocol DefaultsBaseKey {
-	var name: String { get }
-	var suite: UserDefaults { get }
-}
-
-extension DefaultsBaseKey {
-	/**
-	Reset the item back to its default value.
-	*/
-	public func reset() {
-		suite.removeObject(forKey: name)
-	}
-}
-
 public enum Defaults {
-	public typealias BaseKey = DefaultsBaseKey
 	public typealias Keys = AnyKey
 	public typealias Serializable = DefaultsSerializable
 	public typealias CollectionSerializable = DefaultsCollectionSerializable
@@ -28,7 +13,7 @@ public enum Defaults {
 	typealias CodableBridge = DefaultsCodableBridge
 
 	// We cannot use `Key` as the container for keys because of "Static stored properties not supported in generic types".
-	public class AnyKey: BaseKey {
+	public class AnyKey {
 		public typealias Key = Defaults.Key
 
 		public let name: String
@@ -37,6 +22,13 @@ public enum Defaults {
 		fileprivate init(name: String, suite: UserDefaults) {
 			self.name = name
 			self.suite = suite
+		}
+
+		/**
+		Reset the item back to its default value.
+		*/
+		public func reset() {
+			suite.removeObject(forKey: name)
 		}
 	}
 
