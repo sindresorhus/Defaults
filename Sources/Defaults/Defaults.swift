@@ -44,8 +44,8 @@ public enum Defaults {
 		/**
 		It will be executed in these situations:
 
-		- `UserDefaults.object(forKey: string)` return `nil`
-		- `bridge` cannot deserialize `Value` from `UserDefaults`
+		- `UserDefaults.object(forKey: string)` returns `nil`
+		- A `bridge` cannot deserialize `Value` from `UserDefaults`
 		*/
 		private let defaultValueGetter: () -> Value
 
