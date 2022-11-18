@@ -48,7 +48,7 @@ extension PlainHourMinuteTimeRange: Defaults.Serializable {
 		typealias Value = PlainHourMinuteTimeRange
 		typealias Serializable = [PlainHourMinuteTime]
 
-		public func serialize(_ value: Value?) -> Serializable? {
+		func serialize(_ value: Value?) -> Serializable? {
 			guard let value = value else {
 				return nil
 			}
@@ -56,7 +56,7 @@ extension PlainHourMinuteTimeRange: Defaults.Serializable {
 			return [value.start, value.end]
 		}
 
-		public func deserialize(_ object: Serializable?) -> Value? {
+		func deserialize(_ object: Serializable?) -> Value? {
 			guard
 				let array = object,
 				let start = array[safe: 0],

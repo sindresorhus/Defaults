@@ -140,7 +140,7 @@ extension Defaults {
 			object?.addObserver(self, forKeyPath: key, options: options.toNSKeyValueObservingOptions, context: nil)
 		}
 
-		public func invalidate() {
+		func invalidate() {
 			object?.removeObserver(self, forKeyPath: key, context: nil)
 			object = nil
 			lifetimeAssociation?.cancel()
@@ -148,7 +148,7 @@ extension Defaults {
 
 		private var lifetimeAssociation: LifetimeAssociation?
 
-		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+		func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
 			// swiftlint:disable:next trailing_closure
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
 				self?.invalidate()
@@ -157,7 +157,7 @@ extension Defaults {
 			return self
 		}
 
-		public func removeLifetimeTie() {
+		func removeLifetimeTie() {
 			lifetimeAssociation?.cancel()
 		}
 
@@ -216,7 +216,7 @@ extension Defaults {
 			invalidate()
 		}
 
-		public func start(options: ObservationOptions) {
+		func start(options: ObservationOptions) {
 			for observable in observables {
 				observable.suite?.addObserver(
 					self,
@@ -227,7 +227,7 @@ extension Defaults {
 			}
 		}
 
-		public func invalidate() {
+		func invalidate() {
 			for observable in observables {
 				observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &Self.observationContext)
 				observable.suite = nil
@@ -236,7 +236,7 @@ extension Defaults {
 			lifetimeAssociation?.cancel()
 		}
 
-		public func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+		func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
 			// swiftlint:disable:next trailing_closure
 			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
 				self?.invalidate()
@@ -245,7 +245,7 @@ extension Defaults {
 			return self
 		}
 
-		public func removeLifetimeTie() {
+		func removeLifetimeTie() {
 			lifetimeAssociation?.cancel()
 		}
 
@@ -293,6 +293,8 @@ extension Defaults {
 		//=> false
 	}
 	```
+
+	- Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-9eh8`` instead.
 	*/
 	public static func observe<Value: Serializable>(
 		_ key: Key<Value>,
@@ -322,6 +324,8 @@ extension Defaults {
 		// …
 	}
 	```
+
+	- Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-9eh8`` instead.
 	*/
 	public static func observe(
 		keys: _AnyKey...,

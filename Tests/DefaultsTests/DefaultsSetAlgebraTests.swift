@@ -19,18 +19,18 @@ struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: SetAlgebra
 		store.contains(member)
 	}
 
-	func union(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
-		DefaultsSetAlgebra(store.union(other.store))
+	func union(_ other: Self) -> Self {
+		Self(store.union(other.store))
 	}
 
-	func intersection(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
-		var defaultsSetAlgebra = DefaultsSetAlgebra()
+	func intersection(_ other: Self) -> Self {
+		var defaultsSetAlgebra = Self()
 		defaultsSetAlgebra.store = store.intersection(other.store)
 		return defaultsSetAlgebra
 	}
 
-	func symmetricDifference(_ other: DefaultsSetAlgebra) -> DefaultsSetAlgebra {
-		var defaultedSetAlgebra = DefaultsSetAlgebra()
+	func symmetricDifference(_ other: Self) -> Self {
+		var defaultedSetAlgebra = Self()
 		defaultedSetAlgebra.store = store.symmetricDifference(other.store)
 		return defaultedSetAlgebra
 	}

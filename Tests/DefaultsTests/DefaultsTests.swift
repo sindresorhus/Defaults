@@ -731,4 +731,64 @@ final class DefaultsTests: XCTestCase {
 	func testKeyHashable() {
 		_ = Set([Defaults.Key<Bool>("hashableKeyTest", default: false)])
 	}
+
+	func testUpdates() async {
+		let key = Defaults.Key<Bool>("updatesKey", default: false)
+
+		async let waiter = Defaults.updates(key, initial: false).first { $0 }
+
+		try? await Task.sleep(seconds: 0.1)
+
+		Defaults[key] = true
+
+		guard let result = await waiter else {
+			XCTFail()
+			return
+		}
+
+		XCTAssertTrue(result)
+	}
+
+	func testUpdatesMultipleKeys() async {
+		let key1 = Defaults.Key<Bool>("updatesMultipleKey1", default: false)
+		let key2 = Defaults.Key<Bool>("updatesMultipleKey2", default: false)
+		let counter = Counter()
+
+		async let waiter: Void = {
+			for await _ in Defaults.updates([key1, key2], initial: false) {
+				await counter.increment()
+
+				if await counter.count == 2 {
+					break
+				}
+			}
+		}()
+
+		try? await Task.sleep(seconds: 0.1)
+
+		Defaults[key1] = true
+		Defaults[key2] = true
+
+		await waiter
+
+		let count = await counter.count
+		XCTAssertEqual(count, 2)
+	}
+}
+
+actor Counter {
+	private var _count = 0
+
+	var count: Int { _count }
+
+	func increment() {
+		_count += 1
+	}
+}
+
+// TODO: Remove when testing on macOS 13.
+extension Task<Never, Never> {
+	static func sleep(seconds: TimeInterval) async throws {
+		try await sleep(nanoseconds: UInt64(seconds * Double(NSEC_PER_SEC)))
+	}
 }

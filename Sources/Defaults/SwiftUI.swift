@@ -25,7 +25,7 @@ extension Defaults {
 			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
 				// The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.
 				self.task = .detached(priority: .userInitiated) { @MainActor [weak self] in
-					for await _ in Defaults.events(key) {
+					for await _ in Defaults.updates(key) {
 						guard let self else {
 							return
 						}
@@ -227,28 +227,6 @@ extension Defaults.Toggle {
 	public func onChange(_ action: @escaping (Bool) -> Void) -> Self {
 		onChange = action
 		return self
-	}
-}
-
-extension Defaults {
-	// TODO: Expose this publicly at some point.
-	private static func events<Value: Serializable>(
-		_ key: Defaults.Key<Value>,
-		initial: Bool = true
-	) -> AsyncStream<Value> { // TODO: Make this `some AsyncSequence<Value>` when Swift 6 is out.
-		.init { continuation in
-			let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
-				// TODO: Use the `.deserialize` method directly.
-				let value = KeyChange(change: change, defaultValue: key.defaultValue).newValue
-				continuation.yield(value)
-			}
-
-			observation.start(options: initial ? [.initial] : [])
-
-			continuation.onTermination = { _ in
-				observation.invalidate()
-			}
-		}
 	}
 }
 

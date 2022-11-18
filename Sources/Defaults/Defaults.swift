@@ -76,7 +76,7 @@ extension Defaults {
 	}
 	```
 
-	- Warning: The key must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+	- Warning: The `UserDefaults` name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 	*/
 	public final class Key<Value: Serializable>: _AnyKey {
 		/**
@@ -90,7 +90,7 @@ extension Defaults {
 		public var defaultValue: Value { defaultValueGetter() }
 
 		/**
-		Create a defaults key.
+		Create a key.
 
 		- Parameter key: The key must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 
@@ -118,7 +118,7 @@ extension Defaults {
 		}
 
 		/**
-		Create a defaults key with a dynamic default value.
+		Create a key with a dynamic default value.
 		
 		This can be useful in cases where you cannot define a static default value as it may change during the lifetime of the app.
 
@@ -143,7 +143,7 @@ extension Defaults {
 		}
 
 		/**
-		Create a defaults key with an optional value.
+		Create a key with an optional value.
 
 		- Parameter key: The key must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 		*/
@@ -285,4 +285,84 @@ extension Defaults {
 	Convenience protocol for `Codable`.
 	*/
 	typealias CodableBridge = _DefaultsCodableBridge
+}
+
+extension Defaults {
+	/**
+	Observe updates to a stored value.
+
+	- Parameter initial: Trigger an initial event on creation. This can be useful for setting default values on controls.
+
+	```swift
+	extension Defaults.Keys {
+		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+	}
+
+	// …
+
+	Task {
+		for await value in Defaults.updates(.isUnicornMode) {
+			print("Value:", value)
+		}
+	}
+	```
+	*/
+	public static func updates<Value: Serializable>(
+		_ key: Key<Value>,
+		initial: Bool = true
+	) -> AsyncStream<Value> { // TODO: Make this `some AsyncSequence<Value>` when Swift 6 is out.
+		.init { continuation in
+			let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
+				// TODO: Use the `.deserialize` method directly.
+				let value = KeyChange(change: change, defaultValue: key.defaultValue).newValue
+				continuation.yield(value)
+			}
+
+			observation.start(options: initial ? [.initial] : [])
+
+			continuation.onTermination = { _ in
+				observation.invalidate()
+			}
+		}
+	}
+
+	// TODO: Make this include a tuple with the values when Swift supports variadic generics. I can then simply use `merge()` with the first `updates()` method.
+	/**
+	Observe updates to multiple stored values.
+
+	- Parameter initial: Trigger an initial event on creation. This can be useful for setting default values on controls.
+
+	```swift
+	Task {
+		for await _ in Defaults.updates([.foo, .bar]) {
+			print("One of the values changed")
+		}
+	}
+	```
+
+	- Note: This does not include which of the values changed. Use ``Defaults/updates(_:initial:)-9eh8`` if you need that. You could use [`merge`](https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncAlgorithms.docc/Guides/Merge.md) to merge them into a single sequence.
+	*/
+	public static func updates(
+		_ keys: [_AnyKey],
+		initial: Bool = true
+	) -> AsyncStream<Void> { // TODO: Make this `some AsyncSequence<Value>` when Swift 6 is out.
+		.init { continuation in
+			let observations = keys.indexed().map { index, key in
+				let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { _ in
+					continuation.yield()
+				}
+
+				// Ensure we only trigger a single initial event.
+				observation.start(options: initial && index == 0 ? [.initial] : [])
+
+				return observation
+			}
+
+			continuation.onTermination = { _ in
+				for observation in observations {
+					observation.invalidate()
+				}
+			}
+		}
+	}
 }

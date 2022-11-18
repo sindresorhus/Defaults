@@ -40,6 +40,8 @@ Defaults[.quality] = 0.5
 
 ### Methods
 
+- ``Defaults/updates(_:initial:)-9eh8``
+- ``Defaults/updates(_:initial:)-1mqkb``
 - ``Defaults/reset(_:)-7jv5v``
 - ``Defaults/reset(_:)-7es1e``
 - ``Defaults/removeAll(suite:)``
@@ -48,11 +50,6 @@ Defaults[.quality] = 0.5
 
 - ``Default``
 - ``Defaults/Toggle``
-
-### Events
-
-- ``Defaults/publisher(_:options:)``
-- ``Defaults/publisher(keys:options:)``
 
 ### Force Type Resolution
 
