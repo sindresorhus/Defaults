@@ -19,19 +19,19 @@ extension UserDefaults {
 
 	1. If `Value` is  `[String]`, `Value.CodableForm` will covert into `[String].CodableForm`.
 
-	```
+	```swift
 	JSONDecoder().decode([String].CodableForm.self, from: jsonData)
 	```
 
 	2. If `Array` conforms to `NativeType`, its `CodableForm` is `[Element.CodableForm]` and `Element` is `String`.
 
-	```
+	```swift
 	JSONDecoder().decode([String.CodableForm].self, from: jsonData)
 	```
 
 	3. `String`'s `CodableForm` is `self`,  because `String` is `Codable`.
 
-	```
+	```swift
 	JSONDecoder().decode([String].self, from: jsonData)
 	```
 	*/

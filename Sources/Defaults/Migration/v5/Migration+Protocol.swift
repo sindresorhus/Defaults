@@ -9,7 +9,7 @@ It should have an associated type name `CodableForm` where its protocol conform 
 
 So we can convert the JSON string into a `NativeType` like this:
 
-```
+```swift
 guard
 	let jsonData = string?.data(using: .utf8),
 	let codable = try? JSONDecoder().decode(NativeType.CodableForm.self, from: jsonData)
@@ -20,7 +20,7 @@ else {
 return codable.toNative()
 ```
 */
-public protocol DefaultsNativeType: Defaults.Serializable {
+public protocol _DefaultsNativeType: Defaults.Serializable {
 	associatedtype CodableForm: Defaults.CodableType
 }
 
@@ -31,7 +31,7 @@ Represents the type before migration an its protocol should conform to `Codable`
 
 The main purposed of `CodableType` is trying to infer the `Codable` type to do `JSONDecoder().decode`. It should have an associated type name `NativeForm` which is the type we want it to store in `UserDefaults`. nd it also have a `toNative()` function to convert itself into `NativeForm`.
 
-```
+```swift
 struct User {
 	username: String
 	password: String
@@ -55,7 +55,7 @@ extension CodableUser: Defaults.CodableType {
 }
 ```
 */
-public protocol DefaultsCodableType: Codable {
+public protocol _DefaultsCodableType: Codable {
 	associatedtype NativeForm: Defaults.NativeType
 	func toNative() -> NativeForm
 }

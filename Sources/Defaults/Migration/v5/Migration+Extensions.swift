@@ -2,8 +2,8 @@ import Foundation
 import CoreGraphics
 
 extension Defaults {
-	public typealias NativeType = DefaultsNativeType
-	public typealias CodableType = DefaultsCodableType
+	public typealias NativeType = _DefaultsNativeType
+	public typealias CodableType = _DefaultsCodableType
 }
 
 extension Data: Defaults.NativeType {

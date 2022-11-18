@@ -9,7 +9,7 @@ extension Defaults {
 	- Parameter keys: String keys to reset.
 	- Parameter suite: `UserDefaults` suite.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 	}
@@ -36,7 +36,7 @@ extension Defaults {
 	- Parameter keys: String keys to reset.
 	- Parameter suite: `UserDefaults` suite.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 	}
@@ -62,7 +62,7 @@ extension Defaults {
 	/**
 	Reset the given keys back to their default values.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 	}
@@ -76,14 +76,14 @@ extension Defaults {
 	//=> false
 	```
 	*/
-	public static func reset(_ keys: AnyKey...) {
+	public static func reset(_ keys: _AnyKey...) {
 		reset(keys)
 	}
 
 	/**
 	Reset the given keys back to their default values.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 	}
@@ -97,7 +97,7 @@ extension Defaults {
 	//=> false
 	```
 	*/
-	public static func reset(_ keys: [AnyKey]) {
+	public static func reset(_ keys: [_AnyKey]) {
 		for key in keys {
 			key.reset()
 		}

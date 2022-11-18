@@ -1,12 +1,12 @@
 import Foundation
 
-public protocol DefaultsObservation: AnyObject {
+public protocol _DefaultsObservation: AnyObject {
 	func invalidate()
 
 	/**
 	Keep this observation alive for as long as, and no longer than, another object exists.
 
-	```
+	```swift
 	Defaults.observe(.xyz) { [unowned self] change in
 		self.xyz = change.newValue
 	}.tieToLifetime(of: self)
@@ -25,7 +25,7 @@ public protocol DefaultsObservation: AnyObject {
 }
 
 extension Defaults {
-	public typealias Observation = DefaultsObservation
+	public typealias Observation = _DefaultsObservation
 
 	public enum ObservationOption {
 		/**
@@ -95,7 +95,7 @@ extension Defaults {
 
 	- Note: This only works with `Defaults.observe()` and `Defaults.publisher()`. User-made KVO will not be affected.
 
-	```
+	```swift
 	let observer = Defaults.observe(keys: .key1, .key2) {
 		// …
 
@@ -283,7 +283,7 @@ extension Defaults {
 	/**
 	Observe a defaults key.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
 	}
@@ -312,7 +312,7 @@ extension Defaults {
 	/**
 	Observe multiple keys of any type, but without any information about the changes.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let setting1 = Key<Bool>("setting1", default: false)
 		static let setting2 = Key<Bool>("setting2", default: true)
@@ -324,7 +324,7 @@ extension Defaults {
 	```
 	*/
 	public static func observe(
-		keys: AnyKey...,
+		keys: _AnyKey...,
 		options: ObservationOptions = [.initial],
 		handler: @escaping () -> Void
 	) -> Observation {

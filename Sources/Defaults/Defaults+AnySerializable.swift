@@ -11,7 +11,7 @@ extension Defaults {
 
 	`get` will deserialize the internal value to the type that user specify in the function parameter.
 
-	```
+	```swift
 	let any = Defaults.Key<Defaults.AnySerializable>("independentAnyKey", default: 121_314)
 
 	print(Defaults[any].get(Int.self))
@@ -20,7 +20,7 @@ extension Defaults {
 
 	- Note: The only way to assign a non-serializable value is using `ExpressibleByArrayLiteral` or `ExpressibleByDictionaryLiteral` to assign a type that is not a `UserDefaults` natively supported type.
 
-	```
+	```swift
 	private enum mime: String, Defaults.Serializable {
 		case JSON = "application/json"
 	}

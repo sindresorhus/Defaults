@@ -62,6 +62,11 @@ extension Defaults {
 	}
 }
 
+/**
+Access stored values from SwiftUI.
+
+This is similar to `@AppStorage` but it accepts a ``Defaults/Key`` and many more types.
+*/
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @propertyWrapper
 public struct Default<Value: Defaults.Serializable>: DynamicProperty {
@@ -77,7 +82,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 
 	- Important: You cannot use this in an `ObservableObject`. It's meant to be used in a `View`.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let hasUnicorn = Key<Bool>("hasUnicorn", default: false)
 	}
@@ -126,7 +131,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	/**
 	Reset the key back to its default value.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let opacity = Key<Double>("opacity", default: 1)
 	}
@@ -158,11 +163,11 @@ extension Default where Value: Equatable {
 @available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Defaults {
 	/**
-	Creates a SwiftUI `Toggle` view that is connected to a `Defaults` key with a `Bool` value.
+	A SwiftUI `Toggle` view that is connected to a ``Defaults/Key`` with a `Bool` value.
 
 	The toggle works exactly like the SwiftUI `Toggle`.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let showAllDayEvents = Key<Bool>("showAllDayEvents", default: false)
 	}
@@ -176,7 +181,7 @@ extension Defaults {
 
 	You can also listen to changes:
 
-	```
+	```swift
 	struct ShowAllDayEventsSetting: View {
 		var body: some View {
 			Defaults.Toggle("Show All-Day Events", key: .showAllDayEvents)

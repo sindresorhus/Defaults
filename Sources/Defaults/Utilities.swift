@@ -59,7 +59,7 @@ final class LifetimeAssociation {
 
 	When either the owner or the new `LifetimeAssociation` is destroyed, the given deinit handler, if any, is called.
 
-	```
+	```swift
 	class Ghost {
 		var association: LifetimeAssociation?
 
@@ -159,7 +159,7 @@ extension Defaults.Serializable {
 
 	Converts a natively supported type from `UserDefaults` into `Self`.
 
-	```
+	```swift
 	guard let anyObject = object(forKey: key) else {
 		return nil
 	}
@@ -188,7 +188,7 @@ extension Defaults.Serializable {
 
 	Converts `Self` into `UserDefaults` native support type.
 
-	```
+	```swift
 	set(Value.toSerialize(value), forKey: key)
 	```
 	*/

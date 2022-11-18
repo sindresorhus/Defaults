@@ -4,7 +4,7 @@
 
 Store key-value pairs persistently across launches of your app.
 
-It uses `NSUserDefaults` underneath but exposes a type-safe facade with lots of nice conveniences.
+It uses `UserDefaults` underneath but exposes a type-safe facade with lots of nice conveniences.
 
 It's used in production by apps like [Gifski](https://github.com/sindresorhus/Gifski), [Dato](https://sindresorhus.com/dato), [Lungo](https://sindresorhus.com/lungo), [Battery Indicator](https://sindresorhus.com/battery-indicator), and [HEIC Converter](https://sindresorhus.com/heic-converter).
 
@@ -78,12 +78,13 @@ If a type conforms to both `NSSecureCoding` and `Codable`, then `Codable` will b
 
 ## Usage
 
-You declare the defaults keys upfront with type and default value.
+[API documentation.](https://swiftpackageindex.com/sindresorhus/Defaults/documentation/defaults)
+
+You declare the defaults keys upfront with a type and default value.
 
 **The key name must be ASCII, not start with `@`, and cannot contain a dot (`.`).**
 
 ```swift
-import Cocoa
 import Defaults
 
 extension Defaults.Keys {

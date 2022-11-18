@@ -8,7 +8,7 @@ extension Defaults {
 	/**
 	Migrate the given key's value from JSON string to `Value`.
 
-	```
+	```swift
 	extension Defaults.Keys {
 		static let array = Key<Set<String>?>("array")
 	}
