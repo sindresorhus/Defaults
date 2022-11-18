@@ -158,7 +158,6 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		XCTAssertEqual(Defaults[.persistentHistoryDictionary]["0"]?.value, newPersistentHistory.value)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKeyCombine", default: persistentHistoryValue)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
@@ -185,7 +184,6 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
 		let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKeyCombine")
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
@@ -215,7 +213,6 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveArrayKeyCombine() {
 		let key = Defaults.Key<[ExamplePersistentHistory]>("observeNSSecureCodingArrayKeyCombine", default: [persistentHistoryValue])
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
@@ -244,7 +241,6 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveDictionaryKeyCombine() {
 		let key = Defaults.Key<[String: ExamplePersistentHistory]>("observeNSSecureCodingDictionaryKeyCombine", default: ["0": persistentHistoryValue])
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
@@ -273,7 +269,6 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleNSSecureKeysCombine() {
 		let key1 = Defaults.Key<ExamplePersistentHistory>("observeMultipleNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
 		let key2 = Defaults.Key<ExamplePersistentHistory>("observeMultipleNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
@@ -292,7 +287,6 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleNSSecureOptionalKeysCombine() {
 		let key1 = Defaults.Key<ExamplePersistentHistory?>("observeMultipleNSSecureCodingOptionalKey1")
 		let key2 = Defaults.Key<ExamplePersistentHistory?>("observeMultipleNSSecureCodingOptionalKeyKey2")
@@ -334,72 +328,70 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-		func testRemoveDuplicatesObserveNSSecureCodingKeyCombine() {
-			let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
-			let expect = expectation(description: "Observation closure being called")
+	func testRemoveDuplicatesObserveNSSecureCodingKeyCombine() {
+		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
+		let expect = expectation(description: "Observation closure being called")
 
-			let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
-			let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3"]
+		let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
+		let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3"]
 
-			let cancellable = Defaults
-				.publisher(key, options: [])
-				.removeDuplicates()
-				.map(\.newValue.value)
-				.collect(expectedArray.count)
-				.sink { result in
-					print("Result array: \(result)")
+		let cancellable = Defaults
+			.publisher(key, options: [])
+			.removeDuplicates()
+			.map(\.newValue.value)
+			.collect(expectedArray.count)
+			.sink { result in
+				print("Result array: \(result)")
 
-					if result == expectedArray {
-						expect.fulfill()
-					} else {
-						XCTFail("Expected Array is not matched")
-					}
+				if result == expectedArray {
+					expect.fulfill()
+				} else {
+					XCTFail("Expected Array is not matched")
 				}
-
-			inputArray.forEach {
-				Defaults[key] = ExamplePersistentHistory(value: $0)
 			}
 
-			Defaults.reset(key)
-			cancellable.cancel()
-
-			waitForExpectations(timeout: 10)
+		inputArray.forEach {
+			Defaults[key] = ExamplePersistentHistory(value: $0)
 		}
 
-		@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
-		func testRemoveDuplicatesObserveNSSecureCodingOptionalKeyCombine() {
-			let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKey")
-			let expect = expectation(description: "Observation closure being called")
+		Defaults.reset(key)
+		cancellable.cancel()
 
-			let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
-			let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3", nil]
+		waitForExpectations(timeout: 10)
+	}
 
-			let cancellable = Defaults
-				.publisher(key, options: [])
-				.removeDuplicates()
-				.map(\.newValue)
-				.map { $0?.value }
-				.collect(expectedArray.count)
-				.sink { result in
-					print("Result array: \(result)")
+	func testRemoveDuplicatesObserveNSSecureCodingOptionalKeyCombine() {
+		let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKey")
+		let expect = expectation(description: "Observation closure being called")
 
-					if result == expectedArray {
-						expect.fulfill()
-					} else {
-						XCTFail("Expected Array is not matched")
-					}
+		let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
+		let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3", nil]
+
+		let cancellable = Defaults
+			.publisher(key, options: [])
+			.removeDuplicates()
+			.map(\.newValue)
+			.map { $0?.value }
+			.collect(expectedArray.count)
+			.sink { result in
+				print("Result array: \(result)")
+
+				if result == expectedArray {
+					expect.fulfill()
+				} else {
+					XCTFail("Expected Array is not matched")
 				}
-
-			inputArray.forEach {
-				Defaults[key] = ExamplePersistentHistory(value: $0)
 			}
 
-			Defaults.reset(key)
-			cancellable.cancel()
-
-			waitForExpectations(timeout: 10)
+		inputArray.forEach {
+			Defaults[key] = ExamplePersistentHistory(value: $0)
 		}
+
+		Defaults.reset(key)
+		cancellable.cancel()
+
+		waitForExpectations(timeout: 10)
+	}
 
 	func testObserveKey() {
 		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: persistentHistoryValue)

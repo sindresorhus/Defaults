@@ -167,7 +167,6 @@ final class DefaultsTests: XCTestCase {
 		Defaults.removeAll(suite: customSuite)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
 		let expect = expectation(description: "Observation closure being called")
@@ -193,7 +192,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
 		let key = Defaults.Key<Bool?>("observeOptionalKey")
 		let expect = expectation(description: "Observation closure being called")
@@ -222,7 +220,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testDynamicOptionalDateTypeCombine() {
 		let first = Date(timeIntervalSince1970: 0)
 		let second = Date(timeIntervalSince1970: 1)
@@ -254,7 +251,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleKeysCombine() {
 		let key1 = Defaults.Key<String>("observeKey1", default: "x")
 		let key2 = Defaults.Key<Bool>("observeKey2", default: true)
@@ -273,7 +269,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveMultipleOptionalKeysCombine() {
 		let key1 = Defaults.Key<String?>("observeOptionalKey1")
 		let key2 = Defaults.Key<Bool?>("observeOptionalKey2")
@@ -292,7 +287,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testReceiveValueBeforeSubscriptionCombine() {
 		let key = Defaults.Key<String>("receiveValueBeforeSubscription", default: "hello")
 		let expect = expectation(description: "Observation closure being called")
@@ -502,7 +496,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObservePreventPropagationCombine() {
 		let key1 = Defaults.Key<Bool?>("preventPropagation6", default: nil)
 		let expect = expectation(description: "No infinite recursion")
@@ -523,7 +516,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObservePreventPropagationMultipleKeysCombine() {
 		let key1 = Defaults.Key<Bool?>("preventPropagation7", default: nil)
 		let key2 = Defaults.Key<Bool?>("preventPropagation8", default: nil)
@@ -545,7 +537,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObservePreventPropagationModifiersCombine() {
 		let key1 = Defaults.Key<Bool?>("preventPropagation9", default: nil)
 		let expect = expectation(description: "No infinite recursion")
@@ -570,7 +561,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testRemoveDuplicatesObserveKeyCombine() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
 		let expect = expectation(description: "Observation closure being called")
@@ -603,7 +593,6 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testRemoveDuplicatesOptionalObserveKeyCombine() {
 		let key = Defaults.Key<Bool?>("observeOptionalKey", default: nil)
 		let expect = expectation(description: "Observation closure being called")
@@ -720,7 +709,6 @@ final class DefaultsTests: XCTestCase {
 		}
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testImmediatelyFinishingPublisherCombine() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
 		let expect = expectation(description: "Observation closure being called without crashing")

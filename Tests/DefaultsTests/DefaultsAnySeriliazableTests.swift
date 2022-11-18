@@ -368,7 +368,6 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		}
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<Defaults.AnySerializable>("observeAnyKeyCombine", default: 123)
 		let expect = expectation(description: "Observation closure being called")
@@ -396,7 +395,6 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
 		let key = Defaults.Key<Defaults.AnySerializable?>("observeAnyOptionalKeyCombine")
 		let expect = expectation(description: "Observation closure being called")

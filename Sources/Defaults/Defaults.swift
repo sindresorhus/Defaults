@@ -75,6 +75,8 @@ extension Defaults {
 		//           Key          Type   UserDefaults name   Default value
 	}
 	```
+
+	- Warning: The key must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 	*/
 	public final class Key<Value: Serializable>: _AnyKey {
 		/**

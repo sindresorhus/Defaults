@@ -6,7 +6,6 @@ extension Defaults {
 	/**
 	Custom `Subscription` for `UserDefaults` key observation.
 	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	final class DefaultsSubscription<SubscriberType: Subscriber>: Subscription where SubscriberType.Input == BaseChange {
 		private var subscriber: SubscriberType?
 		private var observation: UserDefaultsKeyObservation?
@@ -43,7 +42,6 @@ extension Defaults {
 	/**
 	Custom Publisher, which is using DefaultsSubscription.
 	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	struct DefaultsPublisher: Publisher {
 		typealias Output = BaseChange
 		typealias Failure = Never
@@ -87,7 +85,6 @@ extension Defaults {
 	}
 	```
 	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher<Value: Serializable>(
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial]
@@ -101,7 +98,6 @@ extension Defaults {
 	/**
 	Publisher for multiple `Key<T>` observation, but without specific information about changes.
 	*/
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	public static func publisher(
 		keys: _AnyKey...,
 		options: ObservationOptions = [.initial]

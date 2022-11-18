@@ -242,7 +242,6 @@ final class DefaultsCustomBridge: XCTestCase {
 		XCTAssertEqual(Defaults[.customBridgeDictionary]["0"], newUser)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<User>("observeCustomBridgeKeyCombine", default: fixtureCustomBridge)
 		let newUser = User(username: "sindresorhus", password: "123456789")
@@ -269,7 +268,6 @@ final class DefaultsCustomBridge: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
 		let key = Defaults.Key<User?>("observeCustomBridgeOptionalKeyCombine")
 		let newUser = User(username: "sindresorhus", password: "123456789")
@@ -299,7 +297,6 @@ final class DefaultsCustomBridge: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveArrayKeyCombine() {
 		let key = Defaults.Key<[User]>("observeCustomBridgeArrayKeyCombine", default: [fixtureCustomBridge])
 		let newUser = User(username: "sindresorhus", password: "123456789")
@@ -326,7 +323,6 @@ final class DefaultsCustomBridge: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveDictionaryCombine() {
 		let key = Defaults.Key<[String: User]>("observeCustomBridgeDictionaryKeyCombine", default: ["0": fixtureCustomBridge])
 		let newUser = User(username: "sindresorhus", password: "123456789")

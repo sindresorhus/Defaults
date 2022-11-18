@@ -1,8 +1,6 @@
-#if canImport(Combine)
 import SwiftUI
 import Combine
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Defaults {
 	@MainActor
 	final class Observable<Value: Serializable>: ObservableObject {
@@ -67,7 +65,6 @@ Access stored values from SwiftUI.
 
 This is similar to `@AppStorage` but it accepts a ``Defaults/Key`` and many more types.
 */
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @propertyWrapper
 public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public typealias Publisher = AnyPublisher<Defaults.KeyChange<Value>, Never>
@@ -152,7 +149,6 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	}
 }
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Default where Value: Equatable {
 	/**
 	Indicates whether the value is the same as the default value.
@@ -234,7 +230,6 @@ extension Defaults.Toggle {
 	}
 }
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Defaults {
 	// TODO: Expose this publicly at some point.
 	private static func events<Value: Serializable>(
@@ -257,7 +252,6 @@ extension Defaults {
 	}
 }
 
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @propertyWrapper
 private struct ViewStorage<Value>: DynamicProperty {
 	private final class ValueBox {
@@ -281,4 +275,3 @@ private struct ViewStorage<Value>: DynamicProperty {
 		self._valueBox = .init(wrappedValue: ValueBox(value()))
 	}
 }
-#endif

@@ -126,7 +126,6 @@ final class DefaultsNSColorTests: XCTestCase {
 		XCTAssertTrue(Defaults[.colorDictionary]["0"]?.isEqual(fixtureColor1) ?? false)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<NSColor>("observeNSColorKeyCombine", default: fixtureColor)
 		let expect = expectation(description: "Observation closure being called")
@@ -152,7 +151,6 @@ final class DefaultsNSColorTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveOptionalKeyCombine() {
 		let key = Defaults.Key<NSColor?>("observeNSColorOptionalKeyCombine")
 		let expect = expectation(description: "Observation closure being called")
@@ -189,7 +187,6 @@ final class DefaultsNSColorTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveArrayKeyCombine() {
 		let key = Defaults.Key<[NSColor]>("observeNSColorArrayKeyCombine", default: [fixtureColor])
 		let expect = expectation(description: "Observation closure being called")
@@ -215,7 +212,6 @@ final class DefaultsNSColorTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
-	@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, iOSApplicationExtension 13.0, macOSApplicationExtension 10.15, tvOSApplicationExtension 13.0, watchOSApplicationExtension 6.0, *)
 	func testObserveDictionaryKeyCombine() {
 		let key = Defaults.Key<[String: NSColor]>("observeNSColorDictionaryKeyCombine", default: ["0": fixtureColor])
 		let expect = expectation(description: "Observation closure being called")

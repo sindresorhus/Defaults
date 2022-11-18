@@ -33,10 +33,10 @@ For a real-world example, see the [Plash app](https://github.com/sindresorhus/Pl
 
 ## Compatibility
 
-- macOS 10.13+
-- iOS 12+
-- tvOS 12+
-- watchOS 5+
+- macOS 10.15+
+- iOS 13+
+- tvOS 13+
+- watchOS 6+
 
 ## Migration Guides
 
@@ -517,15 +517,11 @@ Type: `func`
 
 Observation API using [Publisher](https://developer.apple.com/documentation/combine/publisher) from the [Combine](https://developer.apple.com/documentation/combine) framework.
 
-Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
-
 #### `Defaults.publisher(keys: keys…, options:)`
 
 Type: `func`
 
 [Combine](https://developer.apple.com/documentation/combine) observation API for multiple key observation, but without specific information about changes.
-
-Available on macOS 10.15+, iOS 13.0+, tvOS 13.0+, and watchOS 6.0+.
 
 #### `Defaults.removeAll`
 
