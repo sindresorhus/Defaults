@@ -30,6 +30,17 @@ Defaults[.quality] = 0.5
 
 [Learn More](https://github.com/sindresorhus/Defaults#usage)
 
+### Tip
+
+If you don't want to import this package in every file you use it, add the below to a file in your app. You can then use `Defaults` and `@Default` from anywhere without an import.
+
+```swift
+import Defaults
+
+typealias Defaults = _Defaults
+typealias Default = _Default
+```
+
 ## Topics
 
 ### Essentials
