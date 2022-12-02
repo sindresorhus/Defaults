@@ -1,5 +1,9 @@
 import Foundation
-
+#if DEBUG
+#if canImport(OSLog)
+import OSLog
+#endif
+#endif
 
 extension Decodable {
 	init?(jsonData: Data) {
@@ -160,6 +164,21 @@ extension Collection {
 	}
 }
 
+extension Defaults {
+	@usableFromInline
+	internal static func isValidKeyPath(name: String) -> Bool {
+		// Not start with `@`
+		return !name.starts(with: "@") && name.allSatisfy {
+			// Must be ASCII
+			guard let asciiValue = $0.asciiValue else {
+				return false
+			}
+
+			// Cannot contain a dot (`.`)
+			return asciiValue != 46
+		}
+	}
+}
 
 extension Defaults.Serializable {
 	/**
@@ -200,7 +219,8 @@ extension Defaults.Serializable {
 	set(Value.toSerialize(value), forKey: key)
 	```
 	*/
-	static func toSerializable<T: Defaults.Serializable>(_ value: T) -> Any? {
+	@usableFromInline
+	internal static func toSerializable<T: Defaults.Serializable>(_ value: T) -> Any? {
 		if T.isNativelySupportedType {
 			return value
 		}
@@ -216,4 +236,53 @@ extension Defaults.Serializable {
 
 		return toSerializable(next)
 	}
+}
+
+#if DEBUG
+/**
+Get SwiftUI dynamic shared object.
+
+Reference: https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/dyld.3.html
+*/
+@usableFromInline
+internal let dynamicSharedObject = { () -> UnsafeMutableRawPointer in
+	let imageCount = _dyld_image_count()
+	for imageIndex in 0..<imageCount {
+		guard let name = _dyld_get_image_name(imageIndex),
+			  // Use `/SwiftUI` instead of `SwiftUI` to prevent any library named `XXSwiftUI`.
+			  String(cString: name).hasSuffix("/SwiftUI"),
+			  let header = _dyld_get_image_header(imageIndex) else {
+			continue
+		}
+
+		return UnsafeMutableRawPointer(mutating: header)
+	}
+
+	return UnsafeMutableRawPointer(mutating: #dsohandle)
+}()
+#endif
+
+@_transparent
+@usableFromInline
+internal func runtimeWarn(
+	_ condition: @autoclosure() -> Bool, _ message: @autoclosure () -> String
+) {
+#if DEBUG
+#if canImport(OSLog)
+	let message = message()
+	let condition = condition()
+	if !condition {
+		os_log(
+			.fault,
+			// A token that identifies the containing executable or dylib image.
+			dso: dynamicSharedObject,
+			log: OSLog(subsystem: "com.apple.runtime-issues", category: "Defaults"),
+			"%@",
+			message
+		)
+	}
+#else
+	assert(condition, message)
+#endif
+#endif
 }
