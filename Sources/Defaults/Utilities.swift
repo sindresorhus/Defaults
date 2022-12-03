@@ -248,10 +248,12 @@ Reference: https://developer.apple.com/library/archive/documentation/System/Conc
 internal let dynamicSharedObject = { () -> UnsafeMutableRawPointer in
 	let imageCount = _dyld_image_count()
 	for imageIndex in 0..<imageCount {
-		guard let name = _dyld_get_image_name(imageIndex),
-			  // Use `/SwiftUI` instead of `SwiftUI` to prevent any library named `XXSwiftUI`.
-			  String(cString: name).hasSuffix("/SwiftUI"),
-			  let header = _dyld_get_image_header(imageIndex) else {
+		guard
+			let name = _dyld_get_image_name(imageIndex),
+			// Use `/SwiftUI` instead of `SwiftUI` to prevent any library named `XXSwiftUI`.
+			String(cString: name).hasSuffix("/SwiftUI"),
+			let header = _dyld_get_image_header(imageIndex)
+		else {
 			continue
 		}
 
