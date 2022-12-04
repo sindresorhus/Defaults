@@ -167,16 +167,8 @@ extension Collection {
 extension Defaults {
 	@usableFromInline
 	internal static func isValidKeyPath(name: String) -> Bool {
-		// Not start with `@`
-		return !name.starts(with: "@") && name.allSatisfy {
-			// Must be ASCII
-			guard let asciiValue = $0.asciiValue else {
-				return false
-			}
-
-			// Cannot contain a dot (`.`)
-			return asciiValue != 46
-		}
+		// Not start with `@`, Must be ASCII and cannot contain a dot (`.`).
+		return !name.starts(with: "@") && name.allSatisfy { $0 != "." && $0.isASCII }
 	}
 }
 
@@ -245,7 +237,7 @@ Get SwiftUI dynamic shared object.
 Reference: https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/dyld.3.html
 */
 @usableFromInline
-internal let dynamicSharedObject = { () -> UnsafeMutableRawPointer in
+internal let dynamicSharedObject: UnsafeMutableRawPointer = {
 	let imageCount = _dyld_image_count()
 	for imageIndex in 0..<imageCount {
 		guard
