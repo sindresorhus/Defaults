@@ -51,8 +51,11 @@ extension Defaults {
 
 		@_alwaysEmitIntoClient
 		fileprivate init(name: String, suite: UserDefaults) {
-			runtimeWarn(isValidKeyPath(name: name),
-						"The key name must be ASCII, not start with @, and cannot contain a dot (.).")
+			runtimeWarn(
+				isValidKeyPath(name: name),
+				"The key name must be ASCII, not start with @, and cannot contain a dot (.)."
+			)
+
 			self.name = name
 			self.suite = suite
 		}
