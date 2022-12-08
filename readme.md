@@ -347,7 +347,7 @@ Stores the keys.
 #### `Defaults.Key` _(alias `Defaults.Keys.Key`)_
 
 ```swift
-Defaults.Key<T>(_ key: String, default: T, suite: UserDefaults = .standard)
+Defaults.Key<T>(_ name: String, default: T, suite: UserDefaults = .standard)
 ```
 
 Type: `class`

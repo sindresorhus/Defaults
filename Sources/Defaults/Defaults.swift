@@ -102,19 +102,19 @@ extension Defaults {
 		/**
 		Create a key.
 
-		- Parameter key: The key must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 
 		The `default` parameter should not be used if the `Value` type is an optional.
 		*/
 		@_alwaysEmitIntoClient
 		public init(
-			_ key: String,
+			_ name: String,
 			default defaultValue: Value,
 			suite: UserDefaults = .standard
 		) {
 			self.defaultValueGetter = { defaultValue }
 
-			super.init(name: key, suite: suite)
+			super.init(name: name, suite: suite)
 
 			if (defaultValue as? _DefaultsOptionalProtocol)?.isNil == true {
 				return
@@ -139,19 +139,19 @@ extension Defaults {
 		}
 		```
 
-		- Parameter key: The key must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 
 		- Note: This initializer will not set the default value in the actual `UserDefaults`. This should not matter much though. It's only really useful if you use legacy KVO bindings.
 		*/
 		@_alwaysEmitIntoClient
 		public init(
-			_ key: String,
+			_ name: String,
 			suite: UserDefaults = .standard,
 			default defaultValueGetter: @escaping () -> Value
 		) {
 			self.defaultValueGetter = defaultValueGetter
 
-			super.init(name: key, suite: suite)
+			super.init(name: name, suite: suite)
 		}
 	}
 }
@@ -161,14 +161,14 @@ extension Defaults.Key {
 	/**
 	Create a key with an optional value.
 
-	- Parameter key: The key must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+	- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 	*/
 	@_transparent
 	public convenience init<T>(
-		_ key: String,
+		_ name: String,
 		suite: UserDefaults = .standard
 	) where Value == T? {
-		self.init(key, default: nil, suite: suite)
+		self.init(name, default: nil, suite: suite)
 	}
 }
 
