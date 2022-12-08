@@ -167,7 +167,7 @@ extension Collection {
 extension Defaults {
 	@usableFromInline
 	internal static func isValidKeyPath(name: String) -> Bool {
-		// Not start with `@`, Must be ASCII and cannot contain a dot (`.`).
+		// The key must be ASCII, not start with @, and cannot contain a dot.
 		return !name.starts(with: "@") && name.allSatisfy { $0 != "." && $0.isASCII }
 	}
 }
