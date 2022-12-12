@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 import XCTest
-import Defaults
+@testable import Defaults
 
 let fixtureURL = URL(string: "https://sindresorhus.com")!
 let fixtureFileURL = URL(string: "file://~/icon.png")!
@@ -35,6 +35,15 @@ final class DefaultsTests: XCTestCase {
 		XCTAssertFalse(Defaults[key])
 		Defaults[key] = true
 		XCTAssertTrue(Defaults[key])
+	}
+
+	func testValidKeyName() {
+		let validKey = Defaults.Key<Bool>("test", default: false)
+		let containsDotKey = Defaults.Key<Bool>("test.a", default: false)
+		let startsWithAtKey = Defaults.Key<Bool>("@test", default: false)
+		XCTAssertTrue(Defaults.isValidKeyPath(name: validKey.name))
+		XCTAssertFalse(Defaults.isValidKeyPath(name: containsDotKey.name))
+		XCTAssertFalse(Defaults.isValidKeyPath(name: startsWithAtKey.name))
 	}
 
 	func testOptionalKey() {
