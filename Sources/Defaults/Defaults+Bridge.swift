@@ -50,7 +50,7 @@ extension Defaults {
 This exists to avoid compiler ambiguity.
 */
 extension Defaults {
-	public struct CodableNSSecureCodingBridge<Value: Codable & NSSecureCoding>: CodableBridge {}
+	public struct CodableNSSecureCodingBridge<Value: Codable & NSSecureCoding & NSObject>: CodableBridge {}
 }
 
 extension Defaults {
@@ -79,7 +79,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct NSSecureCodingBridge<Value: NSSecureCoding>: Bridge {
+	public struct NSSecureCodingBridge<Value: NSSecureCoding & NSObject>: Bridge {
 		public typealias Value = Value
 		public typealias Serializable = Data
 
@@ -97,7 +97,7 @@ extension Defaults {
 			}
 
 			do {
-				return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(object) as? Value
+				return try NSKeyedUnarchiver.unarchivedObject(ofClass: Value.self, from: object)
 			} catch {
 				print(error)
 				return nil

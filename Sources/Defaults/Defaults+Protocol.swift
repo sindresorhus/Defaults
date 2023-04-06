@@ -41,7 +41,7 @@ public protocol _DefaultsSetAlgebraSerializable: SetAlgebra, Defaults.Serializab
 public protocol _DefaultsCodableBridge: Defaults.Bridge where Serializable == String, Value: Codable {}
 
 public protocol _DefaultsPreferRawRepresentable: RawRepresentable {}
-public protocol _DefaultsPreferNSSecureCoding: NSSecureCoding {}
+public protocol _DefaultsPreferNSSecureCoding: NSObject, NSSecureCoding {}
 
 // Essential properties for serializing and deserializing `ClosedRange` and `Range`.
 public protocol _DefaultsRange {
