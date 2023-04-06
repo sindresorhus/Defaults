@@ -1,4 +1,3 @@
-import Foundation
 import SwiftUI
 #if os(macOS)
 import AppKit
@@ -399,7 +398,7 @@ extension Defaults {
 				return NativeColor.bridge.serialize(NativeColor(value))
 			}
 
-			return [colorSpace, components]
+			return [colorSpace, components] as [Any]
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {

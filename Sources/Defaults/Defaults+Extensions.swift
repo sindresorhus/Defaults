@@ -1,5 +1,3 @@
-import Foundation
-import CoreGraphics
 import SwiftUI
 #if os(macOS)
 import AppKit
