@@ -85,11 +85,11 @@ extension Defaults.Serializable where Self: Codable {
 	public static var bridge: Defaults.TopLevelCodableBridge<Self> { Defaults.TopLevelCodableBridge() }
 }
 
-extension Defaults.Serializable where Self: Codable & NSSecureCoding {
+extension Defaults.Serializable where Self: Codable & NSSecureCoding & NSObject {
 	public static var bridge: Defaults.CodableNSSecureCodingBridge<Self> { Defaults.CodableNSSecureCodingBridge() }
 }
 
-extension Defaults.Serializable where Self: Codable & NSSecureCoding & Defaults.PreferNSSecureCoding {
+extension Defaults.Serializable where Self: Codable & NSSecureCoding & NSObject & Defaults.PreferNSSecureCoding {
 	public static var bridge: Defaults.NSSecureCodingBridge<Self> { Defaults.NSSecureCodingBridge() }
 }
 
@@ -104,7 +104,7 @@ extension Defaults.Serializable where Self: Codable & RawRepresentable & Default
 extension Defaults.Serializable where Self: RawRepresentable {
 	public static var bridge: Defaults.RawRepresentableBridge<Self> { Defaults.RawRepresentableBridge() }
 }
-extension Defaults.Serializable where Self: NSSecureCoding {
+extension Defaults.Serializable where Self: NSSecureCoding & NSObject {
 	public static var bridge: Defaults.NSSecureCodingBridge<Self> { Defaults.NSSecureCodingBridge() }
 }
 
