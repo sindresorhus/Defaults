@@ -130,7 +130,7 @@ extension Defaults {
 
 		/**
 		Create a key with a dynamic default value.
-		
+
 		This can be useful in cases where you cannot define a static default value as it may change during the lifetime of the app.
 
 		```swift

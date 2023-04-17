@@ -49,7 +49,7 @@ extension PlainHourMinuteTimeRange: Defaults.Serializable {
 		typealias Serializable = [PlainHourMinuteTime]
 
 		func serialize(_ value: Value?) -> Serializable? {
-			guard let value = value else {
+			guard let value else {
 				return nil
 			}
 

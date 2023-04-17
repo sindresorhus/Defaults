@@ -175,7 +175,7 @@ extension Defaults {
 
 			guard
 				selfObject == object as? NSObject,
-				let change = change
+				let change
 			else {
 				return
 			}
@@ -265,7 +265,7 @@ extension Defaults {
 
 			guard
 				object is UserDefaults,
-				let change = change
+				let change
 			else {
 				return
 			}

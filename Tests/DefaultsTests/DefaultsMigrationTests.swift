@@ -249,7 +249,7 @@ extension CodableEnumForm: Defaults.CodableType {
 	typealias NativeForm = EnumForm
 }
 
-private func setCodable<Value: Codable>(forKey keyName: String, data: Value) {
+private func setCodable(forKey keyName: String, data: some Codable) {
 	guard
 		let text = try? JSONEncoder().encode(data),
 		let string = String(data: text, encoding: .utf8)

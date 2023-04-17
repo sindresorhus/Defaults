@@ -168,7 +168,7 @@ extension Defaults {
 	@usableFromInline
 	internal static func isValidKeyPath(name: String) -> Bool {
 		// The key must be ASCII, not start with @, and cannot contain a dot.
-		return !name.starts(with: "@") && name.allSatisfy { $0 != "." && $0.isASCII }
+		!name.starts(with: "@") && name.allSatisfy { $0 != "." && $0.isASCII }
 	}
 }
 
@@ -259,7 +259,7 @@ internal let dynamicSharedObject: UnsafeMutableRawPointer = {
 @_transparent
 @usableFromInline
 internal func runtimeWarn(
-	_ condition: @autoclosure() -> Bool, _ message: @autoclosure () -> String
+	_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String
 ) {
 #if DEBUG
 #if canImport(OSLog)

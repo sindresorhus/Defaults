@@ -33,7 +33,7 @@ extension Defaults {
 		var value: Any
 		public static let bridge = AnyBridge()
 
-		init<T>(value: T?) {
+		init(value: (some Any)?) {
 			self.value = value ?? ()
 		}
 

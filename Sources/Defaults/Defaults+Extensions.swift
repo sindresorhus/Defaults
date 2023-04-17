@@ -104,6 +104,7 @@ extension Defaults.Serializable where Self: Codable & RawRepresentable & Default
 extension Defaults.Serializable where Self: RawRepresentable {
 	public static var bridge: Defaults.RawRepresentableBridge<Self> { Defaults.RawRepresentableBridge() }
 }
+
 extension Defaults.Serializable where Self: NSSecureCoding & NSObject {
 	public static var bridge: Defaults.NSSecureCodingBridge<Self> { Defaults.NSSecureCodingBridge() }
 }
