@@ -164,3 +164,6 @@ extension NSColor: Defaults.Serializable {}
 */
 extension UIColor: Defaults.Serializable {}
 #endif
+
+extension NSUbiquitousKeyValueStore: Defaults.KeyValueStore {}
+extension UserDefaults: Defaults.KeyValueStore {}

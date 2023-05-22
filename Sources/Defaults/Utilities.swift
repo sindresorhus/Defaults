@@ -234,6 +234,179 @@ extension Defaults.Serializable {
 	}
 }
 
+/**
+A reader/writer threading lock based on `libpthread`.
+*/
+final class RWLock {
+	private let lock: UnsafeMutablePointer<pthread_rwlock_t> = UnsafeMutablePointer.allocate(capacity: 1)
+
+	init() {
+		let err = pthread_rwlock_init(lock, nil)
+		precondition(err == 0, "\(#function) failed in pthread_rwlock_init with error \(err)")
+	}
+
+	deinit {
+		let err = pthread_rwlock_destroy(lock)
+		precondition(err == 0, "\(#function) failed in pthread_rwlock_destroy with error \(err)")
+		lock.deallocate()
+	}
+
+	private func lockRead() {
+		let err = pthread_rwlock_rdlock(lock)
+		precondition(err == 0, "\(#function) failed in pthread_rwlock_rdlock with error \(err)")
+	}
+
+	private func lockWrite() {
+		let err = pthread_rwlock_wrlock(lock)
+		precondition(err == 0, "\(#function) failed in pthread_rwlock_wrlock with error \(err)")
+	}
+
+	private func unlock() {
+		let err = pthread_rwlock_unlock(lock)
+		precondition(err == 0, "\(#function) failed in pthread_rwlock_unlock with error \(err)")
+	}
+
+	@inlinable
+	func withReadLock<R>(body: () -> R) -> R {
+		lockRead()
+		defer {
+			unlock()
+		}
+		return body()
+	}
+
+	@inlinable
+	func withWriteLock<R>(body: () -> R) -> R {
+		lockWrite()
+		defer {
+			unlock()
+		}
+		return body()
+	}
+}
+
+/**
+A queue for executing asynchronous tasks in order.
+
+```swift
+actor Counter {
+	var count = 0
+
+	func increase() {
+		count += 1
+	}
+}
+let counter = Counter()
+let queue = TaskQueue(priority: .background)
+queue.async {
+	print(await counter.count) //=> 0
+}
+queue.async {
+	await counter.increase()
+}
+queue.async {
+	print(await counter.count) //=> 1
+}
+```
+*/
+final class TaskQueue {
+	typealias AsyncTask = @Sendable () async -> Void
+	private var queueContinuation: AsyncStream<AsyncTask>.Continuation?
+
+	init(priority: TaskPriority? = nil) {
+		let taskStream = AsyncStream<AsyncTask> { queueContinuation = $0 }
+
+		Task.detached(priority: priority) {
+			for await task in taskStream {
+				await task()
+			}
+		}
+	}
+
+	deinit {
+		queueContinuation?.finish()
+	}
+
+	/**
+	Queue a new asynchronous task.
+	*/
+	func async(_ task: @escaping AsyncTask) {
+		queueContinuation?.yield(task)
+	}
+
+	/**
+	Queue a new asynchronous task and wait until it done.
+	*/
+	func sync(_ task: @escaping AsyncTask) {
+		let semaphore = DispatchSemaphore(value: 0)
+
+		queueContinuation?.yield {
+			await task()
+			semaphore.signal()
+		}
+
+		semaphore.wait()
+	}
+
+	/**
+	Wait until previous tasks finish.
+
+	```swift
+	Task {
+		queue.async {
+			print("1")
+		}
+		queue.async {
+			print("2")
+		}
+		await queue.flush()
+		//=> 1
+		//=> 2
+	}
+	```
+	*/
+	func flush() async {
+		await withCheckedContinuation { continuation in
+			queueContinuation?.yield {
+				continuation.resume()
+			}
+		}
+	}
+}
+
+/**
+An array with read-write lock protection.
+Ensures that multiple threads can safely read and write to the array at the same time.
+*/
+final class AtomicSet<T: Hashable> {
+	private let lock = RWLock()
+	private var set: Set<T> = []
+
+	func insert(_ newMember: T) {
+		lock.withWriteLock {
+			_ = set.insert(newMember)
+		}
+	}
+
+	func remove(_ member: T) {
+		lock.withWriteLock {
+			_ = set.remove(member)
+		}
+	}
+
+	func contains(_ member: T) -> Bool {
+		lock.withReadLock {
+			set.contains(member)
+		}
+	}
+
+	func removeAll() {
+		lock.withWriteLock {
+			set.removeAll()
+		}
+	}
+}
+
 #if DEBUG
 /**
 Get SwiftUI dynamic shared object.
