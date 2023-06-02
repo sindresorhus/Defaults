@@ -56,7 +56,7 @@ Add `https://github.com/sindresorhus/Defaults` in the [“Swift Package Manager�
 - `UUID`
 - `NSColor` (macOS)
 - `UIColor` (iOS)
-- `Color` (SwiftUI)
+- `Color` [^1] (SwiftUI)
 - `Codable`
 - `NSSecureCoding`
 - `Range`, `ClosedRange`
@@ -68,6 +68,8 @@ For more types, see the [enum example](#enum-example), [`Codable` example](#coda
 You can easily add support for any custom type.
 
 If a type conforms to both `NSSecureCoding` and `Codable`, then `Codable` will be used for the serialization.
+
+[^1]: [You cannot use `Color.accentColor`.](https://github.com/sindresorhus/Defaults/issues/139)
 
 ## Usage
 
@@ -815,4 +817,4 @@ It's inspired by that package and other solutions. The main difference is that t
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin) - Add "Launch at Login" functionality to your macOS app
 - [DockProgress](https://github.com/sindresorhus/DockProgress) - Show progress in your app's Dock icon
 - [Gifski](https://github.com/sindresorhus/Gifski) - Convert videos to high-quality GIFs on your Mac
-- [More…](https://github.com/search?q=user%3Asindresorhus+language%3Aswift)
+- [More…](https://github.com/search?q=user%3Asindresorhus+language%3Aswift+archived%3Afalse&type=repositories)
