@@ -58,8 +58,19 @@ Essential properties for synchronizing a key value store.
 */
 public protocol _DefaultsKeyValueStore {
 	func object(forKey aKey: String) -> Any?
+
 	func set(_ anObject: Any?, forKey aKey: String)
+
 	func removeObject(forKey aKey: String)
+
 	@discardableResult
 	func synchronize() -> Bool
+}
+
+protocol _DefaultsLockProtocol {
+	static func make() -> Self
+
+	func lock()
+
+	func unlock()
 }

@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 #if DEBUG
 #if canImport(OSLog)
 import OSLog
@@ -234,55 +235,63 @@ extension Defaults.Serializable {
 	}
 }
 
-/**
-A reader/writer threading lock based on `libpthread`.
-*/
-final class RWLock {
-	private let lock: UnsafeMutablePointer<pthread_rwlock_t> = UnsafeMutablePointer.allocate(capacity: 1)
+extension AsyncStream {
+	public static func makeStream(
+		_ elementType: Element.Type = Element.self,
+		bufferingPolicy limit: Continuation.BufferingPolicy = .unbounded
+	  ) -> (stream: Self, continuation: Continuation?) {
+		var continuation: Continuation?
+		return (Self(elementType, bufferingPolicy: limit) { continuation = $0 }, continuation)
+	  }
+}
 
-	init() {
-		let err = pthread_rwlock_init(lock, nil)
-		precondition(err == 0, "\(#function) failed in pthread_rwlock_init with error \(err)")
-	}
+// swiftlint:disable:next final_class
+class Lock: Defaults.LockProtocol {
+	final class UnfairLock: Lock {
+		private let _lock: os_unfair_lock_t
 
-	deinit {
-		let err = pthread_rwlock_destroy(lock)
-		precondition(err == 0, "\(#function) failed in pthread_rwlock_destroy with error \(err)")
-		lock.deallocate()
-	}
-
-	private func lockRead() {
-		let err = pthread_rwlock_rdlock(lock)
-		precondition(err == 0, "\(#function) failed in pthread_rwlock_rdlock with error \(err)")
-	}
-
-	private func lockWrite() {
-		let err = pthread_rwlock_wrlock(lock)
-		precondition(err == 0, "\(#function) failed in pthread_rwlock_wrlock with error \(err)")
-	}
-
-	private func unlock() {
-		let err = pthread_rwlock_unlock(lock)
-		precondition(err == 0, "\(#function) failed in pthread_rwlock_unlock with error \(err)")
-	}
-
-	@inlinable
-	func withReadLock<R>(body: () -> R) -> R {
-		lockRead()
-		defer {
-			unlock()
+		override init() {
+			_lock = .allocate(capacity: 1)
+			_lock.initialize(to: os_unfair_lock())
 		}
-		return body()
+
+		override func lock() {
+			os_unfair_lock_lock(_lock)
+		}
+
+		override func unlock() {
+			os_unfair_lock_unlock(_lock)
+		}
 	}
 
-	@inlinable
-	func withWriteLock<R>(body: () -> R) -> R {
-		lockWrite()
-		defer {
-			unlock()
+	@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+	final class AllocatedUnfairLock: Lock {
+		private let _lock = OSAllocatedUnfairLock()
+
+		override init() {
+			super.init()
 		}
-		return body()
+
+		override func lock() {
+			_lock.lock()
+		}
+
+		override func unlock() {
+			_lock.unlock()
+		}
 	}
+
+	static func make() -> Self {
+		guard #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) else {
+			return UnfairLock() as! Self
+		}
+
+		return AllocatedUnfairLock() as! Self
+	}
+
+	private init() {}
+	func lock() {}
+	func unlock() {}
 }
 
 /**
@@ -312,9 +321,11 @@ queue.async {
 final class TaskQueue {
 	typealias AsyncTask = @Sendable () async -> Void
 	private var queueContinuation: AsyncStream<AsyncTask>.Continuation?
+	private let lock: Lock = .make()
 
 	init(priority: TaskPriority? = nil) {
-		let taskStream = AsyncStream<AsyncTask> { queueContinuation = $0 }
+		let (taskStream, queueContinuation) = AsyncStream<AsyncTask>.makeStream()
+		self.queueContinuation = queueContinuation
 
 		Task.detached(priority: priority) {
 			for await task in taskStream {
@@ -331,21 +342,9 @@ final class TaskQueue {
 	Queue a new asynchronous task.
 	*/
 	func async(_ task: @escaping AsyncTask) {
+		lock.lock()
 		queueContinuation?.yield(task)
-	}
-
-	/**
-	Queue a new asynchronous task and wait until it done.
-	*/
-	func sync(_ task: @escaping AsyncTask) {
-		let semaphore = DispatchSemaphore(value: 0)
-
-		queueContinuation?.yield {
-			await task()
-			semaphore.signal()
-		}
-
-		semaphore.wait()
+		lock.unlock()
 	}
 
 	/**
@@ -367,42 +366,53 @@ final class TaskQueue {
 	*/
 	func flush() async {
 		await withCheckedContinuation { continuation in
+			lock.lock()
 			queueContinuation?.yield {
 				continuation.resume()
 			}
+			lock.unlock()
 		}
 	}
 }
 
-/**
-An array with read-write lock protection.
-Ensures that multiple threads can safely read and write to the array at the same time.
-*/
-final class AtomicSet<T: Hashable> {
-	private let lock = RWLock()
-	private var set: Set<T> = []
+@propertyWrapper
+final class Atomic<Value> {
+	private let lock: Lock = .make()
+	private var _value: Value
 
-	func insert(_ newMember: T) {
-		lock.withWriteLock {
-			_ = set.insert(newMember)
+	var wrappedValue: Value {
+		get {
+			withValue { $0 }
+		}
+		set {
+			swap(newValue)
 		}
 	}
 
-	func remove(_ member: T) {
-		lock.withWriteLock {
-			_ = set.remove(member)
-		}
+	init(value: Value) {
+		self._value = value
 	}
 
-	func contains(_ member: T) -> Bool {
-		lock.withReadLock {
-			set.contains(member)
-		}
+	@discardableResult
+	func withValue<R>(_ action: (Value) -> R) -> R {
+		lock.lock()
+		defer { lock.unlock() }
+		return action(_value)
 	}
 
-	func removeAll() {
-		lock.withWriteLock {
-			set.removeAll()
+	@discardableResult
+	func modify<R>(_ action: (inout Value) -> R) -> R {
+		lock.lock()
+		defer { lock.unlock() }
+		return action(&_value)
+	}
+
+	@discardableResult
+	func swap(_ newValue: Value) -> Value {
+		modify { (value: inout Value) in
+			let oldValue = value
+			value = newValue
+			return oldValue
 		}
 	}
 }

@@ -307,7 +307,9 @@ extension Defaults {
 
 	public typealias RangeSerializable = _DefaultsRange & _DefaultsSerializable
 
-	public typealias KeyValueStore = _DefaultsKeyValueStore
+	typealias KeyValueStore = _DefaultsKeyValueStore
+
+	typealias LockProtocol = _DefaultsLockProtocol
 
 	/**
 	Convenience protocol for `Codable`.
