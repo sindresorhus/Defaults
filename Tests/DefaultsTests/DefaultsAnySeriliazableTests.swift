@@ -466,7 +466,7 @@ final class DefaultsAnySerializableTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-
+	
 	func testWrongCast() {
 		let value = Defaults.AnySerializable(false)
 		XCTAssertEqual(value.get(Bool.self), false)
