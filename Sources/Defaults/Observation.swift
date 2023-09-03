@@ -125,7 +125,7 @@ extension Defaults {
 		private weak var object: UserDefaults?
 		private let key: String
 		private let callback: Callback
-        private var isObserving = false
+		private var isObserving = false
 
 		init(object: UserDefaults, key: String, callback: @escaping Callback) {
 			self.object = object
@@ -139,14 +139,14 @@ extension Defaults {
 
 		func start(options: ObservationOptions) {
 			object?.addObserver(self, forKeyPath: key, options: options.toNSKeyValueObservingOptions, context: nil)
-            self.isObserving = true
+			self.isObserving = true
 		}
 
 		func invalidate() {
-            if isObserving {
-                object?.removeObserver(self, forKeyPath: key, context: nil)
-                isObserving = false
-            }
+			if isObserving {
+				object?.removeObserver(self, forKeyPath: key, context: nil)
+				isObserving = false
+			}
 			object = nil
 			lifetimeAssociation?.cancel()
 		}

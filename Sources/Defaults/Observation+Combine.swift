@@ -119,15 +119,15 @@ extension Defaults {
 				}
 	}
 
-    /**
-    Publisher for multiple `Key<T>` observation, but without specific information about changes.
+	/**
+	Publisher for multiple `Key<T>` observation, but without specific information about changes.
 
-    - Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-9eh8`` instead.
-    */
-    public static func publisher(
-        keys: _AnyKey...,
-        options: ObservationOptions = [.initial]
-    ) -> AnyPublisher<Void, Never> {
-        self.publisher(keys: keys, options: options)
-    }
+	 - Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-9eh8`` instead.
+	*/
+	public static func publisher(
+		keys: _AnyKey...,
+		options: ObservationOptions = [.initial]
+	) -> AnyPublisher<Void, Never> {
+		self.publisher(keys: keys, options: options)
+	}
 }
