@@ -37,11 +37,13 @@ extension CustomDate: Comparable {
 	static func < (lhs: CustomDate, rhs: CustomDate) -> Bool {
 		if lhs.year != rhs.year {
 				return lhs.year < rhs.year
-		} else if lhs.month != rhs.month {
-				return lhs.month < rhs.month
-		} else {
-				return lhs.day < rhs.day
 		}
+
+		if lhs.month != rhs.month {
+				return lhs.month < rhs.month
+		}
+
+		return lhs.day < rhs.day
 	}
 
 	static func == (lhs: CustomDate, rhs: CustomDate) -> Bool {

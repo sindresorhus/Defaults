@@ -99,7 +99,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(3)
 
-		// swiftlint:disable discouraged_optional_collection
+		// swiftlint:disable:next discouraged_optional_collection
 		let expectedValues: [([String: String]?, [String: String]?)] = [(nil, fixtureDictionary), (fixtureDictionary, newName), (newName, nil)]
 
 		let cancellable = publisher.sink { actualValues in
