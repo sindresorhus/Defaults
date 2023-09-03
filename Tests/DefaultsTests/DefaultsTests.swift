@@ -362,7 +362,7 @@ final class DefaultsTests: XCTestCase {
 			if counter == 2 {
 				expect.fulfill()
 			} else if counter > 2 {
-				XCTFail()
+				XCTFail() // swiftlint:disable:this xctfail_message
 			}
 		}
 
@@ -465,7 +465,7 @@ final class DefaultsTests: XCTestCase {
 			}
 			print("--- Main Thread: \(Thread.isMainThread)")
 			if !Thread.isMainThread {
-				XCTAssert(Defaults[key1]! == 4)
+				XCTAssertEqual(Defaults[key1]!, 4)
 				expect.fulfill()
 			} else {
 				usleep(300_000)
@@ -488,7 +488,7 @@ final class DefaultsTests: XCTestCase {
 		let expect = expectation(description: "No infinite recursion")
 
 		let observation1 = Defaults.observe(key2, options: []) { _ in
-			XCTFail()
+			XCTFail() // swiftlint:disable:this xctfail_message
 		}
 
 		let observation2 = Defaults.observe(keys: key1, key2, options: []) {
@@ -713,7 +713,7 @@ final class DefaultsTests: XCTestCase {
 			sleep(1)
 
 			if index == 10 {
-				XCTFail()
+				XCTFail() // swiftlint:disable:this xctfail_message
 			}
 		}
 	}
@@ -751,7 +751,7 @@ final class DefaultsTests: XCTestCase {
 		Defaults[key] = true
 
 		guard let result = await waiter else {
-			XCTFail()
+			XCTFail() // swiftlint:disable:this xctfail_message
 			return
 		}
 

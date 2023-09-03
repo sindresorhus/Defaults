@@ -422,9 +422,9 @@ extension Defaults {
 
 			if #available(macOS 12.0, macOSApplicationExtension 12.0, *) {
 				return Value(cgColor: cgColor)
-			} else {
-				return Value(cgColor)
 			}
+
+			return Value(cgColor)
 		}
 	}
 }

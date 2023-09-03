@@ -317,7 +317,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 			if counter == 2 {
 				expect.fulfill()
 			} else if counter > 2 {
-				XCTFail()
+				XCTFail() // swiftlint:disable:this xctfail_message
 			}
 		}
 

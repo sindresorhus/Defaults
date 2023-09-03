@@ -48,15 +48,15 @@ struct DefaultsSetAlgebra<Element: Defaults.Serializable & Hashable>: SetAlgebra
 		store.update(with: newMember)
 	}
 
-	mutating func formUnion(_ other: DefaultsSetAlgebra) {
+	mutating func formUnion(_ other: Self) {
 		store.formUnion(other.store)
 	}
 
-	mutating func formSymmetricDifference(_ other: DefaultsSetAlgebra) {
+	mutating func formSymmetricDifference(_ other: Self) {
 		store.formSymmetricDifference(other.store)
 	}
 
-	mutating func formIntersection(_ other: DefaultsSetAlgebra) {
+	mutating func formIntersection(_ other: Self) {
 		store.formIntersection(other.store)
 	}
 }

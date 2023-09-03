@@ -466,10 +466,10 @@ final class DefaultsAnySerializableTests: XCTestCase {
 
 		waitForExpectations(timeout: 10)
 	}
-	
+
 	func testWrongCast() {
 		let value = Defaults.AnySerializable(false)
-		XCTAssertEqual(value.get(Bool.self), false)
+		XCTAssertEqual(value.get(Bool.self), false) // swiftlint:disable:this xct_specific_matcher
 		XCTAssertNil(value.get(String.self))
 	}
 }

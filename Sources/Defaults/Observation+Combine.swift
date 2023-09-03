@@ -107,7 +107,7 @@ extension Defaults {
 	) -> AnyPublisher<Void, Never> {
 		let initial = Empty<Void, Never>(completeImmediately: false).eraseToAnyPublisher()
 
-		let combinedPublisher =
+		return
 			keys
 				.map { key in
 					DefaultsPublisher(suite: key.suite, key: key.name, options: options)
@@ -117,7 +117,5 @@ extension Defaults {
 				.reduce(initial) { combined, keyPublisher in
 					combined.merge(with: keyPublisher).eraseToAnyPublisher()
 				}
-
-		return combinedPublisher
 	}
 }

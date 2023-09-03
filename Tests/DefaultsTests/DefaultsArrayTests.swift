@@ -117,7 +117,7 @@ final class DefaultsArrayTests: XCTestCase {
 			.map { ($0.oldValue, $0.newValue) }
 			.collect(3)
 
-		// swiftlint:disable discouraged_optional_collection
+		// swiftlint:disable:next discouraged_optional_collection
 		let expectedValues: [([String]?, [String]?)] = [(nil, fixtureArray), (fixtureArray, newName), (newName, nil)]
 
 		let cancellable = publisher.sink { actualValues in
