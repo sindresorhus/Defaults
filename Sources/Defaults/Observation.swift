@@ -139,7 +139,7 @@ extension Defaults {
 
 		func start(options: ObservationOptions) {
 			object?.addObserver(self, forKeyPath: key, options: options.toNSKeyValueObservingOptions, context: nil)
-			self.isObserving = true
+			isObserving = true
 		}
 
 		func invalidate() {
