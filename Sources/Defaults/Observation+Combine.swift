@@ -128,6 +128,6 @@ extension Defaults {
 		keys: _AnyKey...,
 		options: ObservationOptions = [.initial]
 	) -> AnyPublisher<Void, Never> {
-		self.publisher(keys: keys, options: options)
+		publisher(keys: keys, options: options)
 	}
 }
