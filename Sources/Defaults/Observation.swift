@@ -147,6 +147,7 @@ extension Defaults {
 				object?.removeObserver(self, forKeyPath: key, context: nil)
 				isObserving = false
 			}
+
 			object = nil
 			lifetimeAssociation?.cancel()
 		}
