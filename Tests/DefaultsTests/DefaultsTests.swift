@@ -733,6 +733,23 @@ final class DefaultsTests: XCTestCase {
 		waitForExpectations(timeout: 10)
 	}
 
+    func testImmediatelyFinishingMultiplePublisherCombine() {
+        let key1 = Defaults.Key<Bool>("observeKey1", default: false)
+        let key2 = Defaults.Key<String>("observeKey2", default: "🦄")
+        let expect = expectation(description: "Observation closure being called without crashing")
+
+        let cancellable = Defaults
+            .publisher(keys: [key1, key2], options: [.initial])
+            .first()
+            .sink { _ in
+                expect.fulfill()
+            }
+
+        cancellable.cancel()
+
+        waitForExpectations(timeout: 10)
+    }
+
 	func testKeyEquatable() {
 		XCTAssertEqual(Defaults.Key<Bool>("equatableKeyTest", default: false), Defaults.Key<Bool>("equatableKeyTest", default: false))
 	}
