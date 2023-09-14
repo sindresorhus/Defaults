@@ -132,11 +132,11 @@ public protocol _DefaultsOptionalProtocol: ExpressibleByNilLiteral {
 	/**
 	This is useful as you cannot compare `_OptionalType` to `nil`.
 	*/
-	var isNil: Bool { get }
+	var _defaults_isNil: Bool { get }
 }
 
 extension Optional: _DefaultsOptionalProtocol {
-	public var isNil: Bool { self == nil }
+	public var _defaults_isNil: Bool { self == nil }
 }
 
 
@@ -166,7 +166,7 @@ extension Collection {
 
 extension Defaults {
 	@usableFromInline
-	internal static func isValidKeyPath(name: String) -> Bool {
+	static func isValidKeyPath(name: String) -> Bool {
 		// The key must be ASCII, not start with @, and cannot contain a dot.
 		!name.starts(with: "@") && name.allSatisfy { $0 != "." && $0.isASCII }
 	}
@@ -215,7 +215,7 @@ extension Defaults.Serializable {
 	```
 	*/
 	@usableFromInline
-	internal static func toSerializable<T: Defaults.Serializable>(_ value: T) -> Any? {
+	static func toSerializable<T: Defaults.Serializable>(_ value: T) -> Any? {
 		if T.isNativelySupportedType {
 			return value
 		}
@@ -240,7 +240,7 @@ Get SwiftUI dynamic shared object.
 Reference: https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/dyld.3.html
 */
 @usableFromInline
-internal let dynamicSharedObject: UnsafeMutableRawPointer = {
+let dynamicSharedObject: UnsafeMutableRawPointer = {
 	let imageCount = _dyld_image_count()
 	for imageIndex in 0..<imageCount {
 		guard
@@ -261,7 +261,7 @@ internal let dynamicSharedObject: UnsafeMutableRawPointer = {
 
 @_transparent
 @usableFromInline
-internal func runtimeWarn(
+func runtimeWarn(
 	_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String
 ) {
 #if DEBUG

@@ -15,7 +15,9 @@ extension Defaults.CodableBridge {
 			// Some codable values like URL and enum are encoded as a top-level
 			// string which JSON can't handle, so we need to wrap it in an array
 			// We need this: https://forums.swift.org/t/allowing-top-level-fragments-in-jsondecoder/11750
-			let data = try JSONEncoder().encode([value])
+			let jsonEncoder = JSONEncoder()
+			jsonEncoder.outputFormatting = .sortedKeys
+			let data = try jsonEncoder.encode([value])
 			return String(String(data: data, encoding: .utf8)!.dropFirst().dropLast())
 		} catch {
 			print(error)

@@ -205,7 +205,7 @@ final class DefaultsCustomBridge: XCTestCase {
 			XCTFail("rawValue should not be nil")
 			return
 		}
-		XCTAssertEqual(rawValue, [#"{"minute":0,"hour":1}"#, #"{"minute":0,"hour":2}"#])
+		XCTAssertEqual(rawValue, [#"{"hour":1,"minute":0}"#, #"{"hour":2,"minute":0}"#])
 		let next_start = PlainHourMinuteTime(hour: 3, minute: 58)
 		let next_end = PlainHourMinuteTime(hour: 4, minute: 59)
 		let next_range = PlainHourMinuteTimeRange(start: next_start, end: next_end)
@@ -218,7 +218,7 @@ final class DefaultsCustomBridge: XCTestCase {
 			XCTFail("nextRawValue should not be nil")
 			return
 		}
-		XCTAssertEqual(nextRawValue, [#"{"minute":58,"hour":3}"#, #"{"minute":59,"hour":4}"#])
+		XCTAssertEqual(nextRawValue, [#"{"hour":3,"minute":58}"#, #"{"hour":4,"minute":59}"#])
 	}
 
 	func testType() {

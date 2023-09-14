@@ -95,7 +95,7 @@ extension Defaults {
 		- A `bridge` cannot deserialize `Value` from `UserDefaults`
 		*/
 		@usableFromInline
-		internal let defaultValueGetter: () -> Value
+		let defaultValueGetter: () -> Value
 
 		public var defaultValue: Value { defaultValueGetter() }
 
@@ -116,7 +116,7 @@ extension Defaults {
 
 			super.init(name: name, suite: suite)
 
-			if (defaultValue as? _DefaultsOptionalProtocol)?.isNil == true {
+			if (defaultValue as? _DefaultsOptionalProtocol)?._defaults_isNil == true {
 				return
 			}
 

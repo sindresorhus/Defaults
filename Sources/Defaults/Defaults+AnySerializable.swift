@@ -106,45 +106,45 @@ extension Defaults.AnySerializable: Equatable {
 	public static func == (lhs: Self, rhs: Self) -> Bool {
 		switch (lhs.value, rhs.value) {
 		case (let lhs as Data, let rhs as Data):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Date, let rhs as Date):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Bool, let rhs as Bool):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as UInt8, let rhs as UInt8):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Int8, let rhs as Int8):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as UInt16, let rhs as UInt16):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Int16, let rhs as Int16):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as UInt32, let rhs as UInt32):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Int32, let rhs as Int32):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as UInt64, let rhs as UInt64):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Int64, let rhs as Int64):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as UInt, let rhs as UInt):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Int, let rhs as Int):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Float, let rhs as Float):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as Double, let rhs as Double):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as CGFloat, let rhs as CGFloat):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as String, let rhs as String):
-			return lhs == rhs
+			lhs == rhs
 		case (let lhs as [AnyHashable: Any], let rhs as [AnyHashable: Any]):
-			return lhs.toDictionary() == rhs.toDictionary()
+			lhs.toDictionary() == rhs.toDictionary()
 		case (let lhs as [Any], let rhs as [Any]):
-			return lhs.toSequence() == rhs.toSequence()
+			lhs.toSequence() == rhs.toSequence()
 		default:
-			return false
+			false
 		}
 	}
 }
@@ -193,7 +193,7 @@ extension Defaults.AnySerializable: ExpressibleByDictionaryLiteral {
 
 extension Defaults.AnySerializable: _DefaultsOptionalProtocol {
 	// Since `nil` cannot be assigned to `Any`, we use `Void` instead of `nil`.
-	public var isNil: Bool { value is Void }
+	public var _defaults_isNil: Bool { value is Void }
 }
 
 extension Sequence {
