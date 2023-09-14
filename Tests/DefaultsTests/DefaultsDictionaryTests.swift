@@ -57,6 +57,15 @@ final class DefaultsDictionaryTests: XCTestCase {
 		XCTAssertEqual(Defaults[key]["0"], [newName, fixtureArray[1]])
 	}
 
+	func testIntKey() {
+		let fixture = [1: "x"]
+		let key = Defaults.Key<[Int: String]>("independentDictionaryIntKey", default: fixture)
+		XCTAssertEqual(Defaults[key][1], fixture[1])
+		let newValue = "John"
+		Defaults[key][1] = newValue
+		XCTAssertEqual(Defaults[key][1], newValue)
+	}
+
 	func testType() {
 		XCTAssertEqual(Defaults[.dictionary]["0"], fixtureDictionary["0"])
 		let newName = "Chen"
