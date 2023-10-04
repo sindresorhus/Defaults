@@ -128,6 +128,19 @@ final class DefaultsCodableTests: XCTestCase {
 		XCTAssertFalse(Defaults[key]["0"]?[1].isUnicorn ?? true)
 	}
 
+	func testCodableAndRawRepresentable() {
+		struct Unicorn: Codable, RawRepresentable, Defaults.Serializable {
+			var rawValue: String
+		}
+
+		let fixture = Unicorn(rawValue: "x")
+
+		let key = Defaults.Key<Unicorn?>("independentKey_codableAndRawRepresentable")
+		Defaults[key] = fixture
+		XCTAssertEqual(Defaults[key]?.rawValue, fixture.rawValue)
+		XCTAssertEqual(UserDefaults.standard.string(forKey: key.name), #""\#(fixture.rawValue)""#)
+	}
+
 	func testType() {
 		XCTAssertTrue(Defaults[.codable].isUnicorn)
 		Defaults[.codable] = Unicorn(isUnicorn: false)
