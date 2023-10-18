@@ -27,7 +27,7 @@ extension Defaults.CodableBridge {
 			return nil
 		}
 
-		return Value(jsonString: object)
+		return try? Value(jsonString: object)
 	}
 }
 
@@ -373,15 +373,14 @@ extension Defaults {
 
 	It is unsafe to convert `SwiftUI.Color` to `UIColor` and use `UIColor.bridge` to serialize it, because `UIColor` does not hold a color space, but `Swift.Color` does (which means color space might get lost in the conversion). The bridge will always try to preserve the color space whenever `Color#cgColor` exists. Only when `Color#cgColor` is `nil`, will it use `UIColor.bridge` to do the serialization and deserialization.
 	*/
-	@available(iOS 15.0, macOS 11.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 11.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *)
 	public struct ColorBridge: Bridge {
 		public typealias Value = Color
 		public typealias Serializable = Any
 
 		#if os(macOS)
-		private typealias NativeColor = NSColor
+		private typealias XColor = NSColor
 		#else
-		private typealias NativeColor = UIColor
+		private typealias XColor = UIColor
 		#endif
 
 		public func serialize(_ value: Value?) -> Serializable? {
@@ -394,15 +393,15 @@ extension Defaults {
 				let colorSpace = cgColor.colorSpace?.name as? String,
 				let components = cgColor.components
 			else {
-				return NativeColor.bridge.serialize(NativeColor(value))
+				return XColor.bridge.serialize(XColor(value))
 			}
 
 			return [colorSpace, components] as [Any]
 		}
 
 		public func deserialize(_ object: Serializable?) -> Value? {
-			if let object = object as? NativeColor.Serializable {
-				guard let nativeColor = NativeColor.bridge.deserialize(object) else {
+			if let object = object as? XColor.Serializable {
+				guard let nativeColor = XColor.bridge.deserialize(object) else {
 					return nil
 				}
 
@@ -419,7 +418,7 @@ extension Defaults {
 				return nil
 			}
 
-			if #available(macOS 12.0, macOSApplicationExtension 12.0, *) {
+			if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 12.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *) {
 				return Value(cgColor: cgColor)
 			}
 

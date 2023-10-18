@@ -30,16 +30,15 @@ It's used in production by [all my apps](https://sindresorhus.com/apps) (1 milli
 
 ## Compatibility
 
-- macOS 10.15+
-- iOS 13+
-- tvOS 13+
-- watchOS 6+
+- macOS 11+
+- iOS 14+
+- tvOS 14+
+- watchOS 7+
+- visionOS 1+
 
 ## Install
 
 Add `https://github.com/sindresorhus/Defaults` in the [“Swift Package Manager” tab in Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app).
-
-**Requires Xcode 14.1 or later**
 
 ## Support types
 
@@ -232,8 +231,6 @@ struct ShowAllDayEventsSetting: View {
 	}
 }
 ```
-
-*Requires at least macOS 11, iOS 14, tvOS 14, watchOS 7.*
 
 ### Observe changes to a key
 

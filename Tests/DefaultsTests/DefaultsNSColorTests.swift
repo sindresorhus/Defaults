@@ -1,4 +1,4 @@
-#if canImport(AppKit)
+#if os(macOS)
 import Foundation
 import Defaults
 import XCTest

@@ -6,11 +6,11 @@ jobs:
   test:
     runs-on: macos-13
     steps:
-      - uses: actions/checkout@v3
-      - run: sudo xcode-select -switch /Applications/Xcode_15.0.app
+      - uses: actions/checkout@v4
+      - run: sudo xcode-select -switch /Applications/Xcode_15.2.app
       - run: swift test
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: norio-nomura/action-swiftlint@3.2.1

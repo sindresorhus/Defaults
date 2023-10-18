@@ -156,7 +156,6 @@ extension Default where Value: Equatable {
 	public var isDefaultValue: Bool { wrappedValue == defaultValue }
 }
 
-@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Defaults {
 	/**
 	A SwiftUI `Toggle` view that is connected to a ``Defaults/Key`` with a `Bool` value.
@@ -211,7 +210,6 @@ extension Defaults {
 	}
 }
 
-@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Defaults.Toggle<Text> {
 	public init(_ title: some StringProtocol, key: Defaults.Key<Bool>) {
 		self.label = { Text(title) }
@@ -219,7 +217,6 @@ extension Defaults.Toggle<Text> {
 	}
 }
 
-@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Defaults.Toggle {
 	/**
 	Do something when the value changes to a different value.

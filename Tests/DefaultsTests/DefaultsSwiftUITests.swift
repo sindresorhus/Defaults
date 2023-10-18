@@ -4,12 +4,11 @@ import SwiftUI
 import Defaults
 
 #if os(macOS)
-typealias NativeColor = NSColor
+typealias XColor = NSColor
 #else
-typealias NativeColor = UIColor
+typealias XColor = UIColor
 #endif
 
-@available(macOS 11.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension Defaults.Keys {
 	fileprivate static let hasUnicorn = Key<Bool>("swiftui_hasUnicorn", default: false)
 	fileprivate static let user = Key<User>("swiftui_user", default: User(username: "Hank", password: "123456"))
@@ -17,7 +16,6 @@ extension Defaults.Keys {
 	fileprivate static let color = Key<Color>("swiftui_color", default: .black)
 }
 
-@available(macOS 11.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 struct ContentView: View {
 	@Default(.hasUnicorn) var hasUnicorn
 	@Default(.user) var user
@@ -31,7 +29,6 @@ struct ContentView: View {
 	}
 }
 
-@available(macOS 11.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 final class DefaultsSwiftUITests: XCTestCase {
 	override func setUp() {
 		super.setUp()
@@ -48,7 +45,7 @@ final class DefaultsSwiftUITests: XCTestCase {
 		XCTAssertFalse(view.hasUnicorn)
 		XCTAssertEqual(view.user.username, "Hank")
 		XCTAssertEqual(view.setInt.count, 3)
-		XCTAssertEqual(NativeColor(view.color), NativeColor(Color.black))
+		XCTAssertEqual(XColor(view.color), XColor(Color.black))
 		view.user = User(username: "Chen", password: "123456")
 		view.hasUnicorn.toggle()
 		view.setInt.insert(4)
@@ -58,7 +55,7 @@ final class DefaultsSwiftUITests: XCTestCase {
 		XCTAssertEqual(view.setInt, Set(1...4))
 		XCTAssertFalse(Default(.hasUnicorn).defaultValue)
 		XCTAssertFalse(Default(.hasUnicorn).isDefaultValue)
-		XCTAssertNotEqual(NativeColor(view.color), NativeColor(Color.black))
-		XCTAssertEqual(NativeColor(view.color), NativeColor(Color(.sRGB, red: 100, green: 100, blue: 100, opacity: 1)))
+		XCTAssertNotEqual(XColor(view.color), XColor(Color.black))
+		XCTAssertEqual(XColor(view.color), XColor(Color(.sRGB, red: 100, green: 100, blue: 100, opacity: 1)))
 	}
 }

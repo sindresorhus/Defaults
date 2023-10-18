@@ -5,21 +5,22 @@ import OSLog
 #endif
 #endif
 
-extension Decodable {
-	init?(jsonData: Data) {
-		guard let value = try? JSONDecoder().decode(Self.self, from: jsonData) else {
-			return nil
-		}
 
-		self = value
+extension String {
+	/**
+	Get the string as UTF-8 data.
+	*/
+	var toData: Data { Data(utf8) }
+}
+
+
+extension Decodable {
+	init(jsonData: Data) throws {
+		self = try JSONDecoder().decode(Self.self, from: jsonData)
 	}
 
-	init?(jsonString: String) {
-		guard let data = jsonString.data(using: .utf8) else {
-			return nil
-		}
-
-		self.init(jsonData: data)
+	init(jsonString: String) throws {
+		try self.init(jsonData: jsonString.toData)
 	}
 }
 
