@@ -52,7 +52,7 @@ private let mockStorage = MockStorage()
 final class DefaultsICloudTests: XCTestCase {
 	override class func setUp() {
 		Defaults.iCloud.isDebug = true
-		Defaults.iCloud.shared = Defaults.iCloudSynchronizer(remoteStorage: mockStorage)
+		Defaults.iCloud.synchronizer = Defaults.iCloudSynchronizer(remoteStorage: mockStorage)
 	}
 
 	override func setUp() {

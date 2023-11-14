@@ -235,16 +235,6 @@ extension Defaults.Serializable {
 	}
 }
 
-extension AsyncStream {
-	public static func makeStream(
-		_ elementType: Element.Type = Element.self,
-		bufferingPolicy limit: Continuation.BufferingPolicy = .unbounded
-	  ) -> (stream: Self, continuation: Continuation?) {
-		var continuation: Continuation?
-		return (Self(elementType, bufferingPolicy: limit) { continuation = $0 }, continuation)
-	  }
-}
-
 // swiftlint:disable:next final_class
 class Lock: Defaults.LockProtocol {
 	final class UnfairLock: Lock {
@@ -324,7 +314,7 @@ final class TaskQueue {
 	private let lock: Lock = .make()
 
 	init(priority: TaskPriority? = nil) {
-		let (taskStream, queueContinuation) = AsyncStream<AsyncTask>.makeStream()
+        let (taskStream, queueContinuation) = AsyncStream<AsyncTask>.makeStream()
 		self.queueContinuation = queueContinuation
 
 		Task.detached(priority: priority) {
@@ -342,9 +332,9 @@ final class TaskQueue {
 	Queue a new asynchronous task.
 	*/
 	func async(_ task: @escaping AsyncTask) {
-		lock.lock()
-		queueContinuation?.yield(task)
-		lock.unlock()
+		lock.with {
+			queueContinuation?.yield(task)
+		}
 	}
 
 	/**
@@ -366,11 +356,12 @@ final class TaskQueue {
 	*/
 	func flush() async {
 		await withCheckedContinuation { continuation in
-			lock.lock()
-			queueContinuation?.yield {
-				continuation.resume()
+			lock.with {
+				queueContinuation?.yield {
+					continuation.resume()
+				}
+				return
 			}
-			lock.unlock()
 		}
 	}
 }

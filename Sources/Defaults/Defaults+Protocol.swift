@@ -73,4 +73,6 @@ protocol _DefaultsLockProtocol {
 	func lock()
 
 	func unlock()
+
+	func with<R>(_ body: @Sendable () throws -> R) rethrows -> R where R : Sendable
 }

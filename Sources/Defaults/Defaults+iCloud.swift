@@ -9,7 +9,9 @@ import AppKit
 import Combine
 import Foundation
 
-/// Represent  different data sources available for synchronization.
+/**
+Represent  different data sources available for synchronization.
+*/
 public enum DataSource {
 	/// Using `key.suite` as data source.
 	case local
@@ -18,9 +20,9 @@ public enum DataSource {
 }
 
 private enum SyncStatus {
-	case start
-	case isSyncing
-	case finish
+	case idle
+	case syncing
+    case completed
 }
 
 extension Defaults {
@@ -152,7 +154,7 @@ extension Defaults {
 		- Parameter source: Sync key from which data source(remote or local).
 		*/
 		private func syncKey(_ key: Defaults.Keys, _ source: DataSource) async {
-			Self.logKeySyncStatus(key, source: source, syncStatus: .start)
+            Self.logKeySyncStatus(key, source: source, syncStatus: .idle)
 			switch source {
 			case .remote:
 				await syncFromRemote(key: key)
@@ -161,7 +163,7 @@ extension Defaults {
 				syncFromLocal(key: key)
 				recordTimestamp(.remote)
 			}
-			Self.logKeySyncStatus(key, source: source, syncStatus: .finish)
+			Self.logKeySyncStatus(key, source: source, syncStatus: .completed)
 		}
 
 		/**
@@ -176,7 +178,7 @@ extension Defaults {
 				}
 
 				Task { @MainActor in
-					Self.logKeySyncStatus(key, source: .remote, syncStatus: .isSyncing, value: value)
+					Self.logKeySyncStatus(key, source: .remote, syncStatus: .syncing, value: value)
 					key.suite.set(value, forKey: key.name)
 					continuation.resume()
 				}
@@ -189,13 +191,13 @@ extension Defaults {
 		*/
 		private func syncFromLocal(key: Defaults.Keys) {
 			guard let value = key.suite.object(forKey: key.name) else {
-				Self.logKeySyncStatus(key, source: .local, syncStatus: .isSyncing, value: nil)
+				Self.logKeySyncStatus(key, source: .local, syncStatus: .syncing, value: nil)
 				remoteStorage.removeObject(forKey: key.name)
 				syncRemoteStorageOnChange()
 				return
 			}
 
-			Self.logKeySyncStatus(key, source: .local, syncStatus: .isSyncing, value: value)
+			Self.logKeySyncStatus(key, source: .local, syncStatus: .syncing, value: value)
 			remoteStorage.set(value, forKey: key.name)
 			syncRemoteStorageOnChange()
 		}
@@ -328,13 +330,13 @@ extension Defaults.iCloudSynchronizer {
 		var status: String
 		var valueDescription = " "
 		switch syncStatus {
-		case .start:
-			status = "Start synchronization"
-		case .isSyncing:
+        case .idle:
+            status = "Try synchronizing"
+        case .syncing:
 			status = "Synchronizing"
 			valueDescription = " with value \(value ?? "nil") "
-		case .finish:
-			status = "Finish synchronization"
+		case .completed:
+			status = "Complete synchronization"
 		}
 		let message = "\(status) key '\(key.name)'\(valueDescription)\(destination)"
 
@@ -388,12 +390,12 @@ extension Defaults {
 		/**
 		The singleton for Defaults's iCloudSynchronizer.
 		*/
-		static var shared = Defaults.iCloudSynchronizer(remoteStorage: NSUbiquitousKeyValueStore.default)
+		static var synchronizer = Defaults.iCloudSynchronizer(remoteStorage: NSUbiquitousKeyValueStore.default)
 
 		/**
 		Lists the synced keys.
 		*/
-		public static let keys = shared.keys
+		public static let keys = synchronizer.keys
 
 		/**
 		Enable this if you want to call `NSUbiquitousKeyValueStore.synchronize` when a value is changed.
@@ -409,42 +411,42 @@ extension Defaults {
 		Add the keys to be automatically synced.
 		*/
 		public static func add(_ keys: Defaults.Keys...) {
-			shared.add(keys)
+            synchronizer.add(keys)
 		}
 
 		/**
 		 Remove the keys that are set to be automatically synced.
 		*/
 		public static func remove(_ keys: Defaults.Keys...) {
-			shared.remove(keys)
+            synchronizer.remove(keys)
 		}
 
 		/**
 		Remove all keys that are set to be automatically synced.
 		*/
 		public static func removeAll() {
-			shared.removeAll()
+            synchronizer.removeAll()
 		}
 
 		/**
 		Explicitly synchronizes in-memory keys and values with those stored on disk.
 		*/
 		public static func synchronize() {
-			shared.synchronize()
+            synchronizer.synchronize()
 		}
 
 		/**
 		Wait until all synchronization tasks are complete.
 		*/
 		public static func sync() async {
-			await shared.sync()
+			await synchronizer.sync()
 		}
 
 		/**
 		Create synchronization tasks for all the keys that have been added to the `Defaults.iCloud`.
 		*/
 		public static func syncWithoutWaiting() {
-			shared.syncWithoutWaiting()
+            synchronizer.syncWithoutWaiting()
 		}
 
 		/**
@@ -456,7 +458,7 @@ extension Defaults {
 		- Note: `source` should be specify if `key` has not been added to `Defaults.iCloud`.
 		*/
 		public static func syncWithoutWaiting(_ keys: Defaults.Keys..., source: DataSource? = nil) {
-			shared.syncWithoutWaiting(keys, source)
+            synchronizer.syncWithoutWaiting(keys, source)
 		}
 	}
 }
