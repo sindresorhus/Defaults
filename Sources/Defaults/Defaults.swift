@@ -153,6 +153,23 @@ extension Defaults {
 
 			super.init(name: name, suite: suite)
 		}
+		
+		/**
+		 Create a key with another key as default value.
+		 
+		 This can be useful if you want to change the name of the key, but still provide support to migrate from the previous key name.
+		 
+		 - Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		 */
+		@_alwaysEmitIntoClient
+		public convenience init(
+			_ name: String,
+			default legacyKey: Defaults.Key<Value>,
+			suite: UserDefaults = .standard
+		) where Value: Defaults.Serializable {
+			let keyValue = legacyKey.suite[legacyKey]
+			self.init(name, default: keyValue, suite: suite)
+		}
 	}
 }
 
