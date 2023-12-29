@@ -116,7 +116,7 @@ extension Defaults {
 			self.defaultValueGetter = { defaultValue }
 
 			super.init(name: name, suite: suite)
-			
+
 			if iCloud {
 				Defaults.iCloud.add(self)
 			}

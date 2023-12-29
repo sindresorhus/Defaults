@@ -22,7 +22,7 @@ public enum DataSource {
 private enum SyncStatus {
 	case idle
 	case syncing
-    case completed
+	case completed
 }
 
 extension Defaults {
@@ -154,7 +154,7 @@ extension Defaults {
 		- Parameter source: Sync key from which data source(remote or local).
 		*/
 		private func syncKey(_ key: Defaults.Keys, _ source: DataSource) async {
-            Self.logKeySyncStatus(key, source: source, syncStatus: .idle)
+			Self.logKeySyncStatus(key, source: source, syncStatus: .idle)
 			switch source {
 			case .remote:
 				await syncFromRemote(key: key)
@@ -330,9 +330,9 @@ extension Defaults.iCloudSynchronizer {
 		var status: String
 		var valueDescription = " "
 		switch syncStatus {
-        case .idle:
-            status = "Try synchronizing"
-        case .syncing:
+		case .idle:
+			status = "Try synchronizing"
+		case .syncing:
 			status = "Synchronizing"
 			valueDescription = " with value \(value ?? "nil") "
 		case .completed:
@@ -411,28 +411,28 @@ extension Defaults {
 		Add the keys to be automatically synced.
 		*/
 		public static func add(_ keys: Defaults.Keys...) {
-            synchronizer.add(keys)
+			synchronizer.add(keys)
 		}
 
 		/**
 		 Remove the keys that are set to be automatically synced.
 		*/
 		public static func remove(_ keys: Defaults.Keys...) {
-            synchronizer.remove(keys)
+			synchronizer.remove(keys)
 		}
 
 		/**
 		Remove all keys that are set to be automatically synced.
 		*/
 		public static func removeAll() {
-            synchronizer.removeAll()
+			synchronizer.removeAll()
 		}
 
 		/**
 		Explicitly synchronizes in-memory keys and values with those stored on disk.
 		*/
 		public static func synchronize() {
-            synchronizer.synchronize()
+			synchronizer.synchronize()
 		}
 
 		/**
@@ -446,7 +446,7 @@ extension Defaults {
 		Create synchronization tasks for all the keys that have been added to the `Defaults.iCloud`.
 		*/
 		public static func syncWithoutWaiting() {
-            synchronizer.syncWithoutWaiting()
+			synchronizer.syncWithoutWaiting()
 		}
 
 		/**
@@ -458,7 +458,7 @@ extension Defaults {
 		- Note: `source` should be specify if `key` has not been added to `Defaults.iCloud`.
 		*/
 		public static func syncWithoutWaiting(_ keys: Defaults.Keys..., source: DataSource? = nil) {
-            synchronizer.syncWithoutWaiting(keys, source)
+			synchronizer.syncWithoutWaiting(keys, source)
 		}
 	}
 }
