@@ -152,6 +152,10 @@ extension Range: Defaults.RangeSerializable where Bound: Defaults.Serializable {
 extension ClosedRange: Defaults.RangeSerializable where Bound: Defaults.Serializable {
 	public static var bridge: Defaults.RangeBridge<ClosedRange> { Defaults.RangeBridge() }
 }
+@available(iOS 17.0, macOS 14.0, *)
+extension Color.Resolved : Defaults.Serializable{
+    public static let bridge = Defaults.ColorBridge()
+}
 
 #if os(macOS)
 /**
