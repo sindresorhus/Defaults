@@ -21,7 +21,7 @@ extension Defaults {
 				Defaults[key] = newValue
 			}
 		}
-		
+
 		init(_ key: Key<Value>) {
 			self.key = key
 			
@@ -36,13 +36,14 @@ extension Defaults {
 			// We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
 			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
 				task?.cancel()
+
 				// The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.
 				task = .detached(priority: .userInitiated) { @MainActor [weak self, key] in
 					for await _ in Defaults.updates(key) {
 						guard let self else {
 							return
 						}
-						
+
 						self.objectWillChange.send()
 					}
 				}
@@ -52,7 +53,7 @@ extension Defaults {
 						guard change.isPrior else {
 							return
 						}
-						
+
 						Task { @MainActor in
 							self?.objectWillChange.send()
 						}
