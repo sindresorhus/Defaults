@@ -6,14 +6,14 @@ extension Defaults {
 	final class Observable<Value: Serializable>: ObservableObject {
 		private var cancellable: AnyCancellable?
 		private var task: Task<Void, Never>?
-        
-        var key: Defaults.Key<Value> {
-            didSet {
-                if oldValue != key {
-                    observe()
-                }
-            }
-        }
+		
+		var key: Defaults.Key<Value> {
+			didSet {
+				if oldValue != key {
+					observe()
+				}
+			}
+		}
 
 		var value: Value {
 			get { Defaults[key] }
@@ -21,44 +21,44 @@ extension Defaults {
 				Defaults[key] = newValue
 			}
 		}
-
+		
 		init(_ key: Key<Value>) {
 			self.key = key
-
-            observe()
+			
+			observe()
 		}
-
+		
 		deinit {
 			task?.cancel()
 		}
-        
-        func observe() {
-            // We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
-            if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
-                task?.cancel()
-                // The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.
-                task = .detached(priority: .userInitiated) { @MainActor [weak self, key] in
-                    for await _ in Defaults.updates(key) {
-                        guard let self else {
-                            return
-                        }
-
-                        self.objectWillChange.send()
-                    }
-                }
-            } else {
-                cancellable = Defaults.publisher(key, options: [.prior])
-                    .sink { [weak self] change in
-                        guard change.isPrior else {
-                            return
-                        }
-
-                        Task { @MainActor in
-                            self?.objectWillChange.send()
-                        }
-                    }
-            }
-        }
+		
+		func observe() {
+			// We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
+			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
+				task?.cancel()
+				// The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.
+				task = .detached(priority: .userInitiated) { @MainActor [weak self, key] in
+					for await _ in Defaults.updates(key) {
+						guard let self else {
+							return
+						}
+						
+						self.objectWillChange.send()
+					}
+				}
+			} else {
+				cancellable = Defaults.publisher(key, options: [.prior])
+					.sink { [weak self] change in
+						guard change.isPrior else {
+							return
+						}
+						
+						Task { @MainActor in
+							self?.objectWillChange.send()
+						}
+					}
+			}
+		}
 
 		/**
 		Reset the key back to its default value.
