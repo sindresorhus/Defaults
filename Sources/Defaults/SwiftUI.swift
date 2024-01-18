@@ -108,7 +108,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	*/
 	public init(_ key: Defaults.Key<Value>) {
 		self.key = key
-        self._observable = .init(wrappedValue: .init(key))
+		self._observable = .init(wrappedValue: .init(key))
 	}
 
 	public var wrappedValue: Value {
@@ -131,7 +131,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public var publisher: Publisher { Defaults.publisher(key) }
 
 	public mutating func update() {
-        observable.key = key
+		observable.key = key
 		_observable.update()
 	}
 
