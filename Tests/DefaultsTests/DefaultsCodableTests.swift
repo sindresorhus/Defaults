@@ -74,7 +74,7 @@ final class DefaultsCodableTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[Unicorn]?>("independentCodableArrayOptionalKey")
+		let key = Defaults.Key<[Unicorn]?>("independentCodableArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [fixtureCodable]
 		Defaults[key]?.append(Unicorn(isUnicorn: false))
@@ -111,7 +111,7 @@ final class DefaultsCodableTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: Unicorn]?>("independentCodableDictionaryOptionalKey")
+		let key = Defaults.Key<[String: Unicorn]?>("independentCodableDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": fixtureCodable]
 		Defaults[key]?["1"] = Unicorn(isUnicorn: false)
@@ -209,7 +209,7 @@ final class DefaultsCodableTests: XCTestCase {
 			.map { ($0.oldValue?.isUnicorn, $0.newValue?.isUnicorn) }
 			.collect(2)
 
-		let expectedValue: [(Bool?, Bool?)] = [(nil, true), (true, nil)]
+		let expectedValue: [(Bool?, Bool?)] = [(nil, true), (true, nil)] // swiftlint:disable:this discouraged_optional_boolean
 
 		let cancellable = publisher.sink { tuples in
 			for (index, expected) in expectedValue.enumerated() {

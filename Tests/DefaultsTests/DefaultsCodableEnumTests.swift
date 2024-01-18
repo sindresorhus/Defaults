@@ -53,7 +53,7 @@ final class DefaultsCodableEnumTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[FixtureCodableEnum]?>("independentCodableEnumArrayOptionalKey")
+		let key = Defaults.Key<[FixtureCodableEnum]?>("independentCodableEnumArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [.halfHour]
 	}
@@ -86,7 +86,7 @@ final class DefaultsCodableEnumTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: FixtureCodableEnum]?>("independentCodableEnumDictionaryOptionalKey")
+		let key = Defaults.Key<[String: FixtureCodableEnum]?>("independentCodableEnumDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": .tenMinutes]
 		Defaults[key]?["1"] = .halfHour

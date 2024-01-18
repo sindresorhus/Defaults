@@ -48,7 +48,7 @@ final class DefaultsEnumTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[FixtureEnum]?>("independentEnumArrayOptionalKey")
+		let key = Defaults.Key<[FixtureEnum]?>("independentEnumArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [.tenMinutes]
 		Defaults[key]?.append(.halfHour)
@@ -83,7 +83,7 @@ final class DefaultsEnumTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: FixtureEnum]?>("independentEnumDictionaryOptionalKey")
+		let key = Defaults.Key<[String: FixtureEnum]?>("independentEnumDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": .tenMinutes]
 		XCTAssertEqual(Defaults[key]?["0"], .tenMinutes)

@@ -1,3 +1,4 @@
+// swiftlint:disable discouraged_optional_boolean
 import Foundation
 import Combine
 import XCTest
@@ -818,3 +819,4 @@ extension Task<Never, Never> {
 		try await sleep(nanoseconds: UInt64(seconds * Double(NSEC_PER_SEC)))
 	}
 }
+// swiftlint:enable discouraged_optional_boolean

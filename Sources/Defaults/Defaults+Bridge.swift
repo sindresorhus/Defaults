@@ -412,7 +412,7 @@ extension Defaults {
 				let object = object as? [Any],
 				let rawColorspace = object[0] as? String,
 				let colorspace = CGColorSpace(name: rawColorspace as CFString),
-				let components = object[1] as? [CGFloat],
+				let components = object[1] as? [CGFloat], // swiftlint:disable:this no_cgfloat
 				let cgColor = CGColor(colorSpace: colorspace, components: components)
 			else {
 				return nil

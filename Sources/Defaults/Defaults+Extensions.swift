@@ -41,6 +41,7 @@ extension String: Defaults.Serializable {
 	public static let isNativelySupportedType = true
 }
 
+// swiftlint:disable:next no_cgfloat
 extension CGFloat: Defaults.Serializable {
 	public static let isNativelySupportedType = true
 }

@@ -85,7 +85,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[DefaultsSetAlgebra<Item>]?>("independentSetAlgebraArrayOptionalKey")
+		let key = Defaults.Key<[DefaultsSetAlgebra<Item>]?>("independentSetAlgebraArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [.init([fixtureSetAlgebra])]
 		Defaults[key]?[0].insert(fixtureSetAlgebra1)
@@ -129,7 +129,7 @@ final class DefaultsSetAlgebraCustomElementTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: DefaultsSetAlgebra<Item>]?>("independentSetAlgebraDictionaryOptionalKey")
+		let key = Defaults.Key<[String: DefaultsSetAlgebra<Item>]?>("independentSetAlgebraDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": .init([fixtureSetAlgebra])]
 		Defaults[key]?["0"]?.insert(fixtureSetAlgebra1)

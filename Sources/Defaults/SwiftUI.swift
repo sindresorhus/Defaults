@@ -6,7 +6,7 @@ extension Defaults {
 	final class Observable<Value: Serializable>: ObservableObject {
 		private var cancellable: AnyCancellable?
 		private var task: Task<Void, Never>?
-		
+
 		var key: Defaults.Key<Value> {
 			didSet {
 				if key != oldValue {
@@ -24,14 +24,14 @@ extension Defaults {
 
 		init(_ key: Key<Value>) {
 			self.key = key
-			
+
 			observe()
 		}
-		
+
 		deinit {
 			task?.cancel()
 		}
-		
+
 		func observe() {
 			// We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
 			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {

@@ -30,7 +30,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 	}
 
 	func testOptionalKey() {
-		let key = Defaults.Key<[String: String]?>("independentDictionaryOptionalKey")
+		let key = Defaults.Key<[String: String]?>("independentDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = fixtureDictionary
 		XCTAssertEqual(Defaults[key]?["0"], fixtureDictionary["0"])
@@ -100,7 +100,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 	}
 
 	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<[String: String]?>("observeDictionaryOptionalKeyCombine")
+		let key = Defaults.Key<[String: String]?>("observeDictionaryOptionalKeyCombine") // swiftlint:disable:this discouraged_optional_collection
 		let expect = expectation(description: "Observation closure being called")
 		let newName = ["0": "John"]
 		let publisher = Defaults
@@ -148,7 +148,7 @@ final class DefaultsDictionaryTests: XCTestCase {
 	}
 
 	func testObserveOptionalKey() {
-		let key = Defaults.Key<[String: String]?>("observeDictionaryOptionalKey")
+		let key = Defaults.Key<[String: String]?>("observeDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		let expect = expectation(description: "Observation closure being called")
 
 		var observation: Defaults.Observation!

@@ -85,7 +85,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[Bag<Item>]?>("independentCollectionCustomElementArrayOptionalKey")
+		let key = Defaults.Key<[Bag<Item>]?>("independentCollectionCustomElementArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		Defaults[key] = [.init(items: [fixtureCustomCollection])]
 		Defaults[key]?[0].insert(element: fixtureCustomCollection1, at: 1)
 		Defaults[key]?.append(Bag(items: [fixtureCustomCollection2]))
@@ -126,7 +126,7 @@ final class DefaultsCollectionCustomElementTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: Bag<Item>]?>("independentCollectionCustomElementDictionaryOptionalKey")
+		let key = Defaults.Key<[String: Bag<Item>]?>("independentCollectionCustomElementDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		Defaults[key] = ["0": .init(items: [fixtureCustomCollection])]
 		Defaults[key]?["0"]?.insert(element: fixtureCustomCollection1, at: 1)
 		Defaults[key]?["1"] = .init(items: [fixtureCustomCollection2])

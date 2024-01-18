@@ -21,7 +21,7 @@ private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults
 		coder.encode(value, forKey: "value")
 	}
 
-	override class var supportsSecureCoding: Bool { true }
+	override class var supportsSecureCoding: Bool { true } // swiftlint:disable:this non_overridable_class_declaration
 }
 
 // NSSecureCoding
@@ -77,7 +77,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[ExamplePersistentHistory]?>("independentNSSecureCodingArrayOptionalKey")
+		let key = Defaults.Key<[ExamplePersistentHistory]?>("independentNSSecureCodingArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [persistentHistoryValue]
 		XCTAssertEqual(Defaults[key]?[0].value, persistentHistoryValue.value)
@@ -120,7 +120,7 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: ExamplePersistentHistory]?>("independentNSSecureCodingDictionaryOptionalKey")
+		let key = Defaults.Key<[String: ExamplePersistentHistory]?>("independentNSSecureCodingDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": persistentHistoryValue]
 		XCTAssertEqual(Defaults[key]?["0"]?.value, persistentHistoryValue.value)

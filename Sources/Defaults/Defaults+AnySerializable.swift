@@ -88,7 +88,7 @@ extension Defaults.AnySerializable: Hashable {
 			hasher.combine(value)
 		case let value as Double:
 			hasher.combine(value)
-		case let value as CGFloat:
+		case let value as CGFloat: // swiftlint:disable:this no_cgfloat
 			hasher.combine(value)
 		case let value as String:
 			hasher.combine(value)
@@ -135,7 +135,7 @@ extension Defaults.AnySerializable: Equatable {
 			lhs == rhs
 		case (let lhs as Double, let rhs as Double):
 			lhs == rhs
-		case (let lhs as CGFloat, let rhs as CGFloat):
+		case (let lhs as CGFloat, let rhs as CGFloat): // swiftlint:disable:this no_cgfloat
 			lhs == rhs
 		case (let lhs as String, let rhs as String):
 			lhs == rhs

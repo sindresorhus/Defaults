@@ -27,7 +27,7 @@ final class DefaultsSetTests: XCTestCase {
 	}
 
 	func testOptionalKey() {
-		let key = Defaults.Key<Set<Int>?>("independentSetOptionalKey")
+		let key = Defaults.Key<Set<Int>?>("independentSetOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = fixtureSet
 		XCTAssertEqual(Defaults[key]?.count, fixtureSet.count)

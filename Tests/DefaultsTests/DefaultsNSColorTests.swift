@@ -4,9 +4,9 @@ import Defaults
 import XCTest
 import AppKit
 
-private let fixtureColor = NSColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 1)
-private let fixtureColor1 = NSColor(red: CGFloat(255) / CGFloat(0xFF), green: CGFloat(241) / CGFloat(0xFF), blue: CGFloat(180) / CGFloat(0xFF), alpha: 1)
-private let fixtureColor2 = NSColor(red: CGFloat(255) / CGFloat(0xFF), green: CGFloat(180) / CGFloat(0xFF), blue: CGFloat(194) / CGFloat(0xFF), alpha: 1)
+private let fixtureColor = NSColor(red: Double(103) / Double(0xFF), green: Double(132) / Double(0xFF), blue: Double(255) / Double(0xFF), alpha: 1)
+private let fixtureColor1 = NSColor(red: Double(255) / Double(0xFF), green: Double(241) / Double(0xFF), blue: Double(180) / Double(0xFF), alpha: 1)
+private let fixtureColor2 = NSColor(red: Double(255) / Double(0xFF), green: Double(180) / Double(0xFF), blue: Double(194) / Double(0xFF), alpha: 1)
 
 extension Defaults.Keys {
 	fileprivate static let color = Defaults.Key<NSColor>("NSColor", default: fixtureColor)
@@ -57,7 +57,7 @@ final class DefaultsNSColorTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[NSColor]?>("independentNSColorOptionalKey")
+		let key = Defaults.Key<[NSColor]?>("independentNSColorOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [fixtureColor]
 		Defaults[key]?.append(fixtureColor1)
@@ -91,7 +91,7 @@ final class DefaultsNSColorTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: NSColor]?>("independentNSColorDictionaryOptionalKey")
+		let key = Defaults.Key<[String: NSColor]?>("independentNSColorDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": fixtureColor]
 		Defaults[key]?["1"] = fixtureColor1

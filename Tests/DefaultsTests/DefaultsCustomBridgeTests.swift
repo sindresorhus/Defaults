@@ -125,7 +125,7 @@ final class DefaultsCustomBridge: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[User]?>("independentCustomBridgeArrayOptionalKey")
+		let key = Defaults.Key<[User]?>("independentCustomBridgeArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		let newUser = User(username: "hank121314", password: "123456")
 		Defaults[key] = [newUser]
@@ -174,7 +174,7 @@ final class DefaultsCustomBridge: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: User]?>("independentCustomBridgeDictionaryOptionalKey")
+		let key = Defaults.Key<[String: User]?>("independentCustomBridgeDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": fixtureCustomBridge]
 		XCTAssertEqual(Defaults[key]?["0"], fixtureCustomBridge)

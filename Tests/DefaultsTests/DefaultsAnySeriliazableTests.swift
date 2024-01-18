@@ -169,11 +169,11 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		XCTAssertEqual(Defaults[any].get()!, URL(string: "https://example.com")!)
 		#if os(macOS)
 		// Test NSColor
-		Defaults[any].set(NSColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 0.987))
+		Defaults[any].set(NSColor(red: Double(103) / Double(0xFF), green: Double(132) / Double(0xFF), blue: Double(255) / Double(0xFF), alpha: 0.987))
 		XCTAssertEqual(Defaults[any].get(NSColor.self)?.alphaComponent, 0.987)
 		#else
 		// Test UIColor
-		Defaults[any].set(UIColor(red: CGFloat(103) / CGFloat(0xFF), green: CGFloat(132) / CGFloat(0xFF), blue: CGFloat(255) / CGFloat(0xFF), alpha: 0.654))
+		Defaults[any].set(UIColor(red: Double(103) / Double(0xFF), green: Double(132) / Double(0xFF), blue: Double(255) / Double(0xFF), alpha: 0.654))
 		XCTAssertEqual(Defaults[any].get(UIColor.self)?.cgColor.alpha, 0.654)
 		#endif
 		// Test Codable type
@@ -256,7 +256,7 @@ final class DefaultsAnySerializableTests: XCTestCase {
 		Defaults[key].insert(float)
 		XCTAssertTrue(Defaults[key].contains(float))
 
-		let cgFloat = Defaults.AnySerializable(CGFloat(12_131.415))
+		let cgFloat = Defaults.AnySerializable(CGFloat(12_131.415)) // swiftlint:disable:this no_cgfloat2
 		Defaults[key].insert(cgFloat)
 		XCTAssertTrue(Defaults[key].contains(cgFloat))
 
@@ -278,7 +278,7 @@ final class DefaultsAnySerializableTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[Defaults.AnySerializable]?>("testArrayOptionalAnyKey")
+		let key = Defaults.Key<[Defaults.AnySerializable]?>("testArrayOptionalAnyKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [123]
 		Defaults[key]?.append(456)
@@ -315,7 +315,7 @@ final class DefaultsAnySerializableTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: Defaults.AnySerializable]?>("independentDictionaryOptionalAnyKey")
+		let key = Defaults.Key<[String: Defaults.AnySerializable]?>("independentDictionaryOptionalAnyKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["unicorn": "🦄"]
 		XCTAssertEqual(Defaults[key]?["unicorn"], "🦄")

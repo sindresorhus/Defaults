@@ -81,7 +81,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[Bag<String>]?>("independentCollectionArrayOptionalKey")
+		let key = Defaults.Key<[Bag<String>]?>("independentCollectionArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = [Bag(items: [fixtureCollection[0]])]
 		Defaults[key]?.append(Bag(items: [fixtureCollection[1]]))
@@ -118,7 +118,7 @@ final class DefaultsCollectionTests: XCTestCase {
 	}
 
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: Bag<String>]?>("independentCollectionDictionaryOptionalKey")
+		let key = Defaults.Key<[String: Bag<String>]?>("independentCollectionDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
 		XCTAssertNil(Defaults[key])
 		Defaults[key] = ["0": Bag(items: [fixtureCollection[0]])]
 		Defaults[key]?["0"]?.insert(element: fixtureCollection[1], at: 1)
