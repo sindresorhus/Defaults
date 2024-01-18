@@ -434,17 +434,6 @@ Execute the closure without triggering change events.
 
 Any `Defaults` key changes made within the closure will not propagate to `Defaults` event listeners (`Defaults.observe()` and `Defaults.publisher()`). This can be useful to prevent infinite recursion when you want to change a key in the callback listening to changes for the same key.
 
-#### `Defaults.migrate(keys..., to: Version)`
-
-```swift
-Defaults.migrate<T: Defaults.Serializable & Codable>(keys..., to: Version)
-Defaults.migrate<T: Defaults.NativeType>(keys..., to: Version)
-```
-
-Type: `func`
-
-Migrate the given keys to the specific version.
-
 ### `@Default(_ key:)`
 
 Get/set a `Defaults` item and also have the SwiftUI view be updated when the value changes.
