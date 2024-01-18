@@ -9,7 +9,7 @@ extension Defaults {
 		
 		var key: Defaults.Key<Value> {
 			didSet {
-				if oldValue != key {
+				if key != oldValue {
 					observe()
 				}
 			}
@@ -75,7 +75,6 @@ Access stored values from SwiftUI.
 
 This is similar to `@AppStorage` but it accepts a ``Defaults/Key`` and many more types.
 */
-@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 @propertyWrapper
 public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public typealias Publisher = AnyPublisher<Defaults.KeyChange<Value>, Never>
@@ -160,7 +159,6 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	}
 }
 
-@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Default where Value: Equatable {
 	/**
 	Indicates whether the value is the same as the default value.
@@ -168,7 +166,6 @@ extension Default where Value: Equatable {
 	public var isDefaultValue: Bool { wrappedValue == defaultValue }
 }
 
-@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Defaults {
 	/**
 	A SwiftUI `Toggle` view that is connected to a ``Defaults/Key`` with a `Bool` value.
