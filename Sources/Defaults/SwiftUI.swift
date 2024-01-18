@@ -6,14 +6,18 @@ extension Defaults {
 	final class Observable<Value: Serializable>: ObservableObject {
 		private var cancellable: AnyCancellable?
 		private var task: Task<Void, Never>?
-		private let key: Defaults.Key<Value>
-
-		let objectWillChange = ObservableObjectPublisher()
+        
+        var key: Defaults.Key<Value> {
+            didSet {
+                if oldValue != key {
+                    observe()
+                }
+            }
+        }
 
 		var value: Value {
 			get { Defaults[key] }
 			set {
-				objectWillChange.send()
 				Defaults[key] = newValue
 			}
 		}
@@ -21,35 +25,40 @@ extension Defaults {
 		init(_ key: Key<Value>) {
 			self.key = key
 
-			// We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
-			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
-				// The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.
-				self.task = .detached(priority: .userInitiated) { @MainActor [weak self] in
-					for await _ in Defaults.updates(key) {
-						guard let self else {
-							return
-						}
-
-						self.objectWillChange.send()
-					}
-				}
-			} else {
-				self.cancellable = Defaults.publisher(key, options: [.prior])
-					.sink { [weak self] change in
-						guard change.isPrior else {
-							return
-						}
-
-						Task { @MainActor in
-							self?.objectWillChange.send()
-						}
-					}
-			}
+            observe()
 		}
 
 		deinit {
 			task?.cancel()
 		}
+        
+        func observe() {
+            // We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
+            if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
+                task?.cancel()
+                // The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.
+                task = .detached(priority: .userInitiated) { @MainActor [weak self, key] in
+                    for await _ in Defaults.updates(key) {
+                        guard let self else {
+                            return
+                        }
+
+                        self.objectWillChange.send()
+                    }
+                }
+            } else {
+                cancellable = Defaults.publisher(key, options: [.prior])
+                    .sink { [weak self] change in
+                        guard change.isPrior else {
+                            return
+                        }
+
+                        Task { @MainActor in
+                            self?.objectWillChange.send()
+                        }
+                    }
+            }
+        }
 
 		/**
 		Reset the key back to its default value.
@@ -65,14 +74,14 @@ Access stored values from SwiftUI.
 
 This is similar to `@AppStorage` but it accepts a ``Defaults/Key`` and many more types.
 */
+@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 @propertyWrapper
 public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public typealias Publisher = AnyPublisher<Defaults.KeyChange<Value>, Never>
 
 	private let key: Defaults.Key<Value>
 
-	// Intentionally using `@ObservedObjected` over `@StateObject` so that the key can be dynamically changed.
-	@ObservedObject private var observable: Defaults.Observable<Value>
+	@StateObject private var observable: Defaults.Observable<Value>
 
 	/**
 	Get/set a `Defaults` item and also have the view be updated when the value changes. This is similar to `@State`.
@@ -99,7 +108,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	*/
 	public init(_ key: Defaults.Key<Value>) {
 		self.key = key
-		self.observable = .init(key)
+        self._observable = .init(wrappedValue: .init(key))
 	}
 
 	public var wrappedValue: Value {
@@ -122,6 +131,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public var publisher: Publisher { Defaults.publisher(key) }
 
 	public mutating func update() {
+        observable.key = key
 		_observable.update()
 	}
 
@@ -149,6 +159,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	}
 }
 
+@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 extension Default where Value: Equatable {
 	/**
 	Indicates whether the value is the same as the default value.

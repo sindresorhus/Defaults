@@ -36,6 +36,8 @@ public enum Defaults {
 }
 
 public typealias _Defaults = Defaults
+
+@available(macOS 11, iOS 14, tvOS 14, watchOS 7, *)
 public typealias _Default = Default
 
 extension Defaults {
