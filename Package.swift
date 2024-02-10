@@ -20,7 +20,8 @@ let package = Package(
 	],
 	targets: [
 		.target(
-			name: "Defaults"
+			name: "Defaults",
+			resources: [.copy("PrivacyInfo.xcprivacy")]
 		),
 		.testTarget(
 			name: "DefaultsTests",
