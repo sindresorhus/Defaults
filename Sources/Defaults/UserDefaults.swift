@@ -10,12 +10,14 @@ extension UserDefaults {
 	}
 
 	 func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
-		if (value as? _DefaultsOptionalProtocol)?._defaults_isNil == true {
-			removeObject(forKey: key)
-			return
-		}
+		DispatchQueue.main.async { [self] in
+			if (value as? _DefaultsOptionalProtocol)?._defaults_isNil == true {
+				removeObject(forKey: key)
+				return
+			}
 
-		set(Value.toSerializable(value), forKey: key)
+			set(Value.toSerializable(value), forKey: key)
+		}
 	}
 
 	public subscript<Value: Defaults.Serializable>(key: Defaults.Key<Value>) -> Value {
