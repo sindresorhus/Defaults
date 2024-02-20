@@ -43,7 +43,7 @@ extension Defaults {
 	/**
 	Type-erased key.
 	*/
-	public class _AnyKey {
+	public class _AnyKey: @unchecked Sendable {
 		public typealias Key = Defaults.Key
 
 		public let name: String

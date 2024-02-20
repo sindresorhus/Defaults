@@ -27,7 +27,7 @@ public protocol _DefaultsObservation: AnyObject {
 extension Defaults {
 	public typealias Observation = _DefaultsObservation
 
-	public enum ObservationOption {
+	public enum ObservationOption: Sendable {
 		/**
 		Whether a notification should be sent to the observer immediately, before the observer registration method even returns.
 		*/
@@ -365,3 +365,4 @@ extension Defaults.ObservationOptions {
 }
 
 extension Defaults.KeyChange: Equatable where Value: Equatable {}
+extension Defaults.KeyChange: Sendable where Value: Sendable {}
