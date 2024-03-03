@@ -6,6 +6,19 @@ final class MockStorage: Defaults.KeyValueStore {
 	private var pairs: [String: Any] = [:]
 	private let queue = DispatchQueue(label: "a")
 
+	func data<T>(forKey aKey: String) -> T? {
+		queue.sync {
+			guard
+				let values = pairs[aKey] as? [Any],
+				let data = values[safe: 1] as? T
+			else {
+				return nil
+			}
+
+			return data
+		}
+	}
+
 	func object<T>(forKey aKey: String) -> T? {
 		queue.sync {
 			pairs[aKey] as? T
@@ -52,6 +65,7 @@ private let mockStorage = MockStorage()
 final class DefaultsICloudTests: XCTestCase {
 	override class func setUp() {
 		Defaults.iCloud.isDebug = true
+		Defaults.iCloud.syncOnChange = true
 		Defaults.iCloud.synchronizer = Defaults.iCloudSynchronizer(remoteStorage: mockStorage)
 	}
 
@@ -70,18 +84,16 @@ final class DefaultsICloudTests: XCTestCase {
 	}
 
 	private func updateMockStorage<T>(key: String, value: T, _ date: Date? = nil) {
-		mockStorage.set(value, forKey: key)
-		mockStorage.set(date ?? Date(), forKey: "__DEFAULTS__synchronizeTimestamp")
+		mockStorage.set([date ?? Date(), value], forKey: key)
 	}
 
 	func testICloudInitialize() async {
 		let name = Defaults.Key<String>("testICloudInitialize_name", default: "0", iCloud: true)
 		let quality = Defaults.Key<Double>("testICloudInitialize_quality", default: 0.0, iCloud: true)
-		// Not sure why github action will not trigger a observation callback after initialization, cannot reproduce in local.
-		Defaults.iCloud.syncWithoutWaiting()
+
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "0")
-		XCTAssertEqual(mockStorage.object(forKey: quality.name), 0.0)
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "0")
+		XCTAssertEqual(mockStorage.data(forKey: quality.name), 0.0)
 		let name_expected = ["1", "2", "3", "4", "5", "6", "7"]
 		let quality_expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
 
@@ -89,8 +101,8 @@ final class DefaultsICloudTests: XCTestCase {
 			Defaults[name] = name_expected[index]
 			Defaults[quality] = quality_expected[index]
 			await Defaults.iCloud.sync()
-			XCTAssertEqual(mockStorage.object(forKey: name.name), name_expected[index])
-			XCTAssertEqual(mockStorage.object(forKey: quality.name), quality_expected[index])
+			XCTAssertEqual(mockStorage.data(forKey: name.name), name_expected[index])
+			XCTAssertEqual(mockStorage.data(forKey: quality.name), quality_expected[index])
 		}
 
 		updateMockStorage(key: quality.name, value: 8.0)
@@ -103,11 +115,11 @@ final class DefaultsICloudTests: XCTestCase {
 		Defaults[name] = "9"
 		Defaults[quality] = 9.0
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "9")
-		XCTAssertEqual(mockStorage.object(forKey: quality.name), 9.0)
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "9")
+		XCTAssertEqual(mockStorage.data(forKey: quality.name), 9.0)
 
-		mockStorage.set("10", forKey: name.name)
-		mockStorage.set(10.0, forKey: quality.name)
+		updateMockStorage(key: quality.name, value: 10)
+		updateMockStorage(key: name.name, value: "10")
 		mockStorage.synchronize()
 		await Defaults.iCloud.sync()
 		XCTAssertEqual(Defaults[quality], 10.0)
@@ -115,8 +127,13 @@ final class DefaultsICloudTests: XCTestCase {
 	}
 
 	func testDidChangeExternallyNotification() async {
+		updateMockStorage(key: "testDidChangeExternallyNotification_name", value: "0")
+		updateMockStorage(key: "testDidChangeExternallyNotification_quality", value: 0.0)
 		let name = Defaults.Key<String?>("testDidChangeExternallyNotification_name", iCloud: true)
 		let quality = Defaults.Key<Double?>("testDidChangeExternallyNotification_quality", iCloud: true)
+		await Defaults.iCloud.sync()
+		XCTAssertEqual(Defaults[name], "0")
+		XCTAssertEqual(Defaults[quality], 0.0)
 		let name_expected = ["1", "2", "3", "4", "5", "6", "7"]
 		let quality_expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
 
@@ -132,14 +149,14 @@ final class DefaultsICloudTests: XCTestCase {
 		Defaults[name] = "8"
 		Defaults[quality] = 8.0
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "8")
-		XCTAssertEqual(mockStorage.object(forKey: quality.name), 8.0)
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "8")
+		XCTAssertEqual(mockStorage.data(forKey: quality.name), 8.0)
 
 		Defaults[name] = nil
 		Defaults[quality] = nil
 		await Defaults.iCloud.sync()
-		XCTAssertNil(mockStorage.object(forKey: name.name))
-		XCTAssertNil(mockStorage.object(forKey: quality.name))
+		XCTAssertNil(mockStorage.data(forKey: name.name))
+		XCTAssertNil(mockStorage.data(forKey: quality.name))
 	}
 
 	func testICloudInitializeSyncLast() async {
@@ -156,8 +173,8 @@ final class DefaultsICloudTests: XCTestCase {
 		}
 
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "7")
-		XCTAssertEqual(mockStorage.object(forKey: quality.name), 7.0)
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "7")
+		XCTAssertEqual(mockStorage.data(forKey: quality.name), 7.0)
 	}
 
 	func testRemoveKey() async {
@@ -166,15 +183,15 @@ final class DefaultsICloudTests: XCTestCase {
 		Defaults[name] = "1"
 		Defaults[quality] = 1.0
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "1")
-		XCTAssertEqual(mockStorage.object(forKey: quality.name), 1.0)
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "1")
+		XCTAssertEqual(mockStorage.data(forKey: quality.name), 1.0)
 
 		Defaults.iCloud.remove(quality)
 		Defaults[name] = "2"
 		Defaults[quality] = 1.0
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "2")
-		XCTAssertEqual(mockStorage.object(forKey: quality.name), 1.0)
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "2")
+		XCTAssertEqual(mockStorage.data(forKey: quality.name), 1.0)
 	}
 
 	func testSyncKeysFromLocal() async {
@@ -188,8 +205,8 @@ final class DefaultsICloudTests: XCTestCase {
 			Defaults[quality] = quality_expected[index]
 			Defaults.iCloud.syncWithoutWaiting(name, quality, source: .local)
 			await Defaults.iCloud.sync()
-			XCTAssertEqual(mockStorage.object(forKey: name.name), name_expected[index])
-			XCTAssertEqual(mockStorage.object(forKey: quality.name), quality_expected[index])
+			XCTAssertEqual(mockStorage.data(forKey: name.name), name_expected[index])
+			XCTAssertEqual(mockStorage.data(forKey: quality.name), quality_expected[index])
 		}
 
 		updateMockStorage(key: name.name, value: "8")
@@ -219,8 +236,8 @@ final class DefaultsICloudTests: XCTestCase {
 		Defaults[quality] = 8.0
 		Defaults.iCloud.syncWithoutWaiting(name, quality, source: .local)
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "8")
-		XCTAssertEqual(mockStorage.object(forKey: quality.name), 8.0)
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "8")
+		XCTAssertEqual(mockStorage.data(forKey: quality.name), 8.0)
 
 		Defaults[name] = nil
 		Defaults[quality] = nil
@@ -238,19 +255,18 @@ final class DefaultsICloudTests: XCTestCase {
 			await Defaults.iCloud.sync()
 		}
 		await task.value
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "0")
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "0")
 		Defaults[name] = "1"
 		await Defaults.iCloud.sync()
-		XCTAssertEqual(mockStorage.object(forKey: name.name), "1")
+		XCTAssertEqual(mockStorage.data(forKey: name.name), "1")
 	}
 
 	func testICloudInitializeFromDetached() async {
 		let task = Task.detached {
 			let name = Defaults.Key<String>("testICloudInitializeFromDetached_name", default: "0", iCloud: true)
-			// Not sure why github action will not trigger a observation callback after initialization, cannot reproduce in local.
-			Defaults.iCloud.syncWithoutWaiting()
+
 			await Defaults.iCloud.sync()
-			XCTAssertEqual(mockStorage.object(forKey: name.name), "0")
+			XCTAssertEqual(mockStorage.data(forKey: name.name), "0")
 		}
 		await task.value
 	}

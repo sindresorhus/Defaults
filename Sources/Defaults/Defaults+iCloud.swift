@@ -26,6 +26,15 @@ private enum SyncStatus {
 }
 
 extension Defaults {
+	/**
+	The supervisor for managing `Defaults.Keys` between `key.suite` and `remoteStorage`.
+
+	Depends on the storage, `Defaults.Keys` will represent in different form due to storage limitations.
+
+	Remote storage imposes a limitation of 1024 keys. Therefore, we combine the recorded timestamp and data into a single key.
+
+	Unlike remote storage, local storage does not have this limitation. Therefore, we can create a separate key(with `defaultsSyncKey` suffix) for the timestamp record.
+	*/
 	public final class iCloudSynchronizer {
 		init(remoteStorage: KeyValueStore) {
 			self.remoteStorage = remoteStorage
@@ -36,6 +45,8 @@ extension Defaults {
 		deinit {
 			removeAll()
 		}
+
+		@TaskLocal static var timestamp: Date?
 
 		private var cancellables: Set<AnyCancellable> = []
 
@@ -48,11 +59,6 @@ extension Defaults {
 		A remote key value storage.
 		*/
 		private var remoteStorage: KeyValueStore
-
-		/**
-		A local storage responsible for recording synchronization timestamp.
-		*/
-		private let localStorage: KeyValueStore = UserDefaults.standard
 
 		/**
 		A FIFO queue used to serialize synchronization on keys.
@@ -81,9 +87,9 @@ extension Defaults {
 				return
 			}
 
-			self.backgroundQueue.async {
-				self.recordTimestamp(.local)
-				await self.syncKey(key, .local)
+			self.enqueue {
+				self.recordTimestamp(forKey: key, timestamp: Self.timestamp, source: .local)
+				await self.syncKey(forKey: key, .local)
 			}
 		}
 
@@ -92,6 +98,7 @@ extension Defaults {
 		*/
 		func add(_ keys: [Defaults.Keys]) {
 			self.keys.formUnion(keys)
+			self.syncWithoutWaiting(keys)
 			for key in keys {
 				localKeysMonitor.addObserver(key)
 			}
@@ -131,11 +138,11 @@ extension Defaults {
 		*/
 		func syncWithoutWaiting(_ keys: [Defaults.Keys] = [], _ source: DataSource? = nil) {
 			let keys = keys.isEmpty ? Array(self.keys) : keys
-			let latest = source ?? latestDataSource()
 
 			for key in keys {
-				backgroundQueue.async {
-					await self.syncKey(key, latest)
+				let latest = source ?? latestDataSource(forKey: key)
+				self.enqueue {
+					await self.syncKey(forKey: key, latest)
 				}
 			}
 		}
@@ -148,20 +155,29 @@ extension Defaults {
 		}
 
 		/**
-		Create synchronization tasks for the specified `keys` from the given source.
+		Enqueue the synchronization task into `backgroundQueue` with the current timestamp.
+		*/
+		private func enqueue(_ task: @escaping TaskQueue.AsyncTask) {
+			self.backgroundQueue.async {
+				await Self.$timestamp.withValue(Date()) {
+					await task()
+				}
+			}
+		}
 
-		- Parameter key: The key to synchronize.
+		/**
+		Create synchronization tasks for the specified `key` from the given source.
+
+		- Parameter forKey: The key to synchronize.
 		- Parameter source: Sync key from which data source(remote or local).
 		*/
-		private func syncKey(_ key: Defaults.Keys, _ source: DataSource) async {
+		private func syncKey(forKey key: Defaults.Keys, _ source: DataSource) async {
 			Self.logKeySyncStatus(key, source: source, syncStatus: .idle)
 			switch source {
 			case .remote:
-				await syncFromRemote(key: key)
-				recordTimestamp(.local)
+				await syncFromRemote(forKey: key)
 			case .local:
-				syncFromLocal(key: key)
-				recordTimestamp(.remote)
+				syncFromLocal(forKey: key)
 			}
 			Self.logKeySyncStatus(key, source: source, syncStatus: .completed)
 		}
@@ -169,10 +185,14 @@ extension Defaults {
 		/**
 		Only update the value if it can be retrieved from the remote storage.
 		*/
-		private func syncFromRemote(key: Defaults.Keys) async {
+		private func syncFromRemote(forKey key: Defaults.Keys) async {
 			_remoteSyncingKeys.modify { $0.insert(key) }
 			await withCheckedContinuation { continuation in
-				guard let value = remoteStorage.object(forKey: key.name) else {
+				guard
+					let object = remoteStorage.object(forKey: key.name) as? [Any],
+					let date = Self.timestamp,
+					let value = object[safe: 1]
+				else {
 					continuation.resume()
 					return
 				}
@@ -180,6 +200,7 @@ extension Defaults {
 				Task { @MainActor in
 					Self.logKeySyncStatus(key, source: .remote, syncStatus: .syncing, value: value)
 					key.suite.set(value, forKey: key.name)
+					key.suite.set(date, forKey: "\(key.name)\(defaultsSyncKey)")
 					continuation.resume()
 				}
 			}
@@ -189,8 +210,11 @@ extension Defaults {
 		/**
 		Retrieve a value from local storage, and if it does not exist, remove it from the remote storage.
 		*/
-		private func syncFromLocal(key: Defaults.Keys) {
-			guard let value = key.suite.object(forKey: key.name) else {
+		private func syncFromLocal(forKey key: Defaults.Keys) {
+			guard
+				let value = key.suite.object(forKey: key.name),
+				let date = Self.timestamp
+			else {
 				Self.logKeySyncStatus(key, source: .local, syncStatus: .syncing, value: nil)
 				remoteStorage.removeObject(forKey: key.name)
 				syncRemoteStorageOnChange()
@@ -198,7 +222,7 @@ extension Defaults {
 			}
 
 			Self.logKeySyncStatus(key, source: .local, syncStatus: .syncing, value: value)
-			remoteStorage.set(value, forKey: key.name)
+			remoteStorage.set([date, value], forKey: key.name)
 			syncRemoteStorageOnChange()
 		}
 
@@ -212,26 +236,64 @@ extension Defaults {
 		}
 
 		/**
-		Mark the current timestamp for the specified `source`.
+		Retrieve the timestamp associated with the specified key from the source provider.
+
+		The timestamp storage format varies across different source providers due to storage limitations.
 		*/
-		private func recordTimestamp(_ source: DataSource) {
+		private func timestamp(forKey key: Defaults.Keys, _ source: DataSource) -> Date? {
 			switch source {
-			case .local:
-				localStorage.set(Date(), forKey: defaultsSyncKey)
 			case .remote:
-				remoteStorage.set(Date(), forKey: defaultsSyncKey)
+				guard
+					let values = remoteStorage.object(forKey: key.name) as? [Any],
+					let timestamp = values[safe: 0] as? Date
+				else {
+					return nil
+				}
+
+				return timestamp
+			case .local:
+				guard
+					let timestamp = key.suite.object(forKey: "\(key.name)\(defaultsSyncKey)") as? Date
+				else {
+					return nil
+				}
+
+				return timestamp
+			}
+		}
+
+		/**
+		Mark the current timestamp to given storage.
+		*/
+		func recordTimestamp(forKey key: Defaults.Keys, timestamp: Date?, source: DataSource) {
+			switch source {
+			case .remote:
+				guard
+					let values = remoteStorage.object(forKey: key.name) as? [Any],
+					let data = values[safe: 1],
+					let timestamp
+				else {
+					return
+				}
+
+				remoteStorage.set([timestamp, data], forKey: key.name)
+			case .local:
+				guard let timestamp else {
+					return
+				}
+				key.suite.set(timestamp, forKey: "\(key.name)\(defaultsSyncKey)")
 			}
 		}
 
 		/**
 		Determine which data source has the latest data available by comparing the timestamps of the local and remote sources.
 		*/
-		private func latestDataSource() -> DataSource {
+		private func latestDataSource(forKey key: Defaults.Keys) -> DataSource {
 			// If the remote timestamp does not exist, use the local timestamp as the latest data source.
-			guard let remoteTimestamp = remoteStorage.object(forKey: defaultsSyncKey) as? Date else {
+			guard let remoteTimestamp = self.timestamp(forKey: key, .remote) else {
 				return .local
 			}
-			guard let localTimestamp = localStorage.object(forKey: defaultsSyncKey) as? Date else {
+			guard let localTimestamp = self.timestamp(forKey: key, .local) else {
 				return .remote
 			}
 
@@ -289,21 +351,25 @@ extension Defaults.iCloudSynchronizer {
 		guard
 			let userInfo = notification.userInfo,
 			let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String],
-			let remoteTimestamp = remoteStorage.object(forKey: defaultsSyncKey) as? Date
+			// If `@TaskLocal timestamp` is not nil, it indicates that this notification is triggered by `syncRemoteStorageOnChange`, and therefore, we can skip updating the local storage.
+			Self.timestamp._defaults_isNil
 		else {
 			return
 		}
 
-		if
-			let localTimestamp = localStorage.object(forKey: defaultsSyncKey) as? Date,
-			localTimestamp > remoteTimestamp
-		{
-			return
-		}
-
 		for key in self.keys where changedKeys.contains(key.name) {
-			backgroundQueue.async {
-				await self.syncKey(key, .remote)
+			guard let remoteTimestamp = self.timestamp(forKey: key, .remote) else {
+				continue
+			}
+			if
+				let localTimestamp = self.timestamp(forKey: key, .local),
+				localTimestamp >= remoteTimestamp
+			{
+				continue
+			}
+
+			self.enqueue {
+				await self.syncKey(forKey: key, .remote)
 			}
 		}
 	}
@@ -369,18 +435,21 @@ extension Defaults.iCloudSynchronizer {
 
 extension Defaults {
 	/**
-	Automatically create synchronization tasks when the added `keys` undergo changed.
+	Automatically create synchronization tasks when the added keys undergo changed.
 
-	The synchronization task will be created in three different ways.
+	There are four ways to initiate synchronization, each of which will create a task in `backgroundQueue`:
 
-	1. UserDefaults changes.
-	2. Receive `NSUbiquitousKeyValueStore.didChangeExternallyNotification`.
-	3. Call `syncWithoutWaiting()`.
+	1. Using ``add(_:)``
+	2. Utilizing ``syncWithoutWaiting(_:source:)``
+	3. Observing UserDefaults for added `Defaults.Keys` using Key-Value Observation (KVO)
+	4. Monitoring `NSUbiquitousKeyValueStore.didChangeExternallyNotification` for added `Defaults.Keys`.
 
-	> Tip: Using `await sync()` to make sure all synchronization tasks are done.
+	> Tip: After initializing the task, we can call ``sync()`` to ensure that all tasks in the backgroundQueue are completed.
 
 	```swift
 	let quality = Defaults.Key<Int>("quality", default: 0, iCloud: true)
+	await Defaults.iCloud.sync()
+	print(NSUbiquitousKeyValueStore.default.object(forKey: quality.name)) //=> 0
 	Defaults[quality] = 1
 	await Defaults.iCloud.sync()
 	print(NSUbiquitousKeyValueStore.default.object(forKey: quality.name)) //=> 1
@@ -408,7 +477,7 @@ extension Defaults {
 		public static var isDebug = false
 
 		/**
-		Add the keys to be automatically synced.
+		Add the keys to be automatically synced and create a synchronization task.
 		*/
 		public static func add(_ keys: Defaults.Keys...) {
 			synchronizer.add(keys)

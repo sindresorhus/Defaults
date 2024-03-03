@@ -113,13 +113,15 @@ extension Defaults {
 			suite: UserDefaults = .standard,
 			iCloud: Bool = false
 		) {
+			defer {
+				if iCloud {
+					Defaults.iCloud.add(self)
+				}
+			}
+
 			self.defaultValueGetter = { defaultValue }
 
 			super.init(name: name, suite: suite)
-
-			if iCloud {
-				Defaults.iCloud.add(self)
-			}
 
 			if (defaultValue as? _DefaultsOptionalProtocol)?._defaults_isNil == true {
 				return
