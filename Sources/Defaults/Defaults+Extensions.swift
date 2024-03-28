@@ -164,3 +164,17 @@ extension NSColor: Defaults.Serializable {}
 */
 extension UIColor: Defaults.Serializable {}
 #endif
+
+extension NSUbiquitousKeyValueStore: Defaults.KeyValueStore {}
+extension UserDefaults: Defaults.KeyValueStore {}
+
+extension _DefaultsLockProtocol {
+	@discardableResult
+	func with<R>(_ body: @Sendable () throws -> R) rethrows -> R where R: Sendable {
+		self.lock()
+		defer {
+			self.unlock()
+		}
+		return try body()
+	}
+}

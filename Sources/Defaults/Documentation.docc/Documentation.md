@@ -66,3 +66,7 @@ typealias Default = _Default
 
 - ``Defaults/PreferRawRepresentable``
 - ``Defaults/PreferNSSecureCoding``
+
+### iCloud
+
+- ``Defaults/iCloud``

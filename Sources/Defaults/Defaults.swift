@@ -110,8 +110,15 @@ extension Defaults {
 		public init(
 			_ name: String,
 			default defaultValue: Value,
-			suite: UserDefaults = .standard
+			suite: UserDefaults = .standard,
+			iCloud: Bool = false
 		) {
+			defer {
+				if iCloud {
+					Defaults.iCloud.add(self)
+				}
+			}
+
 			self.defaultValueGetter = { defaultValue }
 
 			super.init(name: name, suite: suite)
@@ -147,11 +154,16 @@ extension Defaults {
 		public init(
 			_ name: String,
 			suite: UserDefaults = .standard,
-			default defaultValueGetter: @escaping () -> Value
+			default defaultValueGetter: @escaping () -> Value,
+			iCloud: Bool = false
 		) {
 			self.defaultValueGetter = defaultValueGetter
 
 			super.init(name: name, suite: suite)
+
+			if iCloud {
+				Defaults.iCloud.add(self)
+			}
 		}
 	}
 }
@@ -163,12 +175,12 @@ extension Defaults.Key {
 
 	- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 	*/
-	@_transparent
 	public convenience init<T>(
 		_ name: String,
-		suite: UserDefaults = .standard
+		suite: UserDefaults = .standard,
+		iCloud: Bool = false
 	) where Value == T? {
-		self.init(name, default: nil, suite: suite)
+		self.init(name, default: nil, suite: suite, iCloud: iCloud)
 	}
 }
 
@@ -296,6 +308,10 @@ extension Defaults {
 	public typealias Bridge = _DefaultsBridge
 
 	public typealias RangeSerializable = _DefaultsRange & _DefaultsSerializable
+
+	typealias KeyValueStore = _DefaultsKeyValueStore
+
+	typealias LockProtocol = _DefaultsLockProtocol
 
 	/**
 	Convenience protocol for `Codable`.

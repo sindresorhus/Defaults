@@ -195,18 +195,28 @@ extension Defaults {
 		}
 	}
 
+	final class SuiteKeyPair: Hashable {
+		weak var suite: UserDefaults?
+		let key: String
+
+		init(suite: UserDefaults, key: String) {
+			self.suite = suite
+			self.key = key
+		}
+
+		func hash(into hasher: inout Hasher) {
+			hasher.combine(key)
+			hasher.combine(suite)
+		}
+
+		static func == (lhs: SuiteKeyPair, rhs: SuiteKeyPair) -> Bool {
+			lhs.key == rhs.key
+				&& lhs.suite == rhs.suite
+		}
+	}
+
 	private final class CompositeUserDefaultsKeyObservation: NSObject, Observation {
 		private static var observationContext = 0
-
-		private final class SuiteKeyPair {
-			weak var suite: UserDefaults?
-			let key: String
-
-			init(suite: UserDefaults, key: String) {
-				self.suite = suite
-				self.key = key
-			}
-		}
 
 		private var observables: [SuiteKeyPair]
 		private var lifetimeAssociation: LifetimeAssociation?
@@ -283,6 +293,87 @@ extension Defaults {
 			}
 
 			callback(BaseChange(change: change))
+		}
+	}
+
+	final class CompositeUserDefaultsAnyKeyObservation: NSObject, Observation {
+		typealias Callback = (SuiteKeyPair) -> Void
+		private static var observationContext = 1
+
+		private var observables: Set<SuiteKeyPair> = []
+		private var lifetimeAssociation: LifetimeAssociation?
+		private let callback: CompositeUserDefaultsAnyKeyObservation.Callback
+
+		init(_ callback: @escaping CompositeUserDefaultsAnyKeyObservation.Callback) {
+			self.callback = callback
+		}
+
+		func addObserver(_ key: Defaults._AnyKey, options: ObservationOptions = []) {
+			let keyPair: SuiteKeyPair = .init(suite: key.suite, key: key.name)
+			let (inserted, observable) = observables.insert(keyPair)
+			guard inserted else {
+				return
+			}
+
+			observable.suite?.addObserver(self, forKeyPath: observable.key, options: options.toNSKeyValueObservingOptions, context: &Self.observationContext)
+		}
+
+		func removeObserver(_ key: Defaults._AnyKey) {
+			let keyPair: SuiteKeyPair = .init(suite: key.suite, key: key.name)
+			guard let observable = observables.remove(keyPair) else {
+				return
+			}
+
+			observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &Self.observationContext)
+		}
+
+		@discardableResult
+		func tieToLifetime(of weaklyHeldObject: AnyObject) -> Self {
+			// swiftlint:disable:next trailing_closure
+			lifetimeAssociation = LifetimeAssociation(of: self, with: weaklyHeldObject, deinitHandler: { [weak self] in
+				self?.invalidate()
+			})
+
+			return self
+		}
+
+		func removeLifetimeTie() {
+			lifetimeAssociation?.cancel()
+		}
+
+		func invalidate() {
+			for observable in observables {
+				observable.suite?.removeObserver(self, forKeyPath: observable.key, context: &Self.observationContext)
+				observable.suite = nil
+			}
+
+			observables.removeAll()
+			lifetimeAssociation?.cancel()
+		}
+
+		// swiftlint:disable:next block_based_kvo
+		override func observeValue(
+			forKeyPath keyPath: String?,
+			of object: Any?,
+			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
+			context: UnsafeMutableRawPointer?
+		) {
+			guard
+				context == &Self.observationContext
+			else {
+				super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+				return
+			}
+
+			guard
+				let object = object as? UserDefaults,
+				let keyPath,
+				let observable = observables.first(where: { $0.key == keyPath && $0.suite == object })
+			else {
+				return
+			}
+
+			callback(observable)
 		}
 	}
 
