@@ -391,7 +391,7 @@ extension Defaults {
 	}
 	```
 
-	- Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-9eh8`` instead.
+	- Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-88orv`` instead.
 	*/
 	public static func observe<Value: Serializable>(
 		_ key: Key<Value>,
@@ -407,7 +407,6 @@ extension Defaults {
 		return observation
 	}
 
-
 	/**
 	Observe multiple keys of any type, but without any information about the changes.
 
@@ -422,7 +421,7 @@ extension Defaults {
 	}
 	```
 
-	- Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-9eh8`` instead.
+	- Warning: This method exists for backwards compatibility and will be deprecated sometime in the future. Use ``Defaults/updates(_:initial:)-88orv`` instead.
 	*/
 	public static func observe(
 		keys: _AnyKey...,

@@ -235,13 +235,14 @@ extension Defaults.Serializable {
 	}
 }
 
+// TODO: Remove this in favor of `MutexLock` when targeting Swift 6.
 // swiftlint:disable:next final_class
 class Lock: DefaultsLockProtocol {
 	final class UnfairLock: Lock {
 		private let _lock: os_unfair_lock_t
 
 		override init() {
-			_lock = .allocate(capacity: 1)
+			self._lock = .allocate(capacity: 1)
 			_lock.initialize(to: os_unfair_lock())
 		}
 
@@ -360,13 +361,12 @@ final class TaskQueue {
 				queueContinuation?.yield {
 					continuation.resume()
 				}
-				return
 			}
 		}
 	}
 }
 
-// TODO: replace with Swift 6 native Atomics support.
+// TODO: Replace with Swift 6 native Atomics support: https://github.com/apple/swift-evolution/blob/main/proposals/0258-property-wrappers.md?rgh-link-date=2024-03-29T14%3A14%3A00Z#changes-from-the-accepted-proposal
 @propertyWrapper
 final class Atomic<Value> {
 	private let lock: Lock = .make()

@@ -67,6 +67,8 @@ extension Defaults {
 			suite.removeObject(forKey: name)
 		}
 	}
+
+	public typealias Keys = _AnyKey
 }
 
 extension Defaults {
@@ -85,7 +87,7 @@ extension Defaults {
 	}
 	```
 
-	- Warning: The `UserDefaults` name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+	- Important: The `UserDefaults` name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 	*/
 	public final class Key<Value: Serializable>: _AnyKey {
 		/**
@@ -103,7 +105,7 @@ extension Defaults {
 		Create a key.
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
-		- Parameter iCloud: Automatically synchronize the value with ``Defaults/Defaults/iCloud``.
+		- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
 
 		The `default` parameter should not be used if the `Value` type is an optional.
 		*/
@@ -148,7 +150,7 @@ extension Defaults {
 		```
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
-		- Parameter iCloud: Automatically synchronize the value with ``Defaults/Defaults/iCloud``.
+		- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
 
 		- Note: This initializer will not set the default value in the actual `UserDefaults`. This should not matter much though. It's only really useful if you use legacy KVO bindings.
 		*/
@@ -176,7 +178,7 @@ extension Defaults.Key {
 	Create a key with an optional value.
 
 	- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
-	- Parameter iCloud: Automatically synchronize the value with ``Defaults/Defaults/iCloud``.
+	- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
 	*/
 	public convenience init<T>(
 		_ name: String,
@@ -210,112 +212,6 @@ extension Defaults._AnyKey: Hashable {
 		hasher.combine(name)
 		hasher.combine(suite)
 	}
-}
-
-extension Defaults {
-	public typealias Keys = _AnyKey
-
-	/**
-	Types that conform to this protocol can be used with `Defaults`.
-
-	The type should have a static variable `bridge` which should reference an instance of a type that conforms to `Defaults.Bridge`.
-
-	```swift
-	struct User {
-		username: String
-		password: String
-	}
-
-	extension User: Defaults.Serializable {
-		static let bridge = UserBridge()
-	}
-	```
-	*/
-	public typealias Serializable = _DefaultsSerializable
-
-	public typealias CollectionSerializable = _DefaultsCollectionSerializable
-	public typealias SetAlgebraSerializable = _DefaultsSetAlgebraSerializable
-
-	/**
-	Ambiguous bridge selector protocol that lets you select your preferred bridge when there are multiple possibilities.
-
-	```swift
-	enum Interval: Int, Codable, Defaults.Serializable, Defaults.PreferRawRepresentable {
-		case tenMinutes = 10
-		case halfHour = 30
-		case oneHour = 60
-	}
-	```
-
-	By default, if an `enum` conforms to `Codable` and `Defaults.Serializable`, it will use the `CodableBridge`, but by conforming to `Defaults.PreferRawRepresentable`, we can switch the bridge back to `RawRepresentableBridge`.
-	*/
-	public typealias PreferRawRepresentable = _DefaultsPreferRawRepresentable
-
-	/**
-	Ambiguous bridge selector protocol that lets you select your preferred bridge when there are multiple possibilities.
-	*/
-	public typealias PreferNSSecureCoding = _DefaultsPreferNSSecureCoding
-
-	/**
-	A `Bridge` is responsible for serialization and deserialization.
-
-	It has two associated types `Value` and `Serializable`.
-
-	- `Value`: The type you want to use.
-	- `Serializable`: The type stored in `UserDefaults`.
-	- `serialize`: Executed before storing to the `UserDefaults` .
-	- `deserialize`: Executed after retrieving its value from the `UserDefaults`.
-
-	```swift
-	struct User {
-		username: String
-		password: String
-	}
-
-	extension User {
-		static let bridge = UserBridge()
-	}
-
-	struct UserBridge: Defaults.Bridge {
-		typealias Value = User
-		typealias Serializable = [String: String]
-
-		func serialize(_ value: Value?) -> Serializable? {
-			guard let value else {
-				return nil
-			}
-
-			return [
-				"username": value.username,
-				"password": value.password
-			]
-		}
-
-		func deserialize(_ object: Serializable?) -> Value? {
-			guard
-				let object,
-				let username = object["username"],
-				let password = object["password"]
-			else {
-				return nil
-			}
-
-			return User(
-				username: username,
-				password: password
-			)
-		}
-	}
-	```
-	*/
-	public typealias Bridge = _DefaultsBridge
-
-	public typealias RangeSerializable = _DefaultsRange & _DefaultsSerializable
-
-	/**
-	Convenience protocol for `Codable`.
-	*/
-	typealias CodableBridge = _DefaultsCodableBridge
 }
 
 extension Defaults {
@@ -371,7 +267,7 @@ extension Defaults {
 	}
 	```
 
-	- Note: This does not include which of the values changed. Use ``Defaults/updates(_:initial:)-9eh8`` if you need that. You could use [`merge`](https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncAlgorithms.docc/Guides/Merge.md) to merge them into a single sequence.
+	- Note: This does not include which of the values changed. Use ``Defaults/updates(_:initial:)-88orv`` if you need that. You could use [`merge`](https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncAlgorithms.docc/Guides/Merge.md) to merge them into a single sequence.
 	*/
 	public static func updates(
 		_ keys: [_AnyKey],

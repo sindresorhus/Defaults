@@ -4,10 +4,10 @@ on:
   - pull_request
 jobs:
   test:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-      - run: sudo xcode-select -switch /Applications/Xcode_15.2.app
+      - run: sudo xcode-select -switch /Applications/Xcode_15.3.app
       - run: swift test
   lint:
     runs-on: ubuntu-latest

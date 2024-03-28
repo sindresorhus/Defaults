@@ -34,7 +34,7 @@ It's used in production by [all my apps](https://sindresorhus.com/apps) (1 milli
 - macOS 11+
 - iOS 14+
 - tvOS 14+
-- watchOS 7+
+- watchOS 9+
 - visionOS 1+
 
 ## Install

@@ -350,8 +350,8 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 				}
 			}
 
-		inputArray.forEach {
-			Defaults[key] = ExamplePersistentHistory(value: $0)
+		for item in inputArray {
+			Defaults[key] = ExamplePersistentHistory(value: item)
 		}
 
 		Defaults.reset(key)
@@ -383,8 +383,8 @@ final class DefaultsNSSecureCodingTests: XCTestCase {
 				}
 			}
 
-		inputArray.forEach {
-			Defaults[key] = ExamplePersistentHistory(value: $0)
+		for item in inputArray {
+			Defaults[key] = ExamplePersistentHistory(value: item)
 		}
 
 		Defaults.reset(key)

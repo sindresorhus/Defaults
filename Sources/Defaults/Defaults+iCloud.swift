@@ -6,6 +6,196 @@ import UIKit
 #endif
 import Combine
 import Foundation
+#if os(watchOS)
+import WatchKit
+#endif
+
+extension Defaults {
+	/**
+	Synchronize values across devices using iCloud.
+
+	To synchronize a key with iCloud, set `iCloud: true` on the ``Defaults/Key``. That's it! ✨
+
+	```swift
+	import Defaults
+
+	extension Defaults.Keys {
+		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false, iCloud: true)
+	}
+
+	// …
+
+	// This change will now be synced to other devices.
+	Defaults[.isUnicornMode] = true
+	```
+
+	- Important: You need to enable the `iCloud` capability in the “Signing and Capabilities” tab in Xcode and then enable “Key-value storage” in the iCloud services.
+
+	## Notes
+
+	- If there is a conflict, it will use the latest change.
+	- Max 1024 keys and a total of 1 MB storage.
+	- It uses [`NSUbiquitousKeyValueStore`](https://developer.apple.com/documentation/foundation/nsubiquitouskeyvaluestore) internally.
+
+	## Dynamically Toggle Syncing
+
+	You can also toggle the syncing behavior dynamically using the ``Defaults/iCloud/add(_:)-5gffb`` and ``Defaults/iCloud/remove(_:)-1b8w5`` methods.
+
+	```swift
+	import Defaults
+
+	extension Defaults.Keys {
+		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+	}
+
+	// …
+
+	if shouldSync {
+		Defaults.iCloud.add(.isUnicornMode)
+	}
+	```
+	*/
+	public enum iCloud {
+		/**
+		The singleton for Defaults's iCloudSynchronizer.
+		*/
+		static var synchronizer = iCloudSynchronizer(remoteStorage: NSUbiquitousKeyValueStore.default)
+
+		/**
+		The synced keys.
+		*/
+		public static var keys: Set<Defaults.Keys> { synchronizer.keys }
+
+		// Note: Can be made public if someone shows a real use-case for it.
+		/**
+		Enable this if you want the key to be synced right away when it's changed.
+		*/
+		static var syncOnChange = true
+
+		/**
+		Log debug info about the syncing.
+
+		It will include details such as the key being synced, its corresponding value, and the status of the synchronization.
+		*/
+		public static var isDebug = false
+
+		/**
+		Add the keys to be automatically synced.
+		*/
+		public static func add(_ keys: Defaults.Keys...) {
+			synchronizer.add(keys)
+		}
+
+		/**
+		Add the keys to be automatically synced.
+		*/
+		public static func add(_ keys: [Defaults.Keys]) {
+			synchronizer.add(keys)
+		}
+
+		/**
+		Remove the keys that are set to be automatically synced.
+		*/
+		public static func remove(_ keys: Defaults.Keys...) {
+			synchronizer.remove(keys)
+		}
+
+		/**
+		Remove the keys that are set to be automatically synced.
+		*/
+		public static func remove(_ keys: [Defaults.Keys]) {
+			synchronizer.remove(keys)
+		}
+
+		/**
+		Remove all keys that are set to be automatically synced.
+		*/
+		public static func removeAll() {
+			synchronizer.removeAll()
+		}
+
+		/**
+		Waits for the completion of synchronization.
+
+		You generally don't need this as synchronization is automatic, but in some cases it could be useful to not continue until all values are synchronized to the cloud.
+
+		```swift
+		import Defaults
+
+		extension Defaults.Keys {
+			static let isUnicornMode = Key<Bool>("isUnicornMode", default: false, iCloud: true)
+		}
+
+		// …
+
+		Task {
+			Defaults[.isUnicornMode] = true
+
+			print(Defaults[.isUnicornMode])
+			//=> true
+
+			await Defaults.iCloud.waitForSyncCompletion()
+
+			// The value is now synchronized to the cloud too.
+		}
+		```
+		*/
+		public static func waitForSyncCompletion() async {
+			await synchronizer.sync()
+		}
+
+		// Only make these public if there is an actual need.
+		// https://github.com/sindresorhus/Defaults/pull/136#discussion_r1544546756
+
+		/**
+		Create synchronization tasks for all the keys that have been added to the ``Defaults/iCloud``.
+		*/
+		static func syncWithoutWaiting() {
+			synchronizer.syncWithoutWaiting()
+		}
+
+		/**
+		Create synchronization tasks for the specified `keys` from the given source, which can be either a remote server or a local cache.
+
+		- Parameter keys: The keys that should be synced.
+		- Parameter source: Sync keys from which data source(remote or local)
+
+		- Note: `source` should be specified if `key` has not been added to ``Defaults/iCloud``.
+		*/
+		static func syncWithoutWaiting(_ keys: Defaults.Keys..., source: DataSource? = nil) {
+			synchronizer.syncWithoutWaiting(keys, source)
+		}
+
+		/**
+		Create synchronization tasks for the specified `keys` from the given source, which can be either a remote server or a local cache.
+
+		- Parameter keys: The keys that should be synced.
+		- Parameter source: Sync keys from which data source(remote or local)
+
+		- Note: `source` should be specified if `key` has not been added to ``Defaults/iCloud``.
+		*/
+		static func syncWithoutWaiting(_ keys: [Defaults.Keys], source: DataSource? = nil) {
+			synchronizer.syncWithoutWaiting(keys, source)
+		}
+	}
+}
+
+extension Defaults.iCloud {
+	/**
+	Represent different data sources available for synchronization.
+	*/
+	public enum DataSource {
+		/**
+		Using `key.suite` as data source.
+		*/
+		case local
+
+		/**
+		Using `NSUbiquitousKeyValueStore` as data source.
+		*/
+		case remote
+	}
+}
 
 private enum SyncStatus {
 	case idle
@@ -31,7 +221,7 @@ final class iCloudSynchronizer {
 
 	@TaskLocal static var timestamp: Date?
 
-	private var cancellables: Set<AnyCancellable> = []
+	private var cancellables = Set<AnyCancellable>()
 
 	/**
 	Key for recording the synchronization between `NSUbiquitousKeyValueStore` and `UserDefaults`.
@@ -63,14 +253,14 @@ final class iCloudSynchronizer {
 		guard
 			let self,
 			let suite = observable.suite,
-			let key = self.keys.first(where: { $0.name == observable.key && $0.suite == suite }),
+			let key = keys.first(where: { $0.name == observable.key && $0.suite == suite }),
 			// Prevent triggering local observation when syncing from remote.
-			!self.remoteSyncingKeys.contains(key)
+			!remoteSyncingKeys.contains(key)
 		else {
 			return
 		}
 
-		self.enqueue {
+		enqueue {
 			self.recordTimestamp(forKey: key, timestamp: Self.timestamp, source: .local)
 			await self.syncKey(key, source: .local)
 		}
@@ -81,7 +271,7 @@ final class iCloudSynchronizer {
 	*/
 	func add(_ keys: [Defaults.Keys]) {
 		self.keys.formUnion(keys)
-		self.syncWithoutWaiting(keys)
+		syncWithoutWaiting(keys)
 		for key in keys {
 			localKeysMonitor.addObserver(key)
 		}
@@ -119,12 +309,12 @@ final class iCloudSynchronizer {
 	- Parameter keys: If the keys parameter is an empty array, the method will use the keys that were added to `Defaults.iCloud`.
 	- Parameter source: Sync keys from which data source (remote or local).
 	*/
-	func syncWithoutWaiting(_ keys: [Defaults.Keys] = [], _ source: Defaults.DataSource? = nil) {
+	func syncWithoutWaiting(_ keys: [Defaults.Keys] = [], _ source: Defaults.iCloud.DataSource? = nil) {
 		let keys = keys.isEmpty ? Array(self.keys) : keys
 
 		for key in keys {
 			let latest = source ?? latestDataSource(forKey: key)
-			self.enqueue {
+			enqueue {
 				await self.syncKey(key, source: latest)
 			}
 		}
@@ -141,7 +331,7 @@ final class iCloudSynchronizer {
 	Enqueue the synchronization task into `backgroundQueue` with the current timestamp.
 	*/
 	private func enqueue(_ task: @escaping TaskQueue.AsyncTask) {
-		self.backgroundQueue.async {
+		backgroundQueue.async {
 			await Self.$timestamp.withValue(Date()) {
 				await task()
 			}
@@ -154,7 +344,7 @@ final class iCloudSynchronizer {
 	- Parameter key: The key to synchronize.
 	- Parameter source: Sync key from which data source (remote or local).
 	*/
-	private func syncKey(_ key: Defaults.Keys, source: Defaults.DataSource) async {
+	private func syncKey(_ key: Defaults.Keys, source: Defaults.iCloud.DataSource) async {
 		Self.logKeySyncStatus(key, source: source, syncStatus: .idle)
 
 		switch source {
@@ -227,7 +417,7 @@ final class iCloudSynchronizer {
 
 	The timestamp storage format varies across different source providers due to storage limitations.
 	*/
-	private func timestamp(forKey key: Defaults.Keys, source: Defaults.DataSource) -> Date? {
+	private func timestamp(forKey key: Defaults.Keys, source: Defaults.iCloud.DataSource) -> Date? {
 		switch source {
 		case .remote:
 			guard
@@ -252,7 +442,7 @@ final class iCloudSynchronizer {
 	/**
 	Mark the current timestamp to the given storage.
 	*/
-	func recordTimestamp(forKey key: Defaults.Keys, timestamp: Date?, source: Defaults.DataSource) {
+	func recordTimestamp(forKey key: Defaults.Keys, timestamp: Date?, source: Defaults.iCloud.DataSource) {
 		switch source {
 		case .remote:
 			guard
@@ -275,12 +465,12 @@ final class iCloudSynchronizer {
 	/**
 	Determine which data source has the latest data available by comparing the timestamps of the local and remote sources.
 	*/
-	private func latestDataSource(forKey key: Defaults.Keys) -> Defaults.DataSource {
+	private func latestDataSource(forKey key: Defaults.Keys) -> Defaults.iCloud.DataSource {
 		// If the remote timestamp does not exist, use the local timestamp as the latest data source.
-		guard let remoteTimestamp = self.timestamp(forKey: key, source: .remote) else {
+		guard let remoteTimestamp = timestamp(forKey: key, source: .remote) else {
 			return .local
 		}
-		guard let localTimestamp = self.timestamp(forKey: key, source: .local) else {
+		guard let localTimestamp = timestamp(forKey: key, source: .local) else {
 			return .remote
 		}
 
@@ -288,9 +478,7 @@ final class iCloudSynchronizer {
 	}
 }
 
-/**
-`iCloudSynchronizer` notification related functions.
-*/
+// Notification related functions.
 extension iCloudSynchronizer {
 	private func registerNotifications() {
 		// TODO: Replace it with async stream when Swift supports custom executors.
@@ -301,27 +489,28 @@ extension iCloudSynchronizer {
 					return
 				}
 
-				self.didChangeExternally(notification: notification)
+				didChangeExternally(notification: notification)
 			}
 			.store(in: &cancellables)
 
-		// TODO: Replace it with async stream when Swift supports custom executors.
-		#if os(iOS) || os(tvOS) || os(visionOS)
-		NotificationCenter.default
-			.publisher(for: UIScene.willEnterForegroundNotification)
-		#elseif os(watchOS)
-		NotificationCenter.default
-			.publisher(for: WKExtension.applicationWillEnterForegroundNotification)
+		#if canImport(UIKit)
+		#if os(watchOS)
+		let notificationName = WKExtension.applicationWillEnterForegroundNotification
+		#else
+		let notificationName = UIScene.willEnterForegroundNotification
 		#endif
-		#if os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
+
+		// TODO: Replace it with async stream when Swift supports custom executors.
+		NotificationCenter.default
+			.publisher(for: notificationName)
 			.sink { [weak self] notification in
 				guard let self else {
 					return
 				}
 
-				self.willEnterForeground(notification: notification)
+				willEnterForeground(notification: notification)
 			}
-			.store(in: cancellables)
+			.store(in: &cancellables)
 		#endif
 	}
 
@@ -343,7 +532,7 @@ extension iCloudSynchronizer {
 			return
 		}
 
-		for key in self.keys where changedKeys.contains(key.name) {
+		for key in keys where changedKeys.contains(key.name) {
 			guard let remoteTimestamp = self.timestamp(forKey: key, source: .remote) else {
 				continue
 			}
@@ -361,14 +550,16 @@ extension iCloudSynchronizer {
 	}
 }
 
-/**
-`iCloudSynchronizer` logging related functions.
-*/
+// Logging related functions.
 extension iCloudSynchronizer {
-	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, visionOS 1.0, *)
 	private static let logger = Logger(OSLog.default)
 
-	private static func logKeySyncStatus(_ key: Defaults.Keys, source: Defaults.DataSource, syncStatus: SyncStatus, value: Any? = nil) {
+	private static func logKeySyncStatus(
+		_ key: Defaults.Keys,
+		source: Defaults.iCloud.DataSource,
+		syncStatus: SyncStatus,
+		value: Any? = nil
+	) {
 		guard Defaults.iCloud.isDebug else {
 			return
 		}
@@ -401,173 +592,6 @@ extension iCloudSynchronizer {
 			return
 		}
 
-		if #available(macOS 11, iOS 14, tvOS 14, watchOS 7, visionOS 1.0, *) {
-			logger.debug("[Defaults.iCloud] \(message)")
-		} else {
-			#if canImport(OSLog)
-			os_log(.debug, log: .default, "[Defaults.iCloud] %@", message)
-			#else
-			let dateFormatter = DateFormatter()
-			dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSSZZZ"
-			let dateString = dateFormatter.string(from: Date())
-			let processName = ProcessInfo.processInfo.processName
-			let processIdentifier = ProcessInfo.processInfo.processIdentifier
-			var threadID: UInt64 = 0
-			pthread_threadid_np(nil, &threadID)
-			print("\(dateString) \(processName)[\(processIdentifier):\(threadID)] [Defaults.iCloud] \(message)")
-			#endif
-		}
-	}
-}
-
-extension Defaults {
-	/**
-	Represent different data sources available for synchronization.
-	*/
-	public enum DataSource {
-		/**
-		Using `key.suite` as data source.
-		*/
-		case local
-
-		/**
-		Using `NSUbiquitousKeyValueStore` as data source.
-		*/
-		case remote
-	}
-
-	/**
-	Synchronize values with different devices over iCloud.
-
-	There are five ways to initiate synchronization, each of which will create a synchronization task in ``Defaults/iCloud/iCloud``:
-
-	1. Using ``iCloud/add(_:)-5gffb``
-	2. Utilizing ``iCloud/syncWithoutWaiting(_:source:)-9cpju``
-	3. Observing UserDefaults for added ``Defaults/Defaults/Key`` using Key-Value Observation (KVO)
-	4. Monitoring `NSUbiquitousKeyValueStore.didChangeExternallyNotification` for added ``Defaults/Defaults/Key``.
-	5. Initializing ``Defaults/Defaults/Keys`` with parameter `iCloud: true`.
-
-	> Tip: After initializing the task, we can call ``iCloud/sync()`` to ensure that all tasks in the backgroundQueue are completed.
-
-	```swift
-	import Defaults
-
-	extension Defaults.Keys {
-		static let isUnicornMode = Key<Bool>("isUnicornMode", default: true, iCloud: true)
-	}
-
-	Task {
-		let quality = Defaults.Key<Int>("quality", default: 0)
-		Defaults.iCloud.add(quality)
-		await Defaults.iCloud.sync() // Optional step: only needed if you require everything to be synced before continuing.
-		// Both `isUnicornMode` and `quality` are synced.
-	}
-	```
-	*/
-	public enum iCloud {
-		/**
-		The singleton for Defaults's iCloudSynchronizer.
-		*/
-		static var synchronizer = iCloudSynchronizer(remoteStorage: NSUbiquitousKeyValueStore.default)
-
-		/**
-		The synced keys.
-		*/
-		public static var keys: Set<Defaults.Keys> { synchronizer.keys }
-
-		/**
-		Enable this if you want to call ```` when a value is changed.
-		*/
-		public static var syncOnChange = false
-
-		/**
-		Enable this if you want to debug the syncing status of keys.
-		Logs will be printed to the console in OSLog format.
-
-		- Note: The log information will include details such as the key being synced, its corresponding value, and the status of the synchronization.
-		*/
-		public static var isDebug = false
-
-		/**
-		Add the keys to be automatically synced.
-		*/
-		public static func add(_ keys: Defaults.Keys...) {
-			synchronizer.add(keys)
-		}
-
-		/**
-		Add the keys to be automatically synced.
-		*/
-		public static func add(_ keys: [Defaults.Keys]) {
-			synchronizer.add(keys)
-		}
-
-		/**
-		Remove the keys that are set to be automatically synced.
-		*/
-		public static func remove(_ keys: Defaults.Keys...) {
-			synchronizer.remove(keys)
-		}
-
-		/**
-		Remove the keys that are set to be automatically synced.
-		*/
-		public static func remove(_ keys: [Defaults.Keys]) {
-			synchronizer.remove(keys)
-		}
-
-		/**
-		Remove all keys that are set to be automatically synced.
-		*/
-		public static func removeAll() {
-			synchronizer.removeAll()
-		}
-
-		/**
-		Explicitly synchronizes in-memory keys and values with those stored on disk.
-
-		As per apple docs, the only recommended time to call this method is upon app launch, or upon returning to the foreground, to ensure that the in-memory key-value store representation is up-to-date.
-		*/
-		public static func synchronize() {
-			synchronizer.synchronize()
-		}
-
-		/**
-		Wait until synchronization is complete.
-		*/
-		public static func sync() async {
-			await synchronizer.sync()
-		}
-
-		/**
-		Create synchronization tasks for all the keys that have been added to the ``Defaults/Defaults/iCloud``.
-		*/
-		public static func syncWithoutWaiting() {
-			synchronizer.syncWithoutWaiting()
-		}
-
-		/**
-		Create synchronization tasks for the specified `keys` from the given source, which can be either a remote server or a local cache.
-
-		- Parameter keys: The keys that should be synced.
-		- Parameter source: Sync keys from which data source(remote or local)
-
-		- Note: `source` should be specified if `key` has not been added to ``Defaults/Defaults/iCloud``.
-		*/
-		public static func syncWithoutWaiting(_ keys: Defaults.Keys..., source: DataSource? = nil) {
-			synchronizer.syncWithoutWaiting(keys, source)
-		}
-
-		/**
-		Create synchronization tasks for the specified `keys` from the given source, which can be either a remote server or a local cache.
-
-		- Parameter keys: The keys that should be synced.
-		- Parameter source: Sync keys from which data source(remote or local)
-
-		- Note: `source` should be specified if `key` has not been added to ``Defaults/Defaults/iCloud``.
-		*/
-		public static func syncWithoutWaiting(_ keys: [Defaults.Keys], source: DataSource? = nil) {
-			synchronizer.syncWithoutWaiting(keys, source)
-		}
+		logger.debug("[Defaults.iCloud] \(message)")
 	}
 }

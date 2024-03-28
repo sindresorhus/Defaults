@@ -593,8 +593,8 @@ final class DefaultsTests: XCTestCase {
 				}
 			}
 
-		inputArray.forEach {
-			Defaults[key] = $0
+		for item in inputArray {
+			Defaults[key] = item
 		}
 
 		Defaults.reset(key)
@@ -625,8 +625,8 @@ final class DefaultsTests: XCTestCase {
 				}
 			}
 
-		inputArray.forEach {
-			Defaults[key] = $0
+		for item in inputArray {
+			Defaults[key] = item
 		}
 
 		Defaults.reset(key)
