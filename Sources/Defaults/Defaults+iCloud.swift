@@ -392,15 +392,14 @@ extension Defaults.iCloudSynchronizer {
 			return
 		}
 
-		var destination: String
-		switch source {
+		let destination = switch source {
 		case .local:
-			destination = "from local"
+			"from local"
 		case .remote:
-			destination = "from remote"
+			"from remote"
 		}
 
-		var status: String
+		let status: String
 		var valueDescription = " "
 		switch syncStatus {
 		case .idle:
@@ -424,9 +423,9 @@ extension Defaults.iCloudSynchronizer {
 		if #available(macOS 11, iOS 14, tvOS 14, watchOS 7, *) {
 			logger.debug("[Defaults.iCloud] \(message)")
 		} else {
-#if canImport(OSLog)
+			#if canImport(OSLog)
 			os_log(.debug, log: .default, "[Defaults.iCloud] %@", message)
-#else
+			#else
 			let dateFormatter = DateFormatter()
 			dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSSZZZ"
 			let dateString = dateFormatter.string(from: Date())
@@ -435,7 +434,7 @@ extension Defaults.iCloudSynchronizer {
 			var threadID: UInt64 = 0
 			pthread_threadid_np(nil, &threadID)
 			print("\(dateString) \(processName)[\(processIdentifier):\(threadID)] [Defaults.iCloud] \(message)")
-#endif
+			#endif
 		}
 	}
 }
