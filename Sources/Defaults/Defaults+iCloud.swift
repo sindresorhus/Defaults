@@ -10,12 +10,17 @@ import Combine
 import Foundation
 
 /**
-Represent  different data sources available for synchronization.
+Represent different data sources available for synchronization.
 */
 public enum DataSource {
-	/// Using `key.suite` as data source.
+	/**
+	Using `key.suite` as data source.
+	*/
 	case local
-	/// Using `NSUbiquitousKeyValueStore` as data source.
+
+	/**
+	Using `NSUbiquitousKeyValueStore` as data source.
+	*/
 	case remote
 }
 
@@ -27,13 +32,9 @@ private enum SyncStatus {
 
 extension Defaults {
 	/**
-	The supervisor for managing `Defaults.Keys` between `key.suite` and `remoteStorage`.
+	Manages `Defaults.Keys` between the locale and remote storage.
 
-	Depends on the storage, `Defaults.Keys` will represent in different form due to storage limitations.
-
-	Remote storage imposes a limitation of 1024 keys. Therefore, we combine the recorded timestamp and data into a single key.
-
-	Unlike remote storage, local storage does not have this limitation. Therefore, we can create a separate key(with `defaultsSyncKey` suffix) for the timestamp record.
+	Depending on the storage, `Defaults.Keys` will be represented in different forms due to storage limitations of the remote storage. The remote storage imposes a limitation of 1024 keys. Therefore, we combine the recorded timestamp and data into a single key. Unlike remote storage, local storage does not have this limitation. Therefore, we can create a separate key (with `defaultsSyncKey` suffix) for the timestamp record.
 	*/
 	public final class iCloudSynchronizer {
 		init(remoteStorage: KeyValueStore) {
@@ -134,7 +135,7 @@ extension Defaults {
 		Synchronize the specified `keys` from the given `source` without waiting.
 
 		- Parameter keys: If the keys parameter is an empty array, the method will use the keys that were added to `Defaults.iCloudSynchronizer`.
-		- Parameter source: Sync keys from which data source(remote or local).
+		- Parameter source: Sync keys from which data source (remote or local).
 		*/
 		func syncWithoutWaiting(_ keys: [Defaults.Keys] = [], _ source: DataSource? = nil) {
 			let keys = keys.isEmpty ? Array(self.keys) : keys
@@ -148,7 +149,7 @@ extension Defaults {
 		}
 
 		/**
-		Wait until all synchronization tasks in `backgroundQueue` are complete.
+		Wait until all synchronization tasks are complete.
 		*/
 		func sync() async {
 			await backgroundQueue.flush()
@@ -169,16 +170,18 @@ extension Defaults {
 		Create synchronization tasks for the specified `key` from the given source.
 
 		- Parameter forKey: The key to synchronize.
-		- Parameter source: Sync key from which data source(remote or local).
+		- Parameter source: Sync key from which data source (remote or local).
 		*/
 		private func syncKey(forKey key: Defaults.Keys, _ source: DataSource) async {
 			Self.logKeySyncStatus(key, source: source, syncStatus: .idle)
+
 			switch source {
 			case .remote:
 				await syncFromRemote(forKey: key)
 			case .local:
 				syncFromLocal(forKey: key)
 			}
+
 			Self.logKeySyncStatus(key, source: source, syncStatus: .completed)
 		}
 
@@ -187,6 +190,7 @@ extension Defaults {
 		*/
 		private func syncFromRemote(forKey key: Defaults.Keys) async {
 			_remoteSyncingKeys.modify { $0.insert(key) }
+
 			await withCheckedContinuation { continuation in
 				guard
 					let object = remoteStorage.object(forKey: key.name) as? [Any],
@@ -204,6 +208,7 @@ extension Defaults {
 					continuation.resume()
 				}
 			}
+
 			_remoteSyncingKeys.modify { $0.remove(key) }
 		}
 
@@ -263,7 +268,7 @@ extension Defaults {
 		}
 
 		/**
-		Mark the current timestamp to given storage.
+		Mark the current timestamp to the given storage.
 		*/
 		func recordTimestamp(forKey key: Defaults.Keys, timestamp: Date?, source: DataSource) {
 			switch source {
@@ -386,6 +391,7 @@ extension Defaults.iCloudSynchronizer {
 		guard Defaults.iCloud.isDebug else {
 			return
 		}
+
 		var destination: String
 		switch source {
 		case .local:
@@ -393,6 +399,7 @@ extension Defaults.iCloudSynchronizer {
 		case .remote:
 			destination = "from remote"
 		}
+
 		var status: String
 		var valueDescription = " "
 		switch syncStatus {
@@ -404,8 +411,8 @@ extension Defaults.iCloudSynchronizer {
 		case .completed:
 			status = "Complete synchronization"
 		}
-		let message = "\(status) key '\(key.name)'\(valueDescription)\(destination)"
 
+		let message = "\(status) key '\(key.name)'\(valueDescription)\(destination)"
 		log(message)
 	}
 
@@ -435,7 +442,7 @@ extension Defaults.iCloudSynchronizer {
 
 extension Defaults {
 	/**
-	Automatically create synchronization tasks when the added keys undergo changed.
+	Automatically create synchronization tasks when the added keys changed.
 
 	There are four ways to initiate synchronization, each of which will create a task in `backgroundQueue`:
 
@@ -484,7 +491,7 @@ extension Defaults {
 		}
 
 		/**
-		 Remove the keys that are set to be automatically synced.
+		Remove the keys that are set to be automatically synced.
 		*/
 		public static func remove(_ keys: Defaults.Keys...) {
 			synchronizer.remove(keys)
