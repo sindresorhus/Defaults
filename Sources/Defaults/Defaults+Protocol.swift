@@ -56,7 +56,7 @@ public protocol _DefaultsRange {
 /**
 Essential properties for synchronizing a key value store.
 */
-public protocol _DefaultsKeyValueStore {
+protocol DefaultsKeyValueStore {
 	func object(forKey aKey: String) -> Any?
 
 	func set(_ anObject: Any?, forKey aKey: String)
@@ -67,7 +67,7 @@ public protocol _DefaultsKeyValueStore {
 	func synchronize() -> Bool
 }
 
-protocol _DefaultsLockProtocol {
+protocol DefaultsLockProtocol {
 	static func make() -> Self
 
 	func lock()

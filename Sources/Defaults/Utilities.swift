@@ -236,7 +236,7 @@ extension Defaults.Serializable {
 }
 
 // swiftlint:disable:next final_class
-class Lock: Defaults.LockProtocol {
+class Lock: DefaultsLockProtocol {
 	final class UnfairLock: Lock {
 		private let _lock: os_unfair_lock_t
 

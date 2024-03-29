@@ -103,6 +103,7 @@ extension Defaults {
 		Create a key.
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		- Parameter iCloud: Set `true` if you want automatic synchronization to iCloud.
 
 		The `default` parameter should not be used if the `Value` type is an optional.
 		*/
@@ -308,10 +309,6 @@ extension Defaults {
 	public typealias Bridge = _DefaultsBridge
 
 	public typealias RangeSerializable = _DefaultsRange & _DefaultsSerializable
-
-	typealias KeyValueStore = _DefaultsKeyValueStore
-
-	typealias LockProtocol = _DefaultsLockProtocol
 
 	/**
 	Convenience protocol for `Codable`.

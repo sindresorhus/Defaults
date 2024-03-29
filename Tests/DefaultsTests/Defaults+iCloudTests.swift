@@ -2,7 +2,7 @@
 import SwiftUI
 import XCTest
 
-final class MockStorage: Defaults.KeyValueStore {
+final class MockStorage: DefaultsKeyValueStore {
 	private var pairs: [String: Any] = [:]
 	private let queue = DispatchQueue(label: "a")
 
@@ -66,7 +66,7 @@ final class DefaultsICloudTests: XCTestCase {
 	override class func setUp() {
 		Defaults.iCloud.isDebug = true
 		Defaults.iCloud.syncOnChange = true
-		Defaults.iCloud.synchronizer = Defaults.iCloudSynchronizer(remoteStorage: mockStorage)
+		Defaults.iCloud.synchronizer = iCloudSynchronizer(remoteStorage: mockStorage)
 	}
 
 	override func setUp() {
@@ -88,9 +88,11 @@ final class DefaultsICloudTests: XCTestCase {
 	}
 
 	func testICloudInitialize() async {
+		print(Defaults.iCloud.keys)
 		let name = Defaults.Key<String>("testICloudInitialize_name", default: "0", iCloud: true)
 		let quality = Defaults.Key<Double>("testICloudInitialize_quality", default: 0.0, iCloud: true)
 
+		print(Defaults.iCloud.keys)
 		await Defaults.iCloud.sync()
 		XCTAssertEqual(mockStorage.data(forKey: name.name), "0")
 		XCTAssertEqual(mockStorage.data(forKey: quality.name), 0.0)

@@ -17,7 +17,7 @@ It's used in production by [all my apps](https://sindresorhus.com/apps) (1 milli
 - **Observation:** Observe changes to keys.
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Customizable:** You can serialize and deserialize your own type in your own way.
-- **iCloud support:** You can easily synchronize data among instances of your app.
+- **iCloud support:** Automatically synchronize data between devices.
 
 ## Benefits over `@AppStorage`
 
@@ -333,34 +333,6 @@ print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 
 > **Note** 
 > A `Defaults.Key` with a dynamic default value will not register the default value in `UserDefaults`.
-
-### Automatically synchronize data with iCloud
-
-You can create an automatically synchronizing `Defaults.Key` by setting the `iCloud` parameter to true.
-
-```swift
-extension Defaults.Keys {
-	static let isUnicornMode = Key<Bool>("isUnicornMode", default: true, iCloud: true)
-}
-
-Task {
-	await Defaults.iCloud.sync() // Using sync to make sure all synchronization tasks are done.
-	print(NSUbiquitousKeyValueStore.default.bool(forKey: Defaults.Keys.isUnicornMode.name))
-	//=> true
-}
-```
-
-Also you can synchronize `Defaults.Key` manually, but make sure you select correct `source`. 
-
-```swift
-extension Defaults.Keys {
-	static let isUnicornMode = Key<Bool>("isUnicornMode", default: true)
-}
-
-Defaults.iCloud.syncKeys(.isUnicornMode, source: .local) // This will synchronize the value of the `isUnicornMode` key from the local source. 
-print(NSUbiquitousKeyValueStore.default.bool(forKey: Defaults.Keys.isUnicornMode.name))
-//=> true
-```
 
 
 ## API
