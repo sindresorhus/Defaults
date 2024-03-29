@@ -334,7 +334,6 @@ print(UserDefaults.standard.bool(forKey: Defaults.Keys.isUnicornMode.name))
 > **Note** 
 > A `Defaults.Key` with a dynamic default value will not register the default value in `UserDefaults`.
 
-
 ## API
 
 ### `Defaults`
