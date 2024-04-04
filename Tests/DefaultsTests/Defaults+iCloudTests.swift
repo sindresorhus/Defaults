@@ -63,7 +63,7 @@ private let mockStorage = MockStorage()
 
 @available(iOS 15, tvOS 15, watchOS 8, visionOS 1.0, *)
 final class DefaultsICloudTests: XCTestCase {
-	override class func setUp() {
+	override final class func setUp() {
 		Defaults.iCloud.isDebug = true
 		Defaults.iCloud.syncOnChange = true
 		Defaults.iCloud.synchronizer = iCloudSynchronizer(remoteStorage: mockStorage)
