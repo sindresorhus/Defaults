@@ -365,7 +365,7 @@ extension iCloudSynchronizer {
 `iCloudSynchronizer` logging related functions.
 */
 extension iCloudSynchronizer {
-	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, visionOS 1, *)
+	@available(macOS 11, iOS 14, tvOS 14, watchOS 7, visionOS 1.0, *)
 	private static let logger = Logger(OSLog.default)
 
 	private static func logKeySyncStatus(_ key: Defaults.Keys, source: Defaults.DataSource, syncStatus: SyncStatus, value: Any? = nil) {
@@ -401,7 +401,7 @@ extension iCloudSynchronizer {
 			return
 		}
 
-		if #available(macOS 11, iOS 14, tvOS 14, watchOS 7, *) {
+		if #available(macOS 11, iOS 14, tvOS 14, watchOS 7, visionOS 1.0, *) {
 			logger.debug("[Defaults.iCloud] \(message)")
 		} else {
 			#if canImport(OSLog)

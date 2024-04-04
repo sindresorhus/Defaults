@@ -418,7 +418,7 @@ extension Defaults {
 				return nil
 			}
 
-			if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, iOSApplicationExtension 15.0, macOSApplicationExtension 12.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, *) {
+			if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, visionOS 1.0, iOSApplicationExtension 15.0, macOSApplicationExtension 12.0, tvOSApplicationExtension 15.0, watchOSApplicationExtension 8.0, visionOSApplicationExtension 1.0, *) {
 				return Value(cgColor: cgColor)
 			}
 

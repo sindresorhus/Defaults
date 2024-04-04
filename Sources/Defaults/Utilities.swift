@@ -254,7 +254,7 @@ class Lock: DefaultsLockProtocol {
 		}
 	}
 
-	@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+	@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, visionOS 1.0, *)
 	final class AllocatedUnfairLock: Lock {
 		private let _lock = OSAllocatedUnfairLock()
 
@@ -272,7 +272,7 @@ class Lock: DefaultsLockProtocol {
 	}
 
 	static func make() -> Self {
-		guard #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) else {
+		guard #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, visionOS 1.0, *) else {
 			return UnfairLock() as! Self
 		}
 
