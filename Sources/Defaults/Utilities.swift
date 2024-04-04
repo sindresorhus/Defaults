@@ -366,6 +366,7 @@ final class TaskQueue {
 	}
 }
 
+// TODO: replace with Swift 6 native Atomics support.
 @propertyWrapper
 final class Atomic<Value> {
 	private let lock: Lock = .make()
