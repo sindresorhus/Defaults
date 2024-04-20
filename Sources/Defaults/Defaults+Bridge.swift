@@ -58,13 +58,6 @@ extension Defaults {
 	}
 }
 
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 9.0, visionOS 1.0, *)
-extension Defaults {
-	public struct ColorResolvedBridge: CodableBridge {
-		public typealias Value = Color.Resolved
-	}
-}
-
 extension Defaults {
 	public struct RawRepresentableBridge<Value: RawRepresentable>: Bridge {
 		public typealias Value = Value
