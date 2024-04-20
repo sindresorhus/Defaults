@@ -57,6 +57,7 @@ Add `https://github.com/sindresorhus/Defaults` in the [â€œSwift Package Managerâ
 - `NSColor` (macOS)
 - `UIColor` (iOS)
 - `Color` [^1] (SwiftUI)
+- `Color.Resolved` [^1] (SwiftUI)
 - `Codable`
 - `NSSecureCoding`
 - `Range`, `ClosedRange`
