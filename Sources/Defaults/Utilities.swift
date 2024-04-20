@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 #if DEBUG
 #if canImport(OSLog)
 import OSLog
@@ -231,6 +232,180 @@ extension Defaults.Serializable {
 		}
 
 		return toSerializable(next)
+	}
+}
+
+// swiftlint:disable:next final_class
+class Lock: DefaultsLockProtocol {
+	final class UnfairLock: Lock {
+		private let _lock: os_unfair_lock_t
+
+		override init() {
+			_lock = .allocate(capacity: 1)
+			_lock.initialize(to: os_unfair_lock())
+		}
+
+		override func lock() {
+			os_unfair_lock_lock(_lock)
+		}
+
+		override func unlock() {
+			os_unfair_lock_unlock(_lock)
+		}
+	}
+
+	@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, visionOS 1.0, *)
+	final class AllocatedUnfairLock: Lock {
+		private let _lock = OSAllocatedUnfairLock()
+
+		override init() {
+			super.init()
+		}
+
+		override func lock() {
+			_lock.lock()
+		}
+
+		override func unlock() {
+			_lock.unlock()
+		}
+	}
+
+	static func make() -> Self {
+		guard #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, visionOS 1.0, *) else {
+			return UnfairLock() as! Self
+		}
+
+		return AllocatedUnfairLock() as! Self
+	}
+
+	private init() {}
+	func lock() {}
+	func unlock() {}
+}
+
+/**
+A queue for executing asynchronous tasks in order.
+
+```swift
+actor Counter {
+	var count = 0
+
+	func increase() {
+		count += 1
+	}
+}
+let counter = Counter()
+let queue = TaskQueue(priority: .background)
+queue.async {
+	print(await counter.count) //=> 0
+}
+queue.async {
+	await counter.increase()
+}
+queue.async {
+	print(await counter.count) //=> 1
+}
+```
+*/
+final class TaskQueue {
+	typealias AsyncTask = @Sendable () async -> Void
+	private var queueContinuation: AsyncStream<AsyncTask>.Continuation?
+	private let lock: Lock = .make()
+
+	init(priority: TaskPriority? = nil) {
+        let (taskStream, queueContinuation) = AsyncStream<AsyncTask>.makeStream()
+		self.queueContinuation = queueContinuation
+
+		Task.detached(priority: priority) {
+			for await task in taskStream {
+				await task()
+			}
+		}
+	}
+
+	deinit {
+		queueContinuation?.finish()
+	}
+
+	/**
+	Queue a new asynchronous task.
+	*/
+	func async(_ task: @escaping AsyncTask) {
+		lock.with {
+			queueContinuation?.yield(task)
+		}
+	}
+
+	/**
+	Wait until previous tasks finish.
+
+	```swift
+	Task {
+		queue.async {
+			print("1")
+		}
+		queue.async {
+			print("2")
+		}
+		await queue.flush()
+		//=> 1
+		//=> 2
+	}
+	```
+	*/
+	func flush() async {
+		await withCheckedContinuation { continuation in
+			lock.with {
+				queueContinuation?.yield {
+					continuation.resume()
+				}
+				return
+			}
+		}
+	}
+}
+
+// TODO: replace with Swift 6 native Atomics support.
+@propertyWrapper
+final class Atomic<Value> {
+	private let lock: Lock = .make()
+	private var _value: Value
+
+	var wrappedValue: Value {
+		get {
+			withValue { $0 }
+		}
+		set {
+			swap(newValue)
+		}
+	}
+
+	init(value: Value) {
+		self._value = value
+	}
+
+	@discardableResult
+	func withValue<R>(_ action: (Value) -> R) -> R {
+		lock.lock()
+		defer { lock.unlock() }
+		return action(_value)
+	}
+
+	@discardableResult
+	func modify<R>(_ action: (inout Value) -> R) -> R {
+		lock.lock()
+		defer { lock.unlock() }
+		return action(&_value)
+	}
+
+	@discardableResult
+	func swap(_ newValue: Value) -> Value {
+		modify { (value: inout Value) in
+			let oldValue = value
+			value = newValue
+			return oldValue
+		}
 	}
 }
 

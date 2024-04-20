@@ -34,7 +34,7 @@ extension Defaults {
 
 		func observe() {
 			// We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
-			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
+			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, visionOS 1.0, *) {
 				task?.cancel()
 
 				// The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.

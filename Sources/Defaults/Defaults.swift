@@ -103,6 +103,7 @@ extension Defaults {
 		Create a key.
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		- Parameter iCloud: Automatically synchronize the value with ``Defaults/Defaults/iCloud``.
 
 		The `default` parameter should not be used if the `Value` type is an optional.
 		*/
@@ -110,8 +111,15 @@ extension Defaults {
 		public init(
 			_ name: String,
 			default defaultValue: Value,
-			suite: UserDefaults = .standard
+			suite: UserDefaults = .standard,
+			iCloud: Bool = false
 		) {
+			defer {
+				if iCloud {
+					Defaults.iCloud.add(self)
+				}
+			}
+
 			self.defaultValueGetter = { defaultValue }
 
 			super.init(name: name, suite: suite)
@@ -140,6 +148,7 @@ extension Defaults {
 		```
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		- Parameter iCloud: Automatically synchronize the value with ``Defaults/Defaults/iCloud``.
 
 		- Note: This initializer will not set the default value in the actual `UserDefaults`. This should not matter much though. It's only really useful if you use legacy KVO bindings.
 		*/
@@ -147,11 +156,16 @@ extension Defaults {
 		public init(
 			_ name: String,
 			suite: UserDefaults = .standard,
-			default defaultValueGetter: @escaping () -> Value
+			default defaultValueGetter: @escaping () -> Value,
+			iCloud: Bool = false
 		) {
 			self.defaultValueGetter = defaultValueGetter
 
 			super.init(name: name, suite: suite)
+
+			if iCloud {
+				Defaults.iCloud.add(self)
+			}
 		}
 	}
 }
@@ -162,13 +176,14 @@ extension Defaults.Key {
 	Create a key with an optional value.
 
 	- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+	- Parameter iCloud: Automatically synchronize the value with ``Defaults/Defaults/iCloud``.
 	*/
-	@_transparent
 	public convenience init<T>(
 		_ name: String,
-		suite: UserDefaults = .standard
+		suite: UserDefaults = .standard,
+		iCloud: Bool = false
 	) where Value == T? {
-		self.init(name, default: nil, suite: suite)
+		self.init(name, default: nil, suite: suite, iCloud: iCloud)
 	}
 }
 

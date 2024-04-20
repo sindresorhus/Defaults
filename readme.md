@@ -17,6 +17,7 @@ It's used in production by [all my apps](https://sindresorhus.com/apps) (1 milli
 - **Observation:** Observe changes to keys.
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Customizable:** You can serialize and deserialize your own type in your own way.
+- **iCloud support:** Automatically synchronize data between devices.
 
 ## Benefits over `@AppStorage`
 

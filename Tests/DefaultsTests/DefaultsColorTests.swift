@@ -2,7 +2,7 @@ import SwiftUI
 import Defaults
 import XCTest
 
-@available(iOS 15, tvOS 15, watchOS 8, *)
+@available(iOS 15, tvOS 15, watchOS 8, visionOS 1.0, *)
 final class DefaultsColorTests: XCTestCase {
 	override func setUp() {
 		super.setUp()

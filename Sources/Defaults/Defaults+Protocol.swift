@@ -52,3 +52,27 @@ public protocol _DefaultsRange {
 
 	init(uncheckedBounds: (lower: Bound, upper: Bound))
 }
+
+/**
+Essential properties for synchronizing a key value store.
+*/
+protocol DefaultsKeyValueStore {
+	func object(forKey aKey: String) -> Any?
+
+	func set(_ anObject: Any?, forKey aKey: String)
+
+	func removeObject(forKey aKey: String)
+
+	@discardableResult
+	func synchronize() -> Bool
+}
+
+protocol DefaultsLockProtocol {
+	static func make() -> Self
+
+	func lock()
+
+	func unlock()
+
+	func with<R>(_ body: @Sendable () throws -> R) rethrows -> R where R: Sendable
+}
