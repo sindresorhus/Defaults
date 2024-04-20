@@ -168,6 +168,12 @@ extension NSColor: Defaults.Serializable {}
 extension UIColor: Defaults.Serializable {}
 #endif
 
+#if os(macOS)
+extension NSFontDescriptor: Defaults.Serializable {}
+#else
+extension UIFontDescriptor: Defaults.Serializable {}
+#endif
+
 extension NSUbiquitousKeyValueStore: DefaultsKeyValueStore {}
 extension UserDefaults: DefaultsKeyValueStore {}
 

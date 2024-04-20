@@ -54,13 +54,16 @@ Add `https://github.com/sindresorhus/Defaults` in the [â€œSwift Package Managerâ
 - `Data`
 - `URL`
 - `UUID`
-- `NSColor` (macOS)
-- `UIColor` (iOS)
-- `Color` [^1] (SwiftUI)
-- `Color.Resolved` [^1] (SwiftUI)
+- `Range`
+- `ClosedRange`
 - `Codable`
 - `NSSecureCoding`
-- `Range`, `ClosedRange`
+- `Color` [^1] (SwiftUI)
+- `Color.Resolved` [^1] (SwiftUI)
+- `NSColor`
+- `UIColor`
+- `NSFontDescriptor`
+- `UIFontDescriptor`
 
 Defaults also support the above types wrapped in `Array`, `Set`, `Dictionary`, `Range`, `ClosedRange`, and even wrapped in nested types. For example, `[[String: Set<[String: Int]>]]`.
 
