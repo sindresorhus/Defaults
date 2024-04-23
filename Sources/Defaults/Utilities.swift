@@ -1,9 +1,7 @@
 import Foundation
 import Combine
-#if DEBUG
-#if canImport(OSLog)
+#if DEBUG && canImport(OSLog)
 import OSLog
-#endif
 #endif
 
 

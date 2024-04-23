@@ -239,7 +239,7 @@ extension Defaults {
 		initial: Bool = true
 	) -> AsyncStream<Value> { // TODO: Make this `some AsyncSequence<Value>` when Swift 6 is out.
 		.init { continuation in
-			let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
+			let observation = UserDefaultsKeyObservation2(object: key.suite, key: key.name) { change in
 				// TODO: Use the `.deserialize` method directly.
 				let value = KeyChange(change: change, defaultValue: key.defaultValue).newValue
 				continuation.yield(value)
@@ -275,7 +275,7 @@ extension Defaults {
 	) -> AsyncStream<Void> { // TODO: Make this `some AsyncSequence<Value>` when Swift 6 is out.
 		.init { continuation in
 			let observations = keys.indexed().map { index, key in
-				let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { _ in
+				let observation = UserDefaultsKeyObservation2(object: key.suite, key: key.name) { _ in
 					continuation.yield()
 				}
 

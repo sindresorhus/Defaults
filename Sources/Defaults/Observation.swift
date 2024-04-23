@@ -180,7 +180,7 @@ extension Defaults {
 			}
 
 			guard
-				selfObject == object as? NSObject,
+				selfObject == (object as? NSObject),
 				let change
 			else {
 				return
@@ -191,6 +191,69 @@ extension Defaults {
 			guard !updatingValuesFlag else {
 				return
 			}
+
+			callback(BaseChange(change: change))
+		}
+	}
+
+	// Same as the above, but without the lifetime utilities, which slows down invalidation and we don't need them for `.updates()`.
+	final class UserDefaultsKeyObservation2: NSObject {
+		typealias Callback = (BaseChange) -> Void
+
+		private weak var object: UserDefaults?
+		private let key: String
+		private let callback: Callback
+		private var isObserving = false
+
+		init(object: UserDefaults, key: String, callback: @escaping Callback) {
+			self.object = object
+			self.key = key
+			self.callback = callback
+		}
+
+		deinit {
+			invalidate()
+		}
+
+		func start(options: ObservationOptions) {
+			object?.addObserver(self, forKeyPath: key, options: options.toNSKeyValueObservingOptions, context: nil)
+			isObserving = true
+		}
+
+		func invalidate() {
+			if isObserving {
+				object?.removeObserver(self, forKeyPath: key, context: nil)
+				isObserving = false
+			}
+
+			object = nil
+		}
+
+		// swiftlint:disable:next block_based_kvo
+		override func observeValue(
+			forKeyPath keyPath: String?,
+			of object: Any?,
+			change: [NSKeyValueChangeKey: Any]?, // swiftlint:disable:this discouraged_optional_collection
+			context: UnsafeMutableRawPointer?
+		) {
+			guard let selfObject = self.object else {
+				invalidate()
+				return
+			}
+
+			guard
+				selfObject == (object as? NSObject),
+				let change
+			else {
+				return
+			}
+
+			let key = preventPropagationThreadDictionaryKey
+			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
+			guard !updatingValuesFlag else {
+				return
+			}
+
 			callback(BaseChange(change: change))
 		}
 	}
