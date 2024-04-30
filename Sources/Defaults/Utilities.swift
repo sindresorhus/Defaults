@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import os
 #if DEBUG && canImport(OSLog)
 import OSLog
 #endif
