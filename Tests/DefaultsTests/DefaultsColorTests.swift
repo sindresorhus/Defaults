@@ -23,7 +23,7 @@ final class DefaultsColorTests: XCTestCase {
 	}
 }
 
-@available(macOS 14, iOS 17, tvOS 17, watchOS 9, visionOS 1.0, *)
+@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 final class DefaultsColorResolvedTests: XCTestCase {
 	override func setUp() {
 		super.setUp()

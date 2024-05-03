@@ -145,7 +145,7 @@ extension Color: Defaults.Serializable {
 	public static let bridge = Defaults.ColorBridge()
 }
 
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 9.0, visionOS 1.0, *)
+@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 extension Color.Resolved: Defaults.Serializable {}
 
 extension Range: Defaults.RangeSerializable where Bound: Defaults.Serializable {
