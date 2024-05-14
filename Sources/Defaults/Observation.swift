@@ -287,11 +287,16 @@ extension Defaults {
 		}
 
 		func start(options: ObservationOptions) {
-			observations.forEach { $0.start(options: options) }
+			for observation in observations {
+				observation.start(options: options)
+			}
 		}
 
 		func invalidate() {
-			observations.forEach { $0.invalidate() }
+			for observation in observations {
+				observation.invalidate()
+			}
+
 			lifetimeAssociation?.cancel()
 		}
 
@@ -305,7 +310,7 @@ extension Defaults {
 		}
 
 		func remove(key: Defaults._AnyKey) {
-			guard let observation = observations.remove(DefaultsObservation(key: key, self.callback)) else {
+			guard let observation = observations.remove(DefaultsObservation(key: key, callback)) else {
 				return
 			}
 

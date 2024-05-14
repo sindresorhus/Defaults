@@ -209,9 +209,9 @@ extension Defaults.Key {
 
 extension Defaults.Key where Value: Equatable {
 	/**
-	Check whether the stored value is the default value.
+	Indicates whether the value is the same as the default value.
 	*/
-	public var isDefaultValue: Bool { self._isDefaultValue }
+	public var isDefaultValue: Bool { suite[self] == defaultValue }
 }
 
 extension Defaults {

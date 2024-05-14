@@ -6,7 +6,7 @@ Store key-value pairs persistently across launches of your app.
 
 It uses `UserDefaults` underneath but exposes a type-safe facade with lots of nice conveniences.
 
-It's used in production by [all my apps](https://sindresorhus.com/apps) (1 million+ users).
+It's used in production by [all my apps](https://sindresorhus.com/apps) (4 million+ users).
 
 ## Highlights
 

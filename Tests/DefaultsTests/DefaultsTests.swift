@@ -771,7 +771,7 @@ final class DefaultsTests: XCTestCase {
 
 		async let waiter = Defaults.updates(key, initial: false).first { $0 }
 
-		try? await Task.sleep(seconds: 0.1)
+		try? await Task.sleep(for: .seconds(0.1))
 
 		Defaults[key] = true
 
@@ -798,7 +798,7 @@ final class DefaultsTests: XCTestCase {
 			}
 		}()
 
-		try? await Task.sleep(seconds: 0.1)
+		try? await Task.sleep(for: .seconds(0.1))
 
 		Defaults[key1] = true
 		Defaults[key2] = true
@@ -820,10 +820,4 @@ actor Counter {
 	}
 }
 
-// TODO: Remove when testing on macOS 13.
-extension Task<Never, Never> {
-	static func sleep(seconds: TimeInterval) async throws {
-		try await sleep(nanoseconds: UInt64(seconds * Double(NSEC_PER_SEC)))
-	}
-}
 // swiftlint:enable discouraged_optional_boolean

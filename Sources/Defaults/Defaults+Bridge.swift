@@ -428,7 +428,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct AnyBridge: Defaults.Bridge, Sendable {
+	public struct AnyBridge: Bridge, Sendable {
 		public typealias Value = Defaults.AnySerializable
 		public typealias Serializable = Any
 
