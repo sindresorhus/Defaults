@@ -32,7 +32,7 @@ extension Defaults {
 			task?.cancel()
 		}
 
-		func observe() {
+		private func observe() {
 			// We only use this on the latest OSes (as of adding this) since the backdeploy library has a lot of bugs.
 			if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, visionOS 1.0, *) {
 				task?.cancel()
@@ -44,7 +44,7 @@ extension Defaults {
 							return
 						}
 
-						self.objectWillChange.send()
+						objectWillChange.send()
 					}
 				}
 			} else {
@@ -221,8 +221,22 @@ extension Defaults {
 }
 
 extension Defaults.Toggle<Text> {
-	public init(_ title: some StringProtocol, key: Defaults.Key<Bool>) {
+	public init(
+		_ title: some StringProtocol,
+		key: Defaults.Key<Bool>
+	) {
 		self.label = { Text(title) }
+		self.observable = .init(key)
+	}
+}
+
+extension Defaults.Toggle<Label<Text, Image>> {
+	public init(
+		_ title: some StringProtocol,
+		systemImage: String,
+		key: Defaults.Key<Bool>
+	) {
+		self.label = { Label(title, systemImage: systemImage) }
 		self.observable = .init(key)
 	}
 }
