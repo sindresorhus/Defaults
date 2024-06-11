@@ -126,7 +126,7 @@ extension Defaults {
 
 			super.init(name: name, suite: suite)
 
-			if (defaultValue as? _DefaultsOptionalProtocol)?._defaults_isNil == true {
+			guard !isNil(defaultValue) else {
 				return
 			}
 

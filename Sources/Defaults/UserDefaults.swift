@@ -10,7 +10,7 @@ extension UserDefaults {
 	}
 
 	 func _set<Value: Defaults.Serializable>(_ key: String, to value: Value) {
-		if (value as? _DefaultsOptionalProtocol)?._defaults_isNil == true {
+		guard !isNil(value) else {
 			removeObject(forKey: key)
 			return
 		}

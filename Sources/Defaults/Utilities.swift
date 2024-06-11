@@ -458,3 +458,14 @@ func runtimeWarn(
 #endif
 #endif
 }
+
+
+@usableFromInline
+func isNil(_ value: Any) -> Bool {
+	switch value {
+	case Optional<Any>.none:
+		return true
+	default:
+		return false
+	}
+}
