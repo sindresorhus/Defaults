@@ -209,7 +209,7 @@ Manages `Defaults.Keys` between the locale and remote storage.
 Depending on the storage, `Defaults.Keys` will be represented in different forms due to storage limitations of the remote storage. The remote storage imposes a limitation of 1024 keys. Therefore, we combine the recorded timestamp and data into a single key. Unlike remote storage, local storage does not have this limitation. Therefore, we can create a separate key (with `defaultsSyncKey` suffix) for the timestamp record.
 */
 final class iCloudSynchronizer {
-	init(remoteStorage: DefaultsKeyValueStore) {
+	init(remoteStorage: any DefaultsKeyValueStore) {
 		self.remoteStorage = remoteStorage
 		registerNotifications()
 		remoteStorage.synchronize()
@@ -231,7 +231,7 @@ final class iCloudSynchronizer {
 	/**
 	A remote key value storage.
 	*/
-	private let remoteStorage: DefaultsKeyValueStore
+	private let remoteStorage: any DefaultsKeyValueStore
 
 	/**
 	A FIFO queue used to serialize synchronization on keys.
