@@ -85,7 +85,7 @@ extension Defaults {
 	}
 
 	private static var preventPropagationThreadDictionaryKey: String {
-		"\(type(of: Observation.self))_threadUpdatingValuesFlag"
+		"\(type(of: (any Observation).self))_threadUpdatingValuesFlag"
 	}
 
 	/**
@@ -460,7 +460,7 @@ extension Defaults {
 		_ key: Key<Value>,
 		options: ObservationOptions = [.initial],
 		handler: @escaping (KeyChange<Value>) -> Void
-	) -> Observation {
+	) -> some Observation {
 		let observation = UserDefaultsKeyObservation(object: key.suite, key: key.name) { change in
 			handler(
 				KeyChange(change: change, defaultValue: key.defaultValue)
@@ -490,7 +490,7 @@ extension Defaults {
 		keys: _AnyKey...,
 		options: ObservationOptions = [.initial],
 		handler: @escaping () -> Void
-	) -> Observation {
+	) -> some Observation {
 		let pairs = keys.map {
 			(suite: $0.suite, key: $0.name)
 		}
