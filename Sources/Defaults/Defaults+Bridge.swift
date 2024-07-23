@@ -53,7 +53,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct URLBridge: CodableBridge {
+	public struct URLBridge: CodableBridge, Sendable {
 		public typealias Value = URL
 	}
 }
@@ -296,7 +296,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct UUIDBridge: Bridge {
+	public struct UUIDBridge: Bridge, Sendable {
 		public typealias Value = UUID
 		public typealias Serializable = String
 
@@ -373,7 +373,7 @@ extension Defaults {
 
 	It is unsafe to convert `SwiftUI.Color` to `UIColor` and use `UIColor.bridge` to serialize it, because `UIColor` does not hold a color space, but `Swift.Color` does (which means color space might get lost in the conversion). The bridge will always try to preserve the color space whenever `Color#cgColor` exists. Only when `Color#cgColor` is `nil`, will it use `UIColor.bridge` to do the serialization and deserialization.
 	*/
-	public struct ColorBridge: Bridge {
+	public struct ColorBridge: Bridge, Sendable {
 		public typealias Value = Color
 		public typealias Serializable = Any
 
@@ -428,7 +428,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public struct AnyBridge: Defaults.Bridge {
+	public struct AnyBridge: Defaults.Bridge, Sendable {
 		public typealias Value = Defaults.AnySerializable
 		public typealias Serializable = Any
 

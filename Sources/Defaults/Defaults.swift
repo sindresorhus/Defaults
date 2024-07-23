@@ -89,7 +89,7 @@ extension Defaults {
 
 	- Important: The `UserDefaults` name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 	*/
-	public final class Key<Value: Serializable>: _AnyKey {
+	public final class Key<Value: Serializable>: _AnyKey, @unchecked Sendable {
 		/**
 		It will be executed in these situations:
 
