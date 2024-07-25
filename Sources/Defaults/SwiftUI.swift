@@ -75,6 +75,7 @@ Access stored values from SwiftUI.
 
 This is similar to `@AppStorage` but it accepts a ``Defaults/Key`` and many more types.
 */
+@MainActor
 @propertyWrapper
 public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	public typealias Publisher = AnyPublisher<Defaults.KeyChange<Value>, Never>
