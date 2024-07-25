@@ -29,6 +29,7 @@ struct ContentView: View {
 	}
 }
 
+@MainActor
 final class DefaultsSwiftUITests: XCTestCase {
 	override func setUp() {
 		super.setUp()
