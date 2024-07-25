@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 
 extension UserDefaults {
 	func _get<Value: Defaults.Serializable>(_ key: String) -> Value? {

@@ -1,4 +1,5 @@
-import SwiftUI
+public import Foundation
+public import SwiftUI
 #if os(macOS)
 import AppKit
 #else
