@@ -120,10 +120,10 @@ extension Defaults {
 	}
 
 	final class SuiteKeyPair: Hashable {
-		weak var suite: NSObject?
+		weak var suite: UserDefaults?
 		let key: String
 
-		init(suite: NSObject, key: String) {
+		init(suite: UserDefaults, key: String) {
 			self.suite = suite
 			self.key = key
 		}
@@ -147,10 +147,11 @@ extension Defaults {
 		typealias Callback = (SuiteKeyPair, BaseChange) -> Void
 
 		static var observationContext = 0
-		private weak var suite: NSObject?
+		private weak var suite: UserDefaults?
 		private let name: String
 		private let callback: Callback
 		private var isObserving = false
+		private let lock: Lock = .make()
 
 		init(object: UserDefaults, key: String, _ callback: @escaping Callback) {
 			self.suite = object
@@ -169,20 +170,24 @@ extension Defaults {
 		}
 
 		func start(options: ObservationOptions) {
-			guard !isObserving else {
-				return
+			lock.with {
+				guard !isObserving else {
+					return
+				}
+				suite?.addObserver(self, forKeyPath: name, options: options.toNSKeyValueObservingOptions, context: &Self.observationContext)
+				isObserving = true
 			}
-			suite?.addObserver(self, forKeyPath: name, options: options.toNSKeyValueObservingOptions, context: &Self.observationContext)
-			isObserving = true
 		}
 
 		func invalidate() {
-			guard isObserving else {
-				return
+			lock.with {
+				guard isObserving else {
+					return
+				}
+				suite?.removeObserver(self, forKeyPath: name)
+				isObserving = false
+				suite = nil
 			}
-			suite?.removeObserver(self, forKeyPath: name)
-			isObserving = false
-			suite = nil
 		}
 
 		// swiftlint:disable:next block_based_kvo
@@ -205,7 +210,7 @@ extension Defaults {
 			}
 
 			guard
-				selfSuite == (object as? NSObject),
+				selfSuite == (object as? UserDefaults),
 				let change
 			else {
 				return
@@ -376,9 +381,11 @@ extension Defaults {
 		let compositeObservation = CompositeDefaultsObservation { _, _ in
 			handler()
 		}
-		keys.forEach {
-			compositeObservation.add(key: $0)
+
+		for key in keys {
+			compositeObservation.add(key: key)
 		}
+
 		compositeObservation.start(options: options)
 
 		return compositeObservation
