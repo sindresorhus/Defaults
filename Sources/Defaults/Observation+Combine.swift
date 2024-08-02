@@ -7,16 +7,16 @@ extension Defaults {
 	*/
 	final class DefaultsSubscription<SubscriberType: Subscriber>: Subscription where SubscriberType.Input == BaseChange {
 		private var subscriber: SubscriberType?
-		private var observation: UserDefaultsKeyObservation?
+		private var observation: DefaultsObservationWithLifeTime?
 		private let options: ObservationOptions
 
 		init(subscriber: SubscriberType, suite: UserDefaults, key: String, options: ObservationOptions) {
 			self.subscriber = subscriber
 			self.options = options
-			self.observation = UserDefaultsKeyObservation(
+			self.observation = DefaultsObservationWithLifeTime(
 				object: suite,
 				key: key,
-				callback: observationCallback(_:)
+				observationCallback
 			)
 		}
 
@@ -33,7 +33,7 @@ extension Defaults {
 			observation?.start(options: options)
 		}
 
-		private func observationCallback(_ change: BaseChange) {
+		private func observationCallback(_: SuiteKeyPair, change: BaseChange) {
 			_ = subscriber?.receive(change)
 		}
 	}

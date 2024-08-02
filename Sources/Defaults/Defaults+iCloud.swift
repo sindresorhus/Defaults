@@ -249,11 +249,11 @@ final class iCloudSynchronizer {
 	@Atomic(value: []) private var remoteSyncingKeys: Set<Defaults.Keys>
 
 	// TODO: Replace it with async stream when Swift supports custom executors.
-	private lazy var localKeysMonitor: Defaults.CompositeUserDefaultsAnyKeyObservation = .init { [weak self] observable in
+	private lazy var localKeysMonitor: Defaults.CompositeDefaultsObservation = .init { [weak self] pair, _ in
 		guard
 			let self,
-			let suite = observable.suite,
-			let key = keys.first(where: { $0.name == observable.key && $0.suite == suite }),
+			let suite = pair.suite,
+			let key = keys.first(where: { $0.name == pair.key && $0.suite == suite }),
 			// Prevent triggering local observation when syncing from remote.
 			!remoteSyncingKeys.contains(key)
 		else {
@@ -273,7 +273,7 @@ final class iCloudSynchronizer {
 		self.keys.formUnion(keys)
 		syncWithoutWaiting(keys)
 		for key in keys {
-			localKeysMonitor.addObserver(key)
+			localKeysMonitor.add(key: key)
 		}
 	}
 
@@ -283,7 +283,7 @@ final class iCloudSynchronizer {
 	func remove(_ keys: [Defaults.Keys]) {
 		self.keys.subtract(keys)
 		for key in keys {
-			localKeysMonitor.removeObserver(key)
+			localKeysMonitor.remove(key: key)
 		}
 	}
 
