@@ -88,14 +88,12 @@ final class DefaultsICloudTests: XCTestCase {
 	}
 
 	func testICloudInitialize() async {
-		print(Defaults.iCloud.keys)
 		let name = Defaults.Key<String>("testICloudInitialize_name", default: "0", iCloud: true)
 		let quality = Defaults.Key<Double>("testICloudInitialize_quality", default: 0.0, iCloud: true)
 
-		print(Defaults.iCloud.keys)
 		await Defaults.iCloud.waitForSyncCompletion()
-		XCTAssertEqual(mockStorage.data(forKey: name.name), "0")
-		XCTAssertEqual(mockStorage.data(forKey: quality.name), 0.0)
+		XCTAssertNil(mockStorage.data(forKey: name.name))
+		XCTAssertNil(mockStorage.data(forKey: quality.name))
 		let name_expected = ["1", "2", "3", "4", "5", "6", "7"]
 		let quality_expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
 
@@ -251,8 +249,9 @@ final class DefaultsICloudTests: XCTestCase {
 
 	func testAddFromDetached() async {
 		let name = Defaults.Key<String>("testInitAddFromDetached_name", default: "0")
+		let quantity = Defaults.Key<Bool>("testInitAddFromDetached_quantity", default: false)
 		let task = Task.detached {
-			Defaults.iCloud.add(name)
+			Defaults.iCloud.add(name, quantity)
 			Defaults.iCloud.syncWithoutWaiting()
 			await Defaults.iCloud.waitForSyncCompletion()
 		}
@@ -268,7 +267,7 @@ final class DefaultsICloudTests: XCTestCase {
 			let name = Defaults.Key<String>("testICloudInitializeFromDetached_name", default: "0", iCloud: true)
 
 			await Defaults.iCloud.waitForSyncCompletion()
-			XCTAssertEqual(mockStorage.data(forKey: name.name), "0")
+			XCTAssertNil(mockStorage.data(forKey: name.name))
 		}
 		await task.value
 	}

@@ -165,6 +165,16 @@ extension Collection {
 	}
 }
 
+extension Equatable {
+	func isEqual(_ rhs: any Equatable) -> Bool {
+		if let rhs = rhs as? Self, rhs == self {
+			return true
+		}
+
+		return false
+	}
+}
+
 extension Defaults {
 	@usableFromInline
 	static func isValidKeyPath(name: String) -> Bool {
