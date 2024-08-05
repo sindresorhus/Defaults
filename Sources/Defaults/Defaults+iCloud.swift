@@ -39,7 +39,7 @@ extension Defaults {
 
 	## Dynamically Toggle Syncing
 
-	You can also toggle the syncing behavior dynamically using the ``Defaults/iCloud/add(_:)-5gffb`` and ``Defaults/iCloud/remove(_:)-1b8w5`` methods.
+	You can also toggle the syncing behavior dynamically using the ``Defaults/iCloud/add(_:)`` and ``Defaults/iCloud/remove(_:)-1b8w5`` methods.
 
 	```swift
 	import Defaults
@@ -82,15 +82,8 @@ extension Defaults {
 		/**
 		Add the keys to be automatically synced.
 		*/
-		public static func add(_ keys: Defaults.Keys...) {
-			synchronizer.add(keys)
-		}
-
-		/**
-		Add the keys to be automatically synced.
-		*/
-		public static func add(_ keys: [Defaults.Keys]) {
-			synchronizer.add(keys)
+		public static func add<each Value: Defaults.Serializable>(_ keys: repeat Defaults.Key<each Value>) {
+			repeat synchronizer.add(each keys)
 		}
 
 		/**
@@ -269,11 +262,20 @@ final class iCloudSynchronizer {
 	/**
 	Add new key and start to observe its changes.
 	*/
-	func add(_ keys: [Defaults.Keys]) {
-		self.keys.formUnion(keys)
-		syncWithoutWaiting(keys)
-		for key in keys {
-			localKeysMonitor.add(key: key)
+	func add<Value: Defaults.Serializable>(_ key: Defaults.Key<Value>) {
+		let (isInserted, _) = self.keys.insert(key)
+		guard isInserted else {
+			return
+		}
+		localKeysMonitor.add(key: key)
+		// If the local value is the default value, only sync from remote, since all devices should already have the default value.
+		if key.isDefaultValue() {
+			guard case .remote = latestDataSource(forKey: key) else {
+				return
+			}
+			syncWithoutWaiting([key], .remote)
+		} else {
+			syncWithoutWaiting([key])
 		}
 	}
 
