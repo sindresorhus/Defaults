@@ -267,12 +267,15 @@ final class iCloudSynchronizer {
 		guard isInserted else {
 			return
 		}
+
 		localKeysMonitor.add(key: key)
+
 		// If the local value is the default value, only sync from remote, since all devices should already have the default value.
 		if key.isDefaultValue() {
 			guard case .remote = latestDataSource(forKey: key) else {
 				return
 			}
+
 			syncWithoutWaiting([key], .remote)
 		} else {
 			syncWithoutWaiting([key])
