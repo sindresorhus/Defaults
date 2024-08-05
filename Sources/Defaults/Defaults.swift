@@ -1,5 +1,5 @@
 // MIT License © Sindre Sorhus
-import Foundation
+public import Foundation
 
 public enum Defaults {
 	/**

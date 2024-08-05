@@ -1,6 +1,6 @@
-import Foundation
+public import Foundation
 import Combine
-import os
+public import os
 #if DEBUG && canImport(OSLog)
 import OSLog
 #endif

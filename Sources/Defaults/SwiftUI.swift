@@ -1,5 +1,5 @@
-import SwiftUI
-import Combine
+public import SwiftUI
+public import Combine
 
 extension Defaults {
 	@MainActor
