@@ -177,6 +177,13 @@ final class DefaultsTests: XCTestCase {
 		Defaults.removeAll(suite: customSuite)
 	}
 
+	func testIsDefaultValue() {
+		let key = Defaults.Key<Bool>("isDefaultValue", default: false)
+		XCTAssert(key.isDefaultValue)
+		Defaults[key].toggle()
+		XCTAssert(!key.isDefaultValue)
+	}
+
 	func testObserveKeyCombine() {
 		let key = Defaults.Key<Bool>("observeKey", default: false)
 		let expect = expectation(description: "Observation closure being called")

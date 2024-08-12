@@ -187,6 +187,31 @@ extension Defaults.Key {
 	) where Value == T? {
 		self.init(name, default: nil, suite: suite, iCloud: iCloud)
 	}
+
+	/**
+	Check whether the stored value is the default value.
+
+	- Note: This is only for internal use because it would not work for non-equatable values.
+	*/
+	var _isDefaultValue: Bool {
+		let defaultValue = defaultValue
+		let value = suite[self]
+		guard
+			let defaultValue = defaultValue as? any Equatable,
+			let value = value as? any Equatable
+		else {
+			return false
+		}
+
+		return defaultValue.isEqual(value)
+	}
+}
+
+extension Defaults.Key where Value: Equatable {
+	/**
+	Check whether the stored value is the default value.
+	*/
+	public var isDefaultValue: Bool { self._isDefaultValue }
 }
 
 extension Defaults {
