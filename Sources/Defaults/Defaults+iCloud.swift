@@ -82,7 +82,8 @@ extension Defaults {
 		/**
 		Add the keys to be automatically synced.
 		*/
-		// TODO: support array of Defaults.Key after swift 6 Pack iteration
+		// TODO: Support array of Defaults.Key after Swift 6 pack iteration is supported.
+		// https://github.com/sindresorhus/Defaults/pull/185#discussion_r1704464183
 		public static func add<each Value: Defaults.Serializable>(_ keys: repeat Defaults.Key<each Value>) {
 			repeat synchronizer.add(each keys)
 		}
