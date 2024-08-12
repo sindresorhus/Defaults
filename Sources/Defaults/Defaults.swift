@@ -191,7 +191,7 @@ extension Defaults.Key {
 	/**
 	Check whether the stored value is the default value.
 
-	- Note: This is only for internal use cause wouldn't work for non-equatable values.
+	- Note: This is only for internal use because it would not work for non-equatable values.
 	*/
 	var _isDefaultValue: Bool {
 		let defaultValue = defaultValue
