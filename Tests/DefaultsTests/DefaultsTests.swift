@@ -179,9 +179,9 @@ final class DefaultsTests: XCTestCase {
 
 	func testIsDefaultValue() {
 		let key = Defaults.Key<Bool>("isDefaultValue", default: false)
-		XCTAssert(key.isDefaultValue())
+		XCTAssert(key.isDefaultValue)
 		Defaults[key].toggle()
-		XCTAssert(!key.isDefaultValue())
+		XCTAssert(!key.isDefaultValue)
 	}
 
 	func testObserveKeyCombine() {

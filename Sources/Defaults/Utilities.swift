@@ -167,11 +167,14 @@ extension Collection {
 
 extension Equatable {
 	func isEqual(_ rhs: any Equatable) -> Bool {
-		if let rhs = rhs as? Self, rhs == self {
-			return true
+		guard
+			let rhs = rhs as? Self,
+			rhs == self
+		else {
+			return false
 		}
 
-		return false
+		return true
 	}
 }
 

@@ -190,8 +190,10 @@ extension Defaults.Key {
 
 	/**
 	Check whether the stored value is the default value.
+
+	- Note: This is only for internal use cause wouldn't work for non-equatable values.
 	*/
-	public func isDefaultValue() -> Bool {
+	var _isDefaultValue: Bool {
 		let defaultValue = defaultValue
 		let value = suite[self]
 		guard
@@ -203,6 +205,13 @@ extension Defaults.Key {
 
 		return defaultValue.isEqual(value)
 	}
+}
+
+extension Defaults.Key where Value: Equatable {
+	/**
+	Check whether the stored value is the default value.
+	*/
+	public var isDefaultValue: Bool { self._isDefaultValue }
 }
 
 extension Defaults {

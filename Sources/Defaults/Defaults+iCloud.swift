@@ -82,6 +82,7 @@ extension Defaults {
 		/**
 		Add the keys to be automatically synced.
 		*/
+		// TODO: support array of Defaults.Key after swift 6 Pack iteration
 		public static func add<each Value: Defaults.Serializable>(_ keys: repeat Defaults.Key<each Value>) {
 			repeat synchronizer.add(each keys)
 		}
@@ -267,12 +268,15 @@ final class iCloudSynchronizer {
 		guard isInserted else {
 			return
 		}
+
 		localKeysMonitor.add(key: key)
+
 		// If the local value is the default value, only sync from remote, since all devices should already have the default value.
-		if key.isDefaultValue() {
+		if key._isDefaultValue {
 			guard case .remote = latestDataSource(forKey: key) else {
 				return
 			}
+
 			syncWithoutWaiting([key], .remote)
 		} else {
 			syncWithoutWaiting([key])
