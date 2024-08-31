@@ -274,3 +274,35 @@ private struct ViewStorage<Value>: DynamicProperty {
 		self._valueBox = .init(wrappedValue: ValueBox(value()))
 	}
 }
+
+extension Default {
+	/**
+	A `Default` instance with a constant value.
+	
+	This is particularly useful for setting default values in SwiftUI previews.
+
+	- Parameter value: The constant value to be used as the default.
+	- Returns: A `Default<Value>` instance initialized with the specified constant value.
+
+	```swift
+	extension Defaults.Keys {
+		static let hasUnicorn = Key<Bool>("hasUnicorn", default: false)
+	}
+
+	struct ContentView: View {
+		@Default(.hasUnicorn) var hasUnicorn
+
+		var body: some View {
+			Toggle("Toggle", isOn: $hasUnicorn)
+		}
+	}
+
+	#Preview {
+		ContentView(hasUnicorn: .constant(true))
+	}
+    ```
+	*/
+	public static func constant(_ value: Value) -> Default<Value> {
+		Default<Value>(.init("__constant_\(value)", default: value))
+	}
+}

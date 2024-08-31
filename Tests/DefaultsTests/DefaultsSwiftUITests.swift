@@ -59,4 +59,15 @@ final class DefaultsSwiftUITests: XCTestCase {
 		XCTAssertNotEqual(XColor(view.color), XColor(Color.black))
 		XCTAssertEqual(XColor(view.color), XColor(Color(.sRGB, red: 100, green: 100, blue: 100, opacity: 1)))
 	}
+
+	func testConstantValue() {
+		// Given: A `Defaults` key `hasUnicorn` with `false` as the default value.
+		XCTAssertFalse(Defaults[.hasUnicorn])
+
+		// When: A `ContentView` is created with a constant value set to `true`.
+		let view = ContentView(hasUnicorn: .constant(true))
+
+		// Then: The state value of the view should be `true`.
+		XCTAssertTrue(view.hasUnicorn)
+	}
 }

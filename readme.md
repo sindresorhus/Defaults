@@ -201,6 +201,10 @@ struct ContentView: View {
 		}
 	}
 }
+
+#Preview {
+	ContentView(hasUnicorn: .constant(true))
+}
 ```
 
 Note that it's `@Default`, not `@Defaults`.
