@@ -7,7 +7,7 @@ private let testKey = "testKey"
 private let defaultValue = "defaultValue"
 private let newValue = "newValue"
 
-private extension Defaults.Keys {
+extension Defaults.Keys {
 	static let test = Defaults.Key(testKey, default: defaultValue)
 }
 
