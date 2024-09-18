@@ -9,18 +9,18 @@ import XCTest
 @testable import DefaultsMacrosDeclarations
 
 let testMacros: [String: Macro.Type] = [
-	"ObservableDefaults": ObservableDefaultsMacro.self,
+	"Default": DefaultMacro.self,
 ]
 #endif
 
-final class ObservableDefaultsMacroTests: XCTestCase {
+final class DefaultMacroTests: XCTestCase {
 	func testExpansionWithMemberSyntax() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""
 			@Observable
 			class ObservableClass {
-				@ObservableDefaults(Defaults.Keys.name)
+				@Default(Defaults.Keys.name)
 				@ObservationIgnored
 				var name: String
 			}
@@ -57,7 +57,7 @@ final class ObservableDefaultsMacroTests: XCTestCase {
 			#"""
 			@Observable
 			class ObservableClass {
-				@ObservableDefaults(.name)
+				@Default(.name)
 				@ObservationIgnored
 				var name: String
 			}
@@ -94,7 +94,7 @@ final class ObservableDefaultsMacroTests: XCTestCase {
 			#"""
 			@Observable
 			class ObservableClass {
-				@ObservableDefaults(getName())
+				@Default(getName())
 				@ObservationIgnored
 				var name: String
 			}
@@ -131,7 +131,7 @@ final class ObservableDefaultsMacroTests: XCTestCase {
 			#"""
 			@Observable
 			class ObservableClass {
-				@ObservableDefaults(propertyName)
+				@Default(propertyName)
 				@ObservationIgnored
 				var name: String
 			}

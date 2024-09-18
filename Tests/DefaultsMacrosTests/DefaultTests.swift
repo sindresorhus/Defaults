@@ -12,7 +12,7 @@ extension Defaults.Keys {
 }
 
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
-final class ObservableDefaultsTests: XCTestCase {
+final class DefaultTests: XCTestCase {
 	override class func setUp() {
 		super.setUp()
 		Defaults[.test] = defaultValue
@@ -27,7 +27,7 @@ final class ObservableDefaultsTests: XCTestCase {
 
 	@Observable
 	final class TestModelWithMemberSyntax {
-		@ObservableDefaults(Defaults.Keys.test)
+		@Default(Defaults.Keys.test)
 		@ObservationIgnored
 		var testValue: String
 	}
@@ -47,7 +47,7 @@ final class ObservableDefaultsTests: XCTestCase {
 
 	@Observable
 	final class TestModelWithDotSyntax {
-		@ObservableDefaults(.test)
+		@Default(.test)
 		@ObservationIgnored
 		var testValue: String
 	}
@@ -71,7 +71,7 @@ final class ObservableDefaultsTests: XCTestCase {
 
 	@Observable
 	final class TestModelWithFunctionCall {
-		@ObservableDefaults(getKey())
+		@Default(getKey())
 		@ObservationIgnored
 		var testValue: String
 	}
@@ -93,7 +93,7 @@ final class ObservableDefaultsTests: XCTestCase {
 
 	@Observable
 	final class TestModelWithProperty {
-		@ObservableDefaults(key)
+		@Default(key)
 		@ObservationIgnored
 		var testValue: String
 	}
