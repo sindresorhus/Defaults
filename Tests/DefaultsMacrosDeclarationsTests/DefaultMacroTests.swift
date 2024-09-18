@@ -9,7 +9,7 @@ import XCTest
 @testable import DefaultsMacrosDeclarations
 
 let testMacros: [String: Macro.Type] = [
-	"Default": DefaultMacro.self,
+	"Default": DefaultMacro.self
 ]
 #endif
 
