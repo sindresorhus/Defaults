@@ -13,14 +13,14 @@ let testMacros: [String: Macro.Type] = [
 ]
 #endif
 
-final class ObservableDefaultsMacrosTests: XCTestCase {
-	func testObservableDefaultsWithKeyPath() throws {
+final class ObservableDefaultsMacroTests: XCTestCase {
+	func testExpansionWithMemberSyntax() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""
 			@Observable
 			class ObservableClass {
-				@ObservableDefaults(\.name)
+				@ObservableDefaults(Defaults.Keys.name)
 				@ObservationIgnored
 				var name: String
 			}
@@ -33,11 +33,11 @@ final class ObservableDefaultsMacrosTests: XCTestCase {
 				var name: String {
 					get {
 						access(keyPath: \.name)
-						return Defaults[\.name]
+						return Defaults[Defaults.Keys.name]
 					}
 					set {
 						withMutation(keyPath: \.name) {
-							Defaults[\.name] = newValue
+							Defaults[Defaults.Keys.name] = newValue
 						}
 					}
 				}
@@ -51,7 +51,44 @@ final class ObservableDefaultsMacrosTests: XCTestCase {
 		#endif
 	}
 
-	func testObservableDefaultsWithFunctionCall() throws {
+	func testExpansionWithDotSyntax() throws {
+		#if canImport(DefaultsMacrosDeclarations)
+		assertMacroExpansion(
+			#"""
+			@Observable
+			class ObservableClass {
+				@ObservableDefaults(.name)
+				@ObservationIgnored
+				var name: String
+			}
+			"""#,
+			expandedSource:
+			#"""
+			@Observable
+			class ObservableClass {
+				@ObservationIgnored
+				var name: String {
+					get {
+						access(keyPath: \.name)
+						return Defaults[.name]
+					}
+					set {
+						withMutation(keyPath: \.name) {
+							Defaults[.name] = newValue
+						}
+					}
+				}
+			}
+			"""#,
+			macros: testMacros,
+			indentationWidth: .tabs(1)
+		)
+		#else
+		throw XCTSkip("Macros are only supported when running tests for the host platform")
+		#endif
+	}
+
+	func testExpansionWithFunctionCall() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""
@@ -88,7 +125,7 @@ final class ObservableDefaultsMacrosTests: XCTestCase {
 		#endif
 	}
 
-	func testObservableDefaultsWithProperty() throws {
+	func testExpansionWithProperty() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""

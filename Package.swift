@@ -60,12 +60,19 @@ let package = Package(
 //			]
 		),
 		.testTarget(
-			name: "DefaultsMacrosTests",
+			name: "DefaultsMacrosDeclarationsTests",
 			dependencies: [
 				"DefaultsMacros",
 				"DefaultsMacrosDeclarations",
 				.product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
 				.product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+			]
+		),
+		.testTarget(
+			name: "DefaultsMacrosTests",
+			dependencies: [
+				"Defaults",
+				"DefaultsMacros",
 			]
 		)
 	]
