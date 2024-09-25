@@ -179,11 +179,13 @@ extension UserDefaults: DefaultsKeyValueStore {}
 
 extension DefaultsLockProtocol {
 	@discardableResult
-	func with<R>(_ body: @Sendable () throws -> R) rethrows -> R where R: Sendable {
+	func with<R, E>(_ body: @Sendable () throws(E) -> R) throws(E) -> R where R: Sendable {
 		lock()
+
 		defer {
-			self.unlock()
+			unlock()
 		}
+
 		return try body()
 	}
 }

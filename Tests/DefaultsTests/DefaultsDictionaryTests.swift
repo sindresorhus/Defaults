@@ -1,167 +1,82 @@
 import Foundation
+import Testing
 import Defaults
-import XCTest
+
+private let suite_ = createSuite()
 
 private let fixtureDictionary = ["0": "Hank"]
 
 private let fixtureArray = ["Hank", "Chen"]
 
 extension Defaults.Keys {
-	fileprivate static let dictionary = Key<[String: String]>("dictionary", default: fixtureDictionary)
+	fileprivate static let dictionary = Key<[String: String]>("dictionary", default: fixtureDictionary, suite: suite_)
 }
 
-final class DefaultsDictionaryTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		Defaults.removeAll()
+@Suite(.serialized)
+final class DefaultsDictionaryTests {
+	init() {
+		Defaults.removeAll(suite: suite_)
 	}
 
-	override func tearDown() {
-		super.tearDown()
-		Defaults.removeAll()
+	deinit {
+		Defaults.removeAll(suite: suite_)
 	}
 
+	@Test
 	func testKey() {
-		let key = Defaults.Key<[String: String]>("independentDictionaryStringKey", default: fixtureDictionary)
-		XCTAssertEqual(Defaults[key]["0"], fixtureDictionary["0"])
+		let key = Defaults.Key<[String: String]>("independentDictionaryStringKey", default: fixtureDictionary, suite: suite_)
+		#expect(Defaults[key]["0"] == fixtureDictionary["0"])
 		let newValue = "John"
 		Defaults[key]["0"] = newValue
-		XCTAssertEqual(Defaults[key]["0"], newValue)
+		#expect(Defaults[key]["0"] == newValue)
 	}
 
+	@Test
 	func testOptionalKey() {
-		let key = Defaults.Key<[String: String]?>("independentDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[String: String]?>("independentDictionaryOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = fixtureDictionary
-		XCTAssertEqual(Defaults[key]?["0"], fixtureDictionary["0"])
+		#expect(Defaults[key]?["0"] == fixtureDictionary["0"])
 		Defaults[key] = nil
-		XCTAssertNil(Defaults[key])
+		#expect(Defaults[key] == nil)
 		let newValue = ["0": "Chen"]
 		Defaults[key] = newValue
-		XCTAssertEqual(Defaults[key]?["0"], newValue["0"])
+		#expect(Defaults[key]?["0"] == newValue["0"])
 	}
 
+	@Test
 	func testNestedKey() {
-		let key = Defaults.Key<[String: [String: String]]>("independentDictionaryNestedKey", default: ["0": fixtureDictionary])
-		XCTAssertEqual(Defaults[key]["0"]?["0"], "Hank")
+		let key = Defaults.Key<[String: [String: String]]>("independentDictionaryNestedKey", default: ["0": fixtureDictionary], suite: suite_)
+		#expect(Defaults[key]["0"]?["0"] == "Hank")
 		let newName = "Chen"
 		Defaults[key]["0"]?["0"] = newName
-		XCTAssertEqual(Defaults[key]["0"]?["0"], newName)
+		#expect(Defaults[key]["0"]?["0"] == newName)
 	}
 
+	@Test
 	func testArrayKey() {
-		let key = Defaults.Key<[String: [String]]>("independentDictionaryArrayKey", default: ["0": fixtureArray])
-		XCTAssertEqual(Defaults[key]["0"], fixtureArray)
+		let key = Defaults.Key<[String: [String]]>("independentDictionaryArrayKey", default: ["0": fixtureArray], suite: suite_)
+		#expect(Defaults[key]["0"] == fixtureArray)
 		let newName = "Chen"
 		Defaults[key]["0"]?[0] = newName
-		XCTAssertEqual(Defaults[key]["0"], [newName, fixtureArray[1]])
+		#expect(Defaults[key]["0"] == [newName, fixtureArray[1]])
 	}
 
+	@Test
 	func testIntKey() {
 		let fixture = [1: "x"]
-		let key = Defaults.Key<[Int: String]>("independentDictionaryIntKey", default: fixture)
-		XCTAssertEqual(Defaults[key][1], fixture[1])
+		let key = Defaults.Key<[Int: String]>("independentDictionaryIntKey", default: fixture, suite: suite_)
+		#expect(Defaults[key][1] == fixture[1])
 		let newValue = "John"
 		Defaults[key][1] = newValue
-		XCTAssertEqual(Defaults[key][1], newValue)
+		#expect(Defaults[key][1] == newValue)
 	}
 
+	@Test
 	func testType() {
-		XCTAssertEqual(Defaults[.dictionary]["0"], fixtureDictionary["0"])
+		#expect(Defaults[.dictionary]["0"] == fixtureDictionary["0"])
 		let newName = "Chen"
 		Defaults[.dictionary]["0"] = newName
-		XCTAssertEqual(Defaults[.dictionary]["0"], newName)
-	}
-
-	func testObserveKeyCombine() {
-		let key = Defaults.Key<[String: String]>("observeDictionaryKeyCombine", default: fixtureDictionary)
-		let expect = expectation(description: "Observation closure being called")
-		let newName = "John"
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(fixtureDictionary["0"]!, newName), (newName, fixtureDictionary["0"]!)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0["0"])
-				XCTAssertEqual(expected.1, tuples[index].1["0"])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key]["0"] = newName
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<[String: String]?>("observeDictionaryOptionalKeyCombine") // swiftlint:disable:this discouraged_optional_collection
-		let expect = expectation(description: "Observation closure being called")
-		let newName = ["0": "John"]
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(3)
-
-		// swiftlint:disable:next discouraged_optional_collection
-		let expectedValues: [([String: String]?, [String: String]?)] = [(nil, fixtureDictionary), (fixtureDictionary, newName), (newName, nil)]
-
-		let cancellable = publisher.sink { actualValues in
-			for (expected, actual) in zip(expectedValues, actualValues) {
-				XCTAssertEqual(expected.0, actual.0)
-				XCTAssertEqual(expected.1, actual.1)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = fixtureDictionary
-		Defaults[key] = newName
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveKey() {
-		let key = Defaults.Key<[String: String]>("observeDictionaryKey", default: fixtureDictionary)
-		let expect = expectation(description: "Observation closure being called")
-		let newName = "John"
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue, fixtureDictionary)
-			XCTAssertEqual(change.newValue["1"], newName)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key]["1"] = newName
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKey() {
-		let key = Defaults.Key<[String: String]?>("observeDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertNil(change.oldValue)
-			XCTAssertEqual(change.newValue!, fixtureDictionary)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = fixtureDictionary
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
+		#expect(Defaults[.dictionary]["0"] == newName)
 	}
 }

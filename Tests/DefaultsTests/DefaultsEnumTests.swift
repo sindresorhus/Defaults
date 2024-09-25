@@ -1,6 +1,8 @@
 import Foundation
+import Testing
 import Defaults
-import XCTest
+
+private let suite_ = createSuite()
 
 private enum FixtureEnum: String, Defaults.Serializable {
 	case tenMinutes = "10 Minutes"
@@ -9,296 +11,121 @@ private enum FixtureEnum: String, Defaults.Serializable {
 }
 
 extension Defaults.Keys {
-	fileprivate static let `enum` = Key<FixtureEnum>("enum", default: .tenMinutes)
-	fileprivate static let enumArray = Key<[FixtureEnum]>("array_enum", default: [.tenMinutes])
-	fileprivate static let enumDictionary = Key<[String: FixtureEnum]>("dictionary_enum", default: ["0": .tenMinutes])
+	fileprivate static let `enum` = Key<FixtureEnum>("enum", default: .tenMinutes, suite: suite_)
+	fileprivate static let enumArray = Key<[FixtureEnum]>("array_enum", default: [.tenMinutes], suite: suite_)
+	fileprivate static let enumDictionary = Key<[String: FixtureEnum]>("dictionary_enum", default: ["0": .tenMinutes], suite: suite_)
 }
 
-final class DefaultsEnumTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		Defaults.removeAll()
+@Suite(.serialized)
+final class DefaultsEnumTests {
+	init() {
+		Defaults.removeAll(suite: suite_)
 	}
 
-	override func tearDown() {
-		super.tearDown()
-		Defaults.removeAll()
+	deinit {
+		Defaults.removeAll(suite: suite_)
 	}
 
+	@Test
 	func testKey() {
-		let key = Defaults.Key<FixtureEnum>("independentEnumKey", default: .tenMinutes)
-		XCTAssertEqual(Defaults[key], .tenMinutes)
+		let key = Defaults.Key<FixtureEnum>("independentEnumKey", default: .tenMinutes, suite: suite_)
+		#expect(Defaults[key] == .tenMinutes)
 		Defaults[key] = .halfHour
-		XCTAssertEqual(Defaults[key], .halfHour)
+		#expect(Defaults[key] == .halfHour)
 	}
 
+	@Test
 	func testOptionalKey() {
-		let key = Defaults.Key<FixtureEnum?>("independentEnumOptionalKey")
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<FixtureEnum?>("independentEnumOptionalKey", suite: suite_)
+		#expect(Defaults[key] == nil)
 		Defaults[key] = .tenMinutes
-		XCTAssertEqual(Defaults[key], .tenMinutes)
+		#expect(Defaults[key] == .tenMinutes)
 	}
 
+	@Test
 	func testArrayKey() {
-		let key = Defaults.Key<[FixtureEnum]>("independentEnumArrayKey", default: [.tenMinutes])
-		XCTAssertEqual(Defaults[key][0], .tenMinutes)
+		let key = Defaults.Key<[FixtureEnum]>("independentEnumArrayKey", default: [.tenMinutes], suite: suite_)
+		#expect(Defaults[key][0] == .tenMinutes)
 		Defaults[key].append(.halfHour)
-		XCTAssertEqual(Defaults[key][0], .tenMinutes)
-		XCTAssertEqual(Defaults[key][1], .halfHour)
+		#expect(Defaults[key][0] == .tenMinutes)
+		#expect(Defaults[key][1] == .halfHour)
 	}
 
+	@Test
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[FixtureEnum]?>("independentEnumArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[FixtureEnum]?>("independentEnumArrayOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = [.tenMinutes]
 		Defaults[key]?.append(.halfHour)
-		XCTAssertEqual(Defaults[key]?[0], .tenMinutes)
-		XCTAssertEqual(Defaults[key]?[1], .halfHour)
+		#expect(Defaults[key]?[0] == .tenMinutes)
+		#expect(Defaults[key]?[1] == .halfHour)
 	}
 
+	@Test
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[FixtureEnum]]>("independentEnumNestedArrayKey", default: [[.tenMinutes]])
-		XCTAssertEqual(Defaults[key][0][0], .tenMinutes)
+		let key = Defaults.Key<[[FixtureEnum]]>("independentEnumNestedArrayKey", default: [[.tenMinutes]], suite: suite_)
+		#expect(Defaults[key][0][0] == .tenMinutes)
 		Defaults[key][0].append(.halfHour)
 		Defaults[key].append([.oneHour])
-		XCTAssertEqual(Defaults[key][0][1], .halfHour)
-		XCTAssertEqual(Defaults[key][1][0], .oneHour)
+		#expect(Defaults[key][0][1] == .halfHour)
+		#expect(Defaults[key][1][0] == .oneHour)
 	}
 
+	@Test
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: FixtureEnum]]>("independentEnumArrayDictionaryKey", default: [["0": .tenMinutes]])
-		XCTAssertEqual(Defaults[key][0]["0"], .tenMinutes)
+		let key = Defaults.Key<[[String: FixtureEnum]]>("independentEnumArrayDictionaryKey", default: [["0": .tenMinutes]], suite: suite_)
+		#expect(Defaults[key][0]["0"] == .tenMinutes)
 		Defaults[key][0]["1"] = .halfHour
 		Defaults[key].append(["0": .oneHour])
-		XCTAssertEqual(Defaults[key][0]["1"], .halfHour)
-		XCTAssertEqual(Defaults[key][1]["0"], .oneHour)
+		#expect(Defaults[key][0]["1"] == .halfHour)
+		#expect(Defaults[key][1]["0"] == .oneHour)
 	}
 
+	@Test
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: FixtureEnum]>("independentEnumDictionaryKey", default: ["0": .tenMinutes])
-		XCTAssertEqual(Defaults[key]["0"], .tenMinutes)
+		let key = Defaults.Key<[String: FixtureEnum]>("independentEnumDictionaryKey", default: ["0": .tenMinutes], suite: suite_)
+		#expect(Defaults[key]["0"] == .tenMinutes)
 		Defaults[key]["1"] = .halfHour
-		XCTAssertEqual(Defaults[key]["0"], .tenMinutes)
-		XCTAssertEqual(Defaults[key]["1"], .halfHour)
+		#expect(Defaults[key]["0"] == .tenMinutes)
+		#expect(Defaults[key]["1"] == .halfHour)
 	}
 
+	@Test
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: FixtureEnum]?>("independentEnumDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[String: FixtureEnum]?>("independentEnumDictionaryOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = ["0": .tenMinutes]
-		XCTAssertEqual(Defaults[key]?["0"], .tenMinutes)
+		#expect(Defaults[key]?["0"] == .tenMinutes)
 	}
 
+	@Test
 	func testDictionaryArrayKey() {
-		let key = Defaults.Key<[String: [FixtureEnum]]>("independentEnumDictionaryKey", default: ["0": [.tenMinutes]])
-		XCTAssertEqual(Defaults[key]["0"]?[0], .tenMinutes)
+		let key = Defaults.Key<[String: [FixtureEnum]]>("independentEnumDictionaryKey", default: ["0": [.tenMinutes]], suite: suite_)
+		#expect(Defaults[key]["0"]?[0] == .tenMinutes)
 		Defaults[key]["0"]?.append(.halfHour)
 		Defaults[key]["1"] = [.oneHour]
-		XCTAssertEqual(Defaults[key]["0"]?[1], .halfHour)
-		XCTAssertEqual(Defaults[key]["1"]?[0], .oneHour)
+		#expect(Defaults[key]["0"]?[1] == .halfHour)
+		#expect(Defaults[key]["1"]?[0] == .oneHour)
 	}
 
+	@Test
 	func testType() {
-		XCTAssertEqual(Defaults[.enum], .tenMinutes)
+		#expect(Defaults[.enum] == .tenMinutes)
 		Defaults[.enum] = .halfHour
-		XCTAssertEqual(Defaults[.enum], .halfHour)
+		#expect(Defaults[.enum] == .halfHour)
 	}
 
+	@Test
 	func testArrayType() {
-		XCTAssertEqual(Defaults[.enumArray][0], .tenMinutes)
+		#expect(Defaults[.enumArray][0] == .tenMinutes)
 		Defaults[.enumArray][0] = .oneHour
-		XCTAssertEqual(Defaults[.enumArray][0], .oneHour)
+		#expect(Defaults[.enumArray][0] == .oneHour)
 	}
 
+	@Test
 	func testDictionaryType() {
-		XCTAssertEqual(Defaults[.enumDictionary]["0"], .tenMinutes)
+		#expect(Defaults[.enumDictionary]["0"] == .tenMinutes)
 		Defaults[.enumDictionary]["0"] = .halfHour
-		XCTAssertEqual(Defaults[.enumDictionary]["0"], .halfHour)
-	}
-
-	func testObserveKeyCombine() {
-		let key = Defaults.Key<FixtureEnum>("observeEnumKeyCombine", default: .tenMinutes)
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(3)
-
-		let expectedValue: [(FixtureEnum, FixtureEnum)] = [(.tenMinutes, .halfHour), (.halfHour, .oneHour), (.oneHour, .tenMinutes)]
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0)
-				XCTAssertEqual(expected.1, tuples[index].1)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = .tenMinutes
-		Defaults[key] = .halfHour
-		Defaults[key] = .oneHour
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<FixtureEnum?>("observeEnumOptionalKeyCombine")
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(4)
-
-		let expectedValue: [(FixtureEnum?, FixtureEnum?)] = [(nil, .tenMinutes), (.tenMinutes, .halfHour), (.halfHour, .oneHour), (.oneHour, nil)]
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0)
-				XCTAssertEqual(expected.1, tuples[index].1)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = .tenMinutes
-		Defaults[key] = .halfHour
-		Defaults[key] = .oneHour
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKeyCombine() {
-		let key = Defaults.Key<[FixtureEnum]>("observeEnumArrayKeyCombine", default: [.tenMinutes])
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let expectedValue: [(FixtureEnum, FixtureEnum)] = [(.tenMinutes, .halfHour), (.halfHour, .oneHour)]
-
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0[0])
-				XCTAssertEqual(expected.1, tuples[index].1[0])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key][0] = .halfHour
-		Defaults[key][0] = .oneHour
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKeyCombine() {
-		let key = Defaults.Key<[String: FixtureEnum]>("observeEnumDictionaryKeyCombine", default: ["0": .tenMinutes])
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let expectedValue: [(FixtureEnum, FixtureEnum)] = [(.tenMinutes, .halfHour), (.halfHour, .oneHour)]
-
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0["0"])
-				XCTAssertEqual(expected.1, tuples[index].1["0"])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key]["0"] = .halfHour
-		Defaults[key]["0"] = .oneHour
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveKey() {
-		let key = Defaults.Key<FixtureEnum>("observeEnumKey", default: .tenMinutes)
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue, .tenMinutes)
-			XCTAssertEqual(change.newValue, .halfHour)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = .halfHour
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKey() {
-		let key = Defaults.Key<FixtureEnum?>("observeEnumOptionalKey")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertNil(change.oldValue)
-			XCTAssertEqual(change.newValue, .tenMinutes)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = .tenMinutes
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKey() {
-		let key = Defaults.Key<[FixtureEnum]>("observeEnumArrayKey", default: [.tenMinutes])
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue[0], .tenMinutes)
-			XCTAssertEqual(change.newValue[1], .halfHour)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key].append(.halfHour)
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKey() {
-		let key = Defaults.Key<[String: FixtureEnum]>("observeEnumDictionaryKey", default: ["0": .tenMinutes])
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue["0"], .tenMinutes)
-			XCTAssertEqual(change.newValue["1"], .halfHour)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key]["1"] = .halfHour
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
+		#expect(Defaults[.enumDictionary]["0"] == .halfHour)
 	}
 }

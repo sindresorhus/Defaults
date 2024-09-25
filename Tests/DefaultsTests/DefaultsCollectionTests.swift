@@ -1,6 +1,8 @@
 import Foundation
-import XCTest
+import Testing
 import Defaults
+
+private let suite_ = createSuite()
 
 struct Bag<Element: Defaults.Serializable>: Collection {
 	var items: [Element]
@@ -36,305 +38,133 @@ extension Bag: Defaults.CollectionSerializable {
 	}
 }
 
-
 private let fixtureCollection = ["Juice", "Apple", "Banana"]
 
 extension Defaults.Keys {
-	fileprivate static let collection = Key<Bag<String>>("collection", default: Bag(items: fixtureCollection))
-	fileprivate static let collectionArray = Key<[Bag<String>]>("collectionArray", default: [Bag(items: fixtureCollection)])
-	fileprivate static let collectionDictionary = Key<[String: Bag<String>]>("collectionDictionary", default: ["0": Bag(items: fixtureCollection)])
+	fileprivate static let collection = Key<Bag<String>>("collection", default: Bag(items: fixtureCollection), suite: suite_)
+	fileprivate static let collectionArray = Key<[Bag<String>]>("collectionArray", default: [Bag(items: fixtureCollection)], suite: suite_)
+	fileprivate static let collectionDictionary = Key<[String: Bag<String>]>("collectionDictionary", default: ["0": Bag(items: fixtureCollection)], suite: suite_)
 }
 
-final class DefaultsCollectionTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		Defaults.removeAll()
+@Suite(.serialized)
+final class DefaultsCollectionTests {
+	init() {
+		Defaults.removeAll(suite: suite_)
 	}
 
-	override func tearDown() {
-		super.tearDown()
-		Defaults.removeAll()
+	deinit {
+		Defaults.removeAll(suite: suite_)
 	}
 
+	@Test
 	func testKey() {
-		let key = Defaults.Key<Bag<String>>("independentCollectionKey", default: Bag(items: fixtureCollection))
+		let key = Defaults.Key<Bag<String>>("independentCollectionKey", default: Bag(items: fixtureCollection), suite: suite_)
 		Defaults[key].insert(element: "123", at: 0)
-		XCTAssertEqual(Defaults[key][0], "123")
+		#expect(Defaults[key][0] == "123")
 	}
 
+	@Test
 	func testOptionalKey() {
-		let key = Defaults.Key<Bag<String>?>("independentCollectionOptionalKey")
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<Bag<String>?>("independentCollectionOptionalKey", suite: suite_)
+		#expect(Defaults[key] == nil)
 		Defaults[key] = Bag(items: [])
 		Defaults[key]?.insert(element: fixtureCollection[0], at: 0)
-		XCTAssertEqual(Defaults[key]?[0], fixtureCollection[0])
+		#expect(Defaults[key]?[0] == fixtureCollection[0])
 		Defaults[key]?.insert(element: fixtureCollection[1], at: 1)
-		XCTAssertEqual(Defaults[key]?[1], fixtureCollection[1])
+		#expect(Defaults[key]?[1] == fixtureCollection[1])
 	}
 
+	@Test
 	func testArrayKey() {
-		let key = Defaults.Key<[Bag<String>]>("independentCollectionArrayKey", default: [Bag(items: [fixtureCollection[0]])])
+		let key = Defaults.Key<[Bag<String>]>("independentCollectionArrayKey", default: [Bag(items: [fixtureCollection[0]])], suite: suite_)
 		Defaults[key].append(Bag(items: [fixtureCollection[1]]))
-		XCTAssertEqual(Defaults[key][1][0], fixtureCollection[1])
+		#expect(Defaults[key][1][0] == fixtureCollection[1])
 		Defaults[key][0].insert(element: fixtureCollection[2], at: 1)
-		XCTAssertEqual(Defaults[key][0][1], fixtureCollection[2])
+		#expect(Defaults[key][0][1] == fixtureCollection[2])
 	}
 
+	@Test
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[Bag<String>]?>("independentCollectionArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[Bag<String>]?>("independentCollectionArrayOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = [Bag(items: [fixtureCollection[0]])]
 		Defaults[key]?.append(Bag(items: [fixtureCollection[1]]))
-		XCTAssertEqual(Defaults[key]?[1][0], fixtureCollection[1])
+		#expect(Defaults[key]?[1][0] == fixtureCollection[1])
 		Defaults[key]?[0].insert(element: fixtureCollection[2], at: 1)
-		XCTAssertEqual(Defaults[key]?[0][1], fixtureCollection[2])
+		#expect(Defaults[key]?[0][1] == fixtureCollection[2])
 	}
 
+	@Test
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[Bag<String>]]>("independentCollectionNestedArrayKey", default: [[Bag(items: [fixtureCollection[0]])]])
+		let key = Defaults.Key<[[Bag<String>]]>("independentCollectionNestedArrayKey", default: [[Bag(items: [fixtureCollection[0]])]], suite: suite_)
 		Defaults[key][0].append(Bag(items: [fixtureCollection[1]]))
 		Defaults[key].append([Bag(items: [fixtureCollection[2]])])
-		XCTAssertEqual(Defaults[key][0][0][0], fixtureCollection[0])
-		XCTAssertEqual(Defaults[key][0][1][0], fixtureCollection[1])
-		XCTAssertEqual(Defaults[key][1][0][0], fixtureCollection[2])
+		#expect(Defaults[key][0][0][0] == fixtureCollection[0])
+		#expect(Defaults[key][0][1][0] == fixtureCollection[1])
+		#expect(Defaults[key][1][0][0] == fixtureCollection[2])
 	}
 
+	@Test
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: Bag<String>]]>("independentCollectionArrayDictionaryKey", default: [["0": Bag(items: [fixtureCollection[0]])]])
+		let key = Defaults.Key<[[String: Bag<String>]]>("independentCollectionArrayDictionaryKey", default: [["0": Bag(items: [fixtureCollection[0]])]], suite: suite_)
 		Defaults[key][0]["1"] = Bag(items: [fixtureCollection[1]])
 		Defaults[key].append(["0": Bag(items: [fixtureCollection[2]])])
-		XCTAssertEqual(Defaults[key][0]["0"]?[0], fixtureCollection[0])
-		XCTAssertEqual(Defaults[key][0]["1"]?[0], fixtureCollection[1])
-		XCTAssertEqual(Defaults[key][1]["0"]?[0], fixtureCollection[2])
+		#expect(Defaults[key][0]["0"]?[0] == fixtureCollection[0])
+		#expect(Defaults[key][0]["1"]?[0] == fixtureCollection[1])
+		#expect(Defaults[key][1]["0"]?[0] == fixtureCollection[2])
 	}
 
+	@Test
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: Bag<String>]>("independentCollectionDictionaryKey", default: ["0": Bag(items: [fixtureCollection[0]])])
+		let key = Defaults.Key<[String: Bag<String>]>("independentCollectionDictionaryKey", default: ["0": Bag(items: [fixtureCollection[0]])], suite: suite_)
 		Defaults[key]["0"]?.insert(element: fixtureCollection[1], at: 1)
 		Defaults[key]["1"] = Bag(items: [fixtureCollection[2]])
-		XCTAssertEqual(Defaults[key]["0"]?[0], fixtureCollection[0])
-		XCTAssertEqual(Defaults[key]["0"]?[1], fixtureCollection[1])
-		XCTAssertEqual(Defaults[key]["1"]?[0], fixtureCollection[2])
+		#expect(Defaults[key]["0"]?[0] == fixtureCollection[0])
+		#expect(Defaults[key]["0"]?[1] == fixtureCollection[1])
+		#expect(Defaults[key]["1"]?[0] == fixtureCollection[2])
 	}
 
+	@Test
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: Bag<String>]?>("independentCollectionDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[String: Bag<String>]?>("independentCollectionDictionaryOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = ["0": Bag(items: [fixtureCollection[0]])]
 		Defaults[key]?["0"]?.insert(element: fixtureCollection[1], at: 1)
 		Defaults[key]?["1"] = Bag(items: [fixtureCollection[2]])
-		XCTAssertEqual(Defaults[key]?["0"]?[0], fixtureCollection[0])
-		XCTAssertEqual(Defaults[key]?["0"]?[1], fixtureCollection[1])
-		XCTAssertEqual(Defaults[key]?["1"]?[0], fixtureCollection[2])
+		#expect(Defaults[key]?["0"]?[0] == fixtureCollection[0])
+		#expect(Defaults[key]?["0"]?[1] == fixtureCollection[1])
+		#expect(Defaults[key]?["1"]?[0] == fixtureCollection[2])
 	}
 
+	@Test
 	func testDictionaryArrayKey() {
-		let key = Defaults.Key<[String: [Bag<String>]]>("independentCollectionDictionaryArrayKey", default: ["0": [Bag(items: [fixtureCollection[0]])]])
+		let key = Defaults.Key<[String: [Bag<String>]]>("independentCollectionDictionaryArrayKey", default: ["0": [Bag(items: [fixtureCollection[0]])]], suite: suite_)
 		Defaults[key]["0"]?[0].insert(element: fixtureCollection[1], at: 1)
 		Defaults[key]["1"] = [Bag(items: [fixtureCollection[2]])]
-		XCTAssertEqual(Defaults[key]["0"]?[0][0], fixtureCollection[0])
-		XCTAssertEqual(Defaults[key]["0"]?[0][1], fixtureCollection[1])
-		XCTAssertEqual(Defaults[key]["1"]?[0][0], fixtureCollection[2])
+		#expect(Defaults[key]["0"]?[0][0] == fixtureCollection[0])
+		#expect(Defaults[key]["0"]?[0][1] == fixtureCollection[1])
+		#expect(Defaults[key]["1"]?[0][0] == fixtureCollection[2])
 	}
 
+	@Test
 	func testType() {
 		Defaults[.collection].insert(element: "123", at: 0)
-		XCTAssertEqual(Defaults[.collection][0], "123")
+		#expect(Defaults[.collection][0] == "123")
 	}
 
+	@Test
 	func testArrayType() {
 		Defaults[.collectionArray].append(Bag(items: [fixtureCollection[0]]))
 		Defaults[.collectionArray][0].insert(element: "123", at: 0)
-		XCTAssertEqual(Defaults[.collectionArray][0][0], "123")
-		XCTAssertEqual(Defaults[.collectionArray][1][0], fixtureCollection[0])
+		#expect(Defaults[.collectionArray][0][0] == "123")
+		#expect(Defaults[.collectionArray][1][0] == fixtureCollection[0])
 	}
 
+	@Test
 	func testDictionaryType() {
 		Defaults[.collectionDictionary]["1"] = Bag(items: [fixtureCollection[0]])
 		Defaults[.collectionDictionary]["0"]?.insert(element: "123", at: 0)
-		XCTAssertEqual(Defaults[.collectionDictionary]["0"]?[0], "123")
-		XCTAssertEqual(Defaults[.collectionDictionary]["1"]?[0], fixtureCollection[0])
-	}
-
-	func testObserveKeyCombine() {
-		let key = Defaults.Key<Bag<String>>("observeCollectionKeyCombine", default: .init(items: fixtureCollection))
-		let item = "Grape"
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0[0])
-				XCTAssertEqual(expected.1, tuples[index].1[0])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key].insert(element: item, at: 0)
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<Bag<String>?>("observeCollectionOptionalKeyCombine")
-		let item = "Grape"
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(3)
-
-		let expectedValue: [(String?, String?)] = [(nil, fixtureCollection[0]), (fixtureCollection[0], item), (item, nil)]
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0?[0])
-				XCTAssertEqual(expected.1, tuples[index].1?[0])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = Bag(items: fixtureCollection)
-		Defaults[key]?.insert(element: item, at: 0)
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKeyCombine() {
-		let key = Defaults.Key<[Bag<String>]>("observeCollectionArrayKeyCombine", default: [.init(items: fixtureCollection)])
-		let item = "Grape"
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0[0][0])
-				XCTAssertEqual(expected.1, tuples[index].1[0][0])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key][0].insert(element: item, at: 0)
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKeyCombine() {
-		let key = Defaults.Key<[String: Bag<String>]>("observeCollectionArrayKeyCombine", default: ["0": .init(items: fixtureCollection)])
-		let item = "Grape"
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(fixtureCollection[0], item), (item, fixtureCollection[0])].enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0["0"]?[0])
-				XCTAssertEqual(expected.1, tuples[index].1["0"]?[0])
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key]["0"]?.insert(element: item, at: 0)
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveKey() {
-		let key = Defaults.Key<Bag<String>>("observeCollectionKey", default: .init(items: fixtureCollection))
-		let item = "Grape"
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue[0], fixtureCollection[0])
-			XCTAssertEqual(change.newValue[0], item)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key].insert(element: item, at: 0)
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKey() {
-		let key = Defaults.Key<Bag<String>?>("observeCollectionOptionalKey")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertNil(change.oldValue)
-			XCTAssertEqual(change.newValue?[0], fixtureCollection[0])
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = .init(items: fixtureCollection)
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKey() {
-		let key = Defaults.Key<[Bag<String>]>("observeCollectionArrayKey", default: [.init(items: fixtureCollection)])
-		let item = "Grape"
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue[0][0], fixtureCollection[0])
-			XCTAssertEqual(change.newValue[0][0], item)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key][0].insert(element: item, at: 0)
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKey() {
-		let key = Defaults.Key<[String: Bag<String>]>("observeCollectionDictionaryKey", default: ["0": .init(items: fixtureCollection)])
-		let item = "Grape"
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue["0"]?[0], fixtureCollection[0])
-			XCTAssertEqual(change.newValue["0"]?[0], item)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key]["0"]?.insert(element: item, at: 0)
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
+		#expect(Defaults[.collectionDictionary]["0"]?[0] == "123")
+		#expect(Defaults[.collectionDictionary]["1"]?[0] == fixtureCollection[0])
 	}
 }

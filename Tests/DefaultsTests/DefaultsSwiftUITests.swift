@@ -1,7 +1,9 @@
-import XCTest
 import Foundation
 import SwiftUI
+import Testing
 import Defaults
+
+private let suite_ = createSuite()
 
 #if os(macOS)
 typealias XColor = NSColor
@@ -10,10 +12,10 @@ typealias XColor = UIColor
 #endif
 
 extension Defaults.Keys {
-	fileprivate static let hasUnicorn = Key<Bool>("swiftui_hasUnicorn", default: false)
-	fileprivate static let user = Key<User>("swiftui_user", default: User(username: "Hank", password: "123456"))
-	fileprivate static let setInt = Key<Set<Int>>("swiftui_setInt", default: Set(1...3))
-	fileprivate static let color = Key<Color>("swiftui_color", default: .black)
+	fileprivate static let hasUnicorn = Key<Bool>("swiftui_hasUnicorn", default: false, suite: suite_)
+	fileprivate static let user = Key<User>("swiftui_user", default: User(username: "Hank", password: "123456"), suite: suite_)
+	fileprivate static let setInt = Key<Set<Int>>("swiftui_setInt", default: Set(1...3), suite: suite_)
+	fileprivate static let color = Key<Color>("swiftui_color", default: .black, suite: suite_)
 }
 
 struct ContentView: View {
@@ -29,34 +31,35 @@ struct ContentView: View {
 	}
 }
 
-
-final class DefaultsSwiftUITests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		Defaults.removeAll()
+@Suite(.serialized)
+final class DefaultsSwiftUITests {
+	init() {
+		Defaults.removeAll(suite: suite_)
 	}
 
-	override func tearDown() {
-		super.tearDown()
-		Defaults.removeAll()
+	deinit {
+		Defaults.removeAll(suite: suite_)
 	}
 
+	@Test
 	func testSwiftUIObserve() {
 		let view = ContentView()
-		XCTAssertFalse(view.hasUnicorn)
-		XCTAssertEqual(view.user.username, "Hank")
-		XCTAssertEqual(view.setInt.count, 3)
-		XCTAssertEqual(XColor(view.color), XColor(Color.black))
+		#expect(!view.hasUnicorn)
+		#expect(view.user.username == "Hank")
+		#expect(view.setInt.count == 3)
+		#expect(XColor(view.color) == XColor(Color.black))
+
 		view.user = User(username: "Chen", password: "123456")
 		view.hasUnicorn.toggle()
 		view.setInt.insert(4)
 		view.color = Color(.sRGB, red: 100, green: 100, blue: 100, opacity: 1)
-		XCTAssertTrue(view.hasUnicorn)
-		XCTAssertEqual(view.user.username, "Chen")
-		XCTAssertEqual(view.setInt, Set(1...4))
-		XCTAssertFalse(Default(.hasUnicorn).defaultValue)
-		XCTAssertFalse(Default(.hasUnicorn).isDefaultValue)
-		XCTAssertNotEqual(XColor(view.color), XColor(Color.black))
-		XCTAssertEqual(XColor(view.color), XColor(Color(.sRGB, red: 100, green: 100, blue: 100, opacity: 1)))
+
+		#expect(view.hasUnicorn)
+		#expect(view.user.username == "Chen")
+		#expect(view.setInt == Set(1...4))
+		#expect(!Default(.hasUnicorn).defaultValue)
+		#expect(!Default(.hasUnicorn).isDefaultValue)
+		#expect(XColor(view.color) != XColor(Color.black))
+		#expect(XColor(view.color) == XColor(Color(.sRGB, red: 100, green: 100, blue: 100, opacity: 1)))
 	}
 }

@@ -1,6 +1,8 @@
 import Foundation
+import Testing
 import Defaults
-import XCTest
+
+private let suite_ = createSuite()
 
 private struct CustomDate {
 	let year: Int
@@ -36,11 +38,11 @@ extension CustomDate: Defaults.Serializable {
 extension CustomDate: Comparable {
 	static func < (lhs: CustomDate, rhs: CustomDate) -> Bool {
 		if lhs.year != rhs.year {
-				return lhs.year < rhs.year
+			return lhs.year < rhs.year
 		}
 
 		if lhs.month != rhs.month {
-				return lhs.month < rhs.month
+			return lhs.month < rhs.month
 		}
 
 		return lhs.day < rhs.day
@@ -48,7 +50,7 @@ extension CustomDate: Comparable {
 
 	static func == (lhs: CustomDate, rhs: CustomDate) -> Bool {
 		lhs.year == rhs.year && lhs.month == rhs.month
-				&& lhs.day == rhs.day
+			&& lhs.day == rhs.day
 	}
 }
 
@@ -62,162 +64,165 @@ private let nextFixtureClosedRange = 1...20
 private let fixtureDateClosedRange = CustomDate(year: 2022, month: 4, day: 0)...CustomDate(year: 2022, month: 5, day: 0)
 private let nextFixtureDateClosedRange = CustomDate(year: 2022, month: 6, day: 1)...CustomDate(year: 2022, month: 7, day: 1)
 
-final class DefaultsClosedRangeTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		Defaults.removeAll()
+@Suite(.serialized)
+final class DefaultsClosedRangeTests {
+	init() {
+		Defaults.removeAll(suite: suite_)
 	}
 
-	override func tearDown() {
-		super.tearDown()
-		Defaults.removeAll()
+	deinit {
+		Defaults.removeAll(suite: suite_)
 	}
 
+	@Test
 	func testKey() {
 		// Test native support Range type
-		let key = Defaults.Key<Range>("independentRangeKey", default: fixtureRange)
-		XCTAssertEqual(fixtureRange.upperBound, Defaults[key].upperBound)
-		XCTAssertEqual(fixtureRange.lowerBound, Defaults[key].lowerBound)
+		let key = Defaults.Key<Range>("independentRangeKey", default: fixtureRange, suite: suite_)
+		#expect(fixtureRange.upperBound == Defaults[key].upperBound)
+		#expect(fixtureRange.lowerBound == Defaults[key].lowerBound)
 		Defaults[key] = nextFixtureRange
-		XCTAssertEqual(nextFixtureRange.upperBound, Defaults[key].upperBound)
-		XCTAssertEqual(nextFixtureRange.lowerBound, Defaults[key].lowerBound)
+		#expect(nextFixtureRange.upperBound == Defaults[key].upperBound)
+		#expect(nextFixtureRange.lowerBound == Defaults[key].lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<Range<CustomDate>>("independentRangeDateKey", default: fixtureDateRange)
-		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey].upperBound)
-		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey].lowerBound)
+		let dateKey = Defaults.Key<Range<CustomDate>>("independentRangeDateKey", default: fixtureDateRange, suite: suite_)
+		#expect(fixtureDateRange.upperBound == Defaults[dateKey].upperBound)
+		#expect(fixtureDateRange.lowerBound == Defaults[dateKey].lowerBound)
 		Defaults[dateKey] = nextFixtureDateRange
-		XCTAssertEqual(nextFixtureDateRange.upperBound, Defaults[dateKey].upperBound)
-		XCTAssertEqual(nextFixtureDateRange.lowerBound, Defaults[dateKey].lowerBound)
+		#expect(nextFixtureDateRange.upperBound == Defaults[dateKey].upperBound)
+		#expect(nextFixtureDateRange.lowerBound == Defaults[dateKey].lowerBound)
 
 		// Test native support ClosedRange type
-		let closedKey = Defaults.Key<ClosedRange>("independentClosedRangeKey", default: fixtureClosedRange)
-		XCTAssertEqual(fixtureClosedRange.upperBound, Defaults[closedKey].upperBound)
-		XCTAssertEqual(fixtureClosedRange.lowerBound, Defaults[closedKey].lowerBound)
+		let closedKey = Defaults.Key<ClosedRange>("independentClosedRangeKey", default: fixtureClosedRange, suite: suite_)
+		#expect(fixtureClosedRange.upperBound == Defaults[closedKey].upperBound)
+		#expect(fixtureClosedRange.lowerBound == Defaults[closedKey].lowerBound)
 		Defaults[closedKey] = nextFixtureClosedRange
-		XCTAssertEqual(nextFixtureClosedRange.upperBound, Defaults[closedKey].upperBound)
-		XCTAssertEqual(nextFixtureClosedRange.lowerBound, Defaults[closedKey].lowerBound)
+		#expect(nextFixtureClosedRange.upperBound == Defaults[closedKey].upperBound)
+		#expect(nextFixtureClosedRange.lowerBound == Defaults[closedKey].lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<ClosedRange<CustomDate>>("independentClosedRangeDateKey", default: fixtureDateClosedRange)
-		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey].upperBound)
-		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey].lowerBound)
+		let closedDateKey = Defaults.Key<ClosedRange<CustomDate>>("independentClosedRangeDateKey", default: fixtureDateClosedRange, suite: suite_)
+		#expect(fixtureDateClosedRange.upperBound == Defaults[closedDateKey].upperBound)
+		#expect(fixtureDateClosedRange.lowerBound == Defaults[closedDateKey].lowerBound)
 		Defaults[closedDateKey] = nextFixtureDateClosedRange
-		XCTAssertEqual(nextFixtureDateClosedRange.upperBound, Defaults[closedDateKey].upperBound)
-		XCTAssertEqual(nextFixtureDateClosedRange.lowerBound, Defaults[closedDateKey].lowerBound)
+		#expect(nextFixtureDateClosedRange.upperBound == Defaults[closedDateKey].upperBound)
+		#expect(nextFixtureDateClosedRange.lowerBound == Defaults[closedDateKey].lowerBound)
 	}
 
+	@Test
 	func testOptionalKey() {
 		// Test native support Range type
-		let key = Defaults.Key<Range<Int>?>("independentRangeOptionalKey")
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<Range<Int>?>("independentRangeOptionalKey", suite: suite_)
+		#expect(Defaults[key] == nil)
 		Defaults[key] = fixtureRange
-		XCTAssertEqual(fixtureRange.upperBound, Defaults[key]?.upperBound)
-		XCTAssertEqual(fixtureRange.lowerBound, Defaults[key]?.lowerBound)
+		#expect(fixtureRange.upperBound == Defaults[key]?.upperBound)
+		#expect(fixtureRange.lowerBound == Defaults[key]?.lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<Range<CustomDate>?>("independentRangeDateOptionalKey")
-		XCTAssertNil(Defaults[dateKey])
+		let dateKey = Defaults.Key<Range<CustomDate>?>("independentRangeDateOptionalKey", suite: suite_)
+		#expect(Defaults[dateKey] == nil)
 		Defaults[dateKey] = fixtureDateRange
-		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey]?.upperBound)
-		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey]?.lowerBound)
+		#expect(fixtureDateRange.upperBound == Defaults[dateKey]?.upperBound)
+		#expect(fixtureDateRange.lowerBound == Defaults[dateKey]?.lowerBound)
 
 		// Test native support ClosedRange type
-		let closedKey = Defaults.Key<ClosedRange<Int>?>("independentClosedRangeOptionalKey")
-		XCTAssertNil(Defaults[closedKey])
+		let closedKey = Defaults.Key<ClosedRange<Int>?>("independentClosedRangeOptionalKey", suite: suite_)
+		#expect(Defaults[closedKey] == nil)
 		Defaults[closedKey] = fixtureClosedRange
-		XCTAssertEqual(fixtureClosedRange.upperBound, Defaults[closedKey]?.upperBound)
-		XCTAssertEqual(fixtureClosedRange.lowerBound, Defaults[closedKey]?.lowerBound)
+		#expect(fixtureClosedRange.upperBound == Defaults[closedKey]?.upperBound)
+		#expect(fixtureClosedRange.lowerBound == Defaults[closedKey]?.lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<ClosedRange<CustomDate>?>("independentClosedRangeDateOptionalKey")
-		XCTAssertNil(Defaults[closedDateKey])
+		let closedDateKey = Defaults.Key<ClosedRange<CustomDate>?>("independentClosedRangeDateOptionalKey", suite: suite_)
+		#expect(Defaults[closedDateKey] == nil)
 		Defaults[closedDateKey] = fixtureDateClosedRange
-		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey]?.upperBound)
-		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey]?.lowerBound)
+		#expect(fixtureDateClosedRange.upperBound == Defaults[closedDateKey]?.upperBound)
+		#expect(fixtureDateClosedRange.lowerBound == Defaults[closedDateKey]?.lowerBound)
 	}
 
+	@Test
 	func testArrayKey() {
 		// Test native support Range type
-		let key = Defaults.Key<[Range]>("independentRangeArrayKey", default: [fixtureRange])
-		XCTAssertEqual(fixtureRange.upperBound, Defaults[key][0].upperBound)
-		XCTAssertEqual(fixtureRange.lowerBound, Defaults[key][0].lowerBound)
+		let key = Defaults.Key<[Range]>("independentRangeArrayKey", default: [fixtureRange], suite: suite_)
+		#expect(fixtureRange.upperBound == Defaults[key][0].upperBound)
+		#expect(fixtureRange.lowerBound == Defaults[key][0].lowerBound)
 		Defaults[key].append(nextFixtureRange)
-		XCTAssertEqual(fixtureRange.upperBound, Defaults[key][0].upperBound)
-		XCTAssertEqual(fixtureRange.lowerBound, Defaults[key][0].lowerBound)
-		XCTAssertEqual(nextFixtureRange.upperBound, Defaults[key][1].upperBound)
-		XCTAssertEqual(nextFixtureRange.lowerBound, Defaults[key][1].lowerBound)
+		#expect(fixtureRange.upperBound == Defaults[key][0].upperBound)
+		#expect(fixtureRange.lowerBound == Defaults[key][0].lowerBound)
+		#expect(nextFixtureRange.upperBound == Defaults[key][1].upperBound)
+		#expect(nextFixtureRange.lowerBound == Defaults[key][1].lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<[Range<CustomDate>]>("independentRangeDateArrayKey", default: [fixtureDateRange])
-		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey][0].upperBound)
-		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey][0].lowerBound)
+		let dateKey = Defaults.Key<[Range<CustomDate>]>("independentRangeDateArrayKey", default: [fixtureDateRange], suite: suite_)
+		#expect(fixtureDateRange.upperBound == Defaults[dateKey][0].upperBound)
+		#expect(fixtureDateRange.lowerBound == Defaults[dateKey][0].lowerBound)
 		Defaults[dateKey].append(nextFixtureDateRange)
-		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey][0].upperBound)
-		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey][0].lowerBound)
-		XCTAssertEqual(nextFixtureDateRange.upperBound, Defaults[dateKey][1].upperBound)
-		XCTAssertEqual(nextFixtureDateRange.lowerBound, Defaults[dateKey][1].lowerBound)
+		#expect(fixtureDateRange.upperBound == Defaults[dateKey][0].upperBound)
+		#expect(fixtureDateRange.lowerBound == Defaults[dateKey][0].lowerBound)
+		#expect(nextFixtureDateRange.upperBound == Defaults[dateKey][1].upperBound)
+		#expect(nextFixtureDateRange.lowerBound == Defaults[dateKey][1].lowerBound)
 
 		// Test native support ClosedRange type
-		let closedKey = Defaults.Key<[ClosedRange]>("independentClosedRangeArrayKey", default: [fixtureClosedRange])
-		XCTAssertEqual(fixtureClosedRange.upperBound, Defaults[closedKey][0].upperBound)
-		XCTAssertEqual(fixtureClosedRange.lowerBound, Defaults[closedKey][0].lowerBound)
+		let closedKey = Defaults.Key<[ClosedRange]>("independentClosedRangeArrayKey", default: [fixtureClosedRange], suite: suite_)
+		#expect(fixtureClosedRange.upperBound == Defaults[closedKey][0].upperBound)
+		#expect(fixtureClosedRange.lowerBound == Defaults[closedKey][0].lowerBound)
 		Defaults[closedKey].append(nextFixtureClosedRange)
-		XCTAssertEqual(fixtureClosedRange.upperBound, Defaults[closedKey][0].upperBound)
-		XCTAssertEqual(fixtureClosedRange.lowerBound, Defaults[closedKey][0].lowerBound)
-		XCTAssertEqual(nextFixtureClosedRange.upperBound, Defaults[closedKey][1].upperBound)
-		XCTAssertEqual(nextFixtureClosedRange.lowerBound, Defaults[closedKey][1].lowerBound)
+		#expect(fixtureClosedRange.upperBound == Defaults[closedKey][0].upperBound)
+		#expect(fixtureClosedRange.lowerBound == Defaults[closedKey][0].lowerBound)
+		#expect(nextFixtureClosedRange.upperBound == Defaults[closedKey][1].upperBound)
+		#expect(nextFixtureClosedRange.lowerBound == Defaults[closedKey][1].lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<[ClosedRange<CustomDate>]>("independentClosedRangeDateArrayKey", default: [fixtureDateClosedRange])
-		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey][0].upperBound)
-		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey][0].lowerBound)
+		let closedDateKey = Defaults.Key<[ClosedRange<CustomDate>]>("independentClosedRangeDateArrayKey", default: [fixtureDateClosedRange], suite: suite_)
+		#expect(fixtureDateClosedRange.upperBound == Defaults[closedDateKey][0].upperBound)
+		#expect(fixtureDateClosedRange.lowerBound == Defaults[closedDateKey][0].lowerBound)
 		Defaults[closedDateKey].append(nextFixtureDateClosedRange)
-		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey][0].upperBound)
-		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey][0].lowerBound)
-		XCTAssertEqual(nextFixtureDateClosedRange.upperBound, Defaults[closedDateKey][1].upperBound)
-		XCTAssertEqual(nextFixtureDateClosedRange.lowerBound, Defaults[closedDateKey][1].lowerBound)
+		#expect(fixtureDateClosedRange.upperBound == Defaults[closedDateKey][0].upperBound)
+		#expect(fixtureDateClosedRange.lowerBound == Defaults[closedDateKey][0].lowerBound)
+		#expect(nextFixtureDateClosedRange.upperBound == Defaults[closedDateKey][1].upperBound)
+		#expect(nextFixtureDateClosedRange.lowerBound == Defaults[closedDateKey][1].lowerBound)
 	}
 
+	@Test
 	func testDictionaryKey() {
 		// Test native support Range type
-		let key = Defaults.Key<[String: Range]>("independentRangeDictionaryKey", default: ["0": fixtureRange])
-		XCTAssertEqual(fixtureRange.upperBound, Defaults[key]["0"]?.upperBound)
-		XCTAssertEqual(fixtureRange.lowerBound, Defaults[key]["0"]?.lowerBound)
+		let key = Defaults.Key<[String: Range]>("independentRangeDictionaryKey", default: ["0": fixtureRange], suite: suite_)
+		#expect(fixtureRange.upperBound == Defaults[key]["0"]?.upperBound)
+		#expect(fixtureRange.lowerBound == Defaults[key]["0"]?.lowerBound)
 		Defaults[key]["1"] = nextFixtureRange
-		XCTAssertEqual(fixtureRange.upperBound, Defaults[key]["0"]?.upperBound)
-		XCTAssertEqual(fixtureRange.lowerBound, Defaults[key]["0"]?.lowerBound)
-		XCTAssertEqual(nextFixtureRange.upperBound, Defaults[key]["1"]?.upperBound)
-		XCTAssertEqual(nextFixtureRange.lowerBound, Defaults[key]["1"]?.lowerBound)
+		#expect(fixtureRange.upperBound == Defaults[key]["0"]?.upperBound)
+		#expect(fixtureRange.lowerBound == Defaults[key]["0"]?.lowerBound)
+		#expect(nextFixtureRange.upperBound == Defaults[key]["1"]?.upperBound)
+		#expect(nextFixtureRange.lowerBound == Defaults[key]["1"]?.lowerBound)
 
 		// Test serializable Range type
-		let dateKey = Defaults.Key<[String: Range<CustomDate>]>("independentRangeDateDictionaryKey", default: ["0": fixtureDateRange])
-		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey]["0"]?.upperBound)
-		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey]["0"]?.lowerBound)
+		let dateKey = Defaults.Key<[String: Range<CustomDate>]>("independentRangeDateDictionaryKey", default: ["0": fixtureDateRange], suite: suite_)
+		#expect(fixtureDateRange.upperBound == Defaults[dateKey]["0"]?.upperBound)
+		#expect(fixtureDateRange.lowerBound == Defaults[dateKey]["0"]?.lowerBound)
 		Defaults[dateKey]["1"] = nextFixtureDateRange
-		XCTAssertEqual(fixtureDateRange.upperBound, Defaults[dateKey]["0"]?.upperBound)
-		XCTAssertEqual(fixtureDateRange.lowerBound, Defaults[dateKey]["0"]?.lowerBound)
-		XCTAssertEqual(nextFixtureDateRange.upperBound, Defaults[dateKey]["1"]?.upperBound)
-		XCTAssertEqual(nextFixtureDateRange.lowerBound, Defaults[dateKey]["1"]?.lowerBound)
+		#expect(fixtureDateRange.upperBound == Defaults[dateKey]["0"]?.upperBound)
+		#expect(fixtureDateRange.lowerBound == Defaults[dateKey]["0"]?.lowerBound)
+		#expect(nextFixtureDateRange.upperBound == Defaults[dateKey]["1"]?.upperBound)
+		#expect(nextFixtureDateRange.lowerBound == Defaults[dateKey]["1"]?.lowerBound)
 
 		// Test native support ClosedRange type
-		let closedKey = Defaults.Key<[String: ClosedRange]>("independentClosedRangeDictionaryKey", default: ["0": fixtureClosedRange])
-		XCTAssertEqual(fixtureClosedRange.upperBound, Defaults[closedKey]["0"]?.upperBound)
-		XCTAssertEqual(fixtureClosedRange.lowerBound, Defaults[closedKey]["0"]?.lowerBound)
+		let closedKey = Defaults.Key<[String: ClosedRange]>("independentClosedRangeDictionaryKey", default: ["0": fixtureClosedRange], suite: suite_)
+		#expect(fixtureClosedRange.upperBound == Defaults[closedKey]["0"]?.upperBound)
+		#expect(fixtureClosedRange.lowerBound == Defaults[closedKey]["0"]?.lowerBound)
 		Defaults[closedKey]["1"] = nextFixtureClosedRange
-		XCTAssertEqual(fixtureClosedRange.upperBound, Defaults[closedKey]["0"]?.upperBound)
-		XCTAssertEqual(fixtureClosedRange.lowerBound, Defaults[closedKey]["0"]?.lowerBound)
-		XCTAssertEqual(nextFixtureClosedRange.upperBound, Defaults[closedKey]["1"]?.upperBound)
-		XCTAssertEqual(nextFixtureClosedRange.lowerBound, Defaults[closedKey]["1"]?.lowerBound)
+		#expect(fixtureClosedRange.upperBound == Defaults[closedKey]["0"]?.upperBound)
+		#expect(fixtureClosedRange.lowerBound == Defaults[closedKey]["0"]?.lowerBound)
+		#expect(nextFixtureClosedRange.upperBound == Defaults[closedKey]["1"]?.upperBound)
+		#expect(nextFixtureClosedRange.lowerBound == Defaults[closedKey]["1"]?.lowerBound)
 
 		// Test serializable ClosedRange type
-		let closedDateKey = Defaults.Key<[String: ClosedRange<CustomDate>]>("independentClosedRangeDateDictionaryKey", default: ["0": fixtureDateClosedRange])
-		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey]["0"]?.upperBound)
-		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey]["0"]?.lowerBound)
+		let closedDateKey = Defaults.Key<[String: ClosedRange<CustomDate>]>("independentClosedRangeDateDictionaryKey", default: ["0": fixtureDateClosedRange], suite: suite_)
+		#expect(fixtureDateClosedRange.upperBound == Defaults[closedDateKey]["0"]?.upperBound)
+		#expect(fixtureDateClosedRange.lowerBound == Defaults[closedDateKey]["0"]?.lowerBound)
 		Defaults[closedDateKey]["1"] = nextFixtureDateClosedRange
-		XCTAssertEqual(fixtureDateClosedRange.upperBound, Defaults[closedDateKey]["0"]?.upperBound)
-		XCTAssertEqual(fixtureDateClosedRange.lowerBound, Defaults[closedDateKey]["0"]?.lowerBound)
-		XCTAssertEqual(nextFixtureDateClosedRange.upperBound, Defaults[closedDateKey]["1"]?.upperBound)
-		XCTAssertEqual(nextFixtureDateClosedRange.lowerBound, Defaults[closedDateKey]["1"]?.lowerBound)
+		#expect(fixtureDateClosedRange.upperBound == Defaults[closedDateKey]["0"]?.upperBound)
+		#expect(fixtureDateClosedRange.lowerBound == Defaults[closedDateKey]["0"]?.lowerBound)
+		#expect(nextFixtureDateClosedRange.upperBound == Defaults[closedDateKey]["1"]?.upperBound)
+		#expect(nextFixtureDateClosedRange.lowerBound == Defaults[closedDateKey]["1"]?.lowerBound)
 	}
 }

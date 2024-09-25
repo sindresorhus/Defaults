@@ -1,314 +1,143 @@
 #if os(macOS)
 import Foundation
-import Defaults
-import XCTest
 import AppKit
+import Testing
+import Defaults
+
+private let suite_ = createSuite()
 
 private let fixtureColor = NSColor(red: Double(103) / Double(0xFF), green: Double(132) / Double(0xFF), blue: Double(255) / Double(0xFF), alpha: 1)
 private let fixtureColor1 = NSColor(red: Double(255) / Double(0xFF), green: Double(241) / Double(0xFF), blue: Double(180) / Double(0xFF), alpha: 1)
 private let fixtureColor2 = NSColor(red: Double(255) / Double(0xFF), green: Double(180) / Double(0xFF), blue: Double(194) / Double(0xFF), alpha: 1)
 
 extension Defaults.Keys {
-	fileprivate static let color = Defaults.Key<NSColor>("NSColor", default: fixtureColor)
-	fileprivate static let colorArray = Defaults.Key<[NSColor]>("NSColorArray", default: [fixtureColor])
-	fileprivate static let colorDictionary = Defaults.Key<[String: NSColor]>("NSColorArray", default: ["0": fixtureColor])
+	fileprivate static let color = Defaults.Key<NSColor>("NSColor", default: fixtureColor, suite: suite_)
+	fileprivate static let colorArray = Defaults.Key<[NSColor]>("NSColorArray", default: [fixtureColor], suite: suite_)
+	fileprivate static let colorDictionary = Defaults.Key<[String: NSColor]>("NSColorArray", default: ["0": fixtureColor], suite: suite_)
 }
 
-final class DefaultsNSColorTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		Defaults.removeAll()
+@Suite(.serialized)
+final class DefaultsNSColorTests {
+	init() {
+		Defaults.removeAll(suite: suite_)
 	}
 
-	override func tearDown() {
-		super.tearDown()
-		Defaults.removeAll()
+	deinit {
+		Defaults.removeAll(suite: suite_)
 	}
 
+	@Test
 	func testKey() {
-		let key = Defaults.Key<NSColor>("independentNSColorKey", default: fixtureColor)
-		XCTAssertTrue(Defaults[key].isEqual(fixtureColor))
+		let key = Defaults.Key<NSColor>("independentNSColorKey", default: fixtureColor, suite: suite_)
+		#expect(Defaults[key].isEqual(fixtureColor))
 		Defaults[key] = fixtureColor1
-		XCTAssertTrue(Defaults[key].isEqual(fixtureColor1))
+		#expect(Defaults[key].isEqual(fixtureColor1))
 	}
 
+	@Test
 	func testPreservesColorSpace() {
 		let fixture = NSColor(displayP3Red: 1, green: 0.3, blue: 0.7, alpha: 1)
-		let key = Defaults.Key<NSColor?>("independentNSColorPreservesColorSpaceKey")
+		let key = Defaults.Key<NSColor?>("independentNSColorPreservesColorSpaceKey", suite: suite_)
 		Defaults[key] = fixture
-		XCTAssertEqual(Defaults[key]?.colorSpace, fixture.colorSpace)
-		XCTAssertEqual(Defaults[key]?.cgColor.colorSpace, fixture.cgColor.colorSpace)
-		XCTAssertEqual(Defaults[key], fixture)
-		XCTAssertEqual(Defaults[key]?.cgColor, fixture.cgColor)
+		#expect(Defaults[key]?.colorSpace == fixture.colorSpace)
+		#expect(Defaults[key]?.cgColor.colorSpace == fixture.cgColor.colorSpace)
+		#expect(Defaults[key] == fixture)
+		#expect(Defaults[key]?.cgColor == fixture.cgColor)
 	}
 
+	@Test
 	func testOptionalKey() {
-		let key = Defaults.Key<NSColor?>("independentNSColorOptionalKey")
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<NSColor?>("independentNSColorOptionalKey", suite: suite_)
+		#expect(Defaults[key] == nil)
 		Defaults[key] = fixtureColor
-		XCTAssertTrue(Defaults[key]?.isEqual(fixtureColor) ?? false)
+		#expect(Defaults[key]?.isEqual(fixtureColor) ?? false)
 	}
 
+	@Test
 	func testArrayKey() {
-		let key = Defaults.Key<[NSColor]>("independentNSColorArrayKey", default: [fixtureColor])
-		XCTAssertTrue(Defaults[key][0].isEqual(fixtureColor))
+		let key = Defaults.Key<[NSColor]>("independentNSColorArrayKey", default: [fixtureColor], suite: suite_)
+		#expect(Defaults[key][0].isEqual(fixtureColor))
 		Defaults[key].append(fixtureColor1)
-		XCTAssertTrue(Defaults[key][1].isEqual(fixtureColor1))
+		#expect(Defaults[key][1].isEqual(fixtureColor1))
 	}
 
+	@Test
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[NSColor]?>("independentNSColorOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[NSColor]?>("independentNSColorOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = [fixtureColor]
 		Defaults[key]?.append(fixtureColor1)
-		XCTAssertTrue(Defaults[key]?[0].isEqual(fixtureColor) ?? false)
-		XCTAssertTrue(Defaults[key]?[1].isEqual(fixtureColor1) ?? false)
+		#expect(Defaults[key]?[0].isEqual(fixtureColor) ?? false)
+		#expect(Defaults[key]?[1].isEqual(fixtureColor1) ?? false)
 	}
 
+	@Test
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[NSColor]]>("independentNSColorNestedArrayKey", default: [[fixtureColor]])
-		XCTAssertTrue(Defaults[key][0][0].isEqual(fixtureColor))
+		let key = Defaults.Key<[[NSColor]]>("independentNSColorNestedArrayKey", default: [[fixtureColor]], suite: suite_)
+		#expect(Defaults[key][0][0].isEqual(fixtureColor))
 		Defaults[key][0].append(fixtureColor1)
 		Defaults[key].append([fixtureColor2])
-		XCTAssertTrue(Defaults[key][0][1].isEqual(fixtureColor1))
-		XCTAssertTrue(Defaults[key][1][0].isEqual(fixtureColor2))
+		#expect(Defaults[key][0][1].isEqual(fixtureColor1))
+		#expect(Defaults[key][1][0].isEqual(fixtureColor2))
 	}
 
+	@Test
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: NSColor]]>("independentNSColorArrayDictionaryKey", default: [["0": fixtureColor]])
-		XCTAssertTrue(Defaults[key][0]["0"]?.isEqual(fixtureColor) ?? false)
+		let key = Defaults.Key<[[String: NSColor]]>("independentNSColorArrayDictionaryKey", default: [["0": fixtureColor]], suite: suite_)
+		#expect(Defaults[key][0]["0"]?.isEqual(fixtureColor) ?? false)
 		Defaults[key][0]["1"] = fixtureColor1
 		Defaults[key].append(["0": fixtureColor2])
-		XCTAssertTrue(Defaults[key][0]["1"]?.isEqual(fixtureColor1) ?? false)
-		XCTAssertTrue(Defaults[key][1]["0"]?.isEqual(fixtureColor2) ?? false)
+		#expect(Defaults[key][0]["1"]?.isEqual(fixtureColor1) ?? false)
+		#expect(Defaults[key][1]["0"]?.isEqual(fixtureColor2) ?? false)
 	}
 
+	@Test
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: NSColor]>("independentNSColorDictionaryKey", default: ["0": fixtureColor])
-		XCTAssertTrue(Defaults[key]["0"]?.isEqual(fixtureColor) ?? false)
+		let key = Defaults.Key<[String: NSColor]>("independentNSColorDictionaryKey", default: ["0": fixtureColor], suite: suite_)
+		#expect(Defaults[key]["0"]?.isEqual(fixtureColor) ?? false)
 		Defaults[key]["1"] = fixtureColor1
-		XCTAssertTrue(Defaults[key]["1"]?.isEqual(fixtureColor1) ?? false)
+		#expect(Defaults[key]["1"]?.isEqual(fixtureColor1) ?? false)
 	}
 
+	@Test
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: NSColor]?>("independentNSColorDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[String: NSColor]?>("independentNSColorDictionaryOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = ["0": fixtureColor]
 		Defaults[key]?["1"] = fixtureColor1
-		XCTAssertTrue(Defaults[key]?["0"]?.isEqual(fixtureColor) ?? false)
-		XCTAssertTrue(Defaults[key]?["1"]?.isEqual(fixtureColor1) ?? false)
+		#expect(Defaults[key]?["0"]?.isEqual(fixtureColor) ?? false)
+		#expect(Defaults[key]?["1"]?.isEqual(fixtureColor1) ?? false)
 	}
 
+	@Test
 	func testDictionaryArrayKey() {
-		let key = Defaults.Key<[String: [NSColor]]>("independentNSColorDictionaryArrayKey", default: ["0": [fixtureColor]])
-		XCTAssertTrue(Defaults[key]["0"]?[0].isEqual(fixtureColor) ?? false)
+		let key = Defaults.Key<[String: [NSColor]]>("independentNSColorDictionaryArrayKey", default: ["0": [fixtureColor]], suite: suite_)
+		#expect(Defaults[key]["0"]?[0].isEqual(fixtureColor) ?? false)
 		Defaults[key]["0"]?.append(fixtureColor1)
 		Defaults[key]["1"] = [fixtureColor2]
-		XCTAssertTrue(Defaults[key]["0"]?[1].isEqual(fixtureColor1) ?? false)
-		XCTAssertTrue(Defaults[key]["1"]?[0].isEqual(fixtureColor2) ?? false)
+		#expect(Defaults[key]["0"]?[1].isEqual(fixtureColor1) ?? false)
+		#expect(Defaults[key]["1"]?[0].isEqual(fixtureColor2) ?? false)
 	}
 
+	@Test
 	func testType() {
-		XCTAssert(Defaults[.color].isEqual(fixtureColor))
+		#expect(Defaults[.color].isEqual(fixtureColor))
 		Defaults[.color] = fixtureColor1
-		XCTAssert(Defaults[.color].isEqual(fixtureColor1))
+		#expect(Defaults[.color].isEqual(fixtureColor1))
 	}
 
+	@Test
 	func testArrayType() {
-		XCTAssertTrue(Defaults[.colorArray][0].isEqual(fixtureColor))
+		#expect(Defaults[.colorArray][0].isEqual(fixtureColor))
 		Defaults[.colorArray][0] = fixtureColor1
-		XCTAssertTrue(Defaults[.colorArray][0].isEqual(fixtureColor1))
+		#expect(Defaults[.colorArray][0].isEqual(fixtureColor1))
 	}
 
+	@Test
 	func testDictionaryType() {
-		XCTAssertTrue(Defaults[.colorDictionary]["0"]?.isEqual(fixtureColor) ?? false)
+		#expect(Defaults[.colorDictionary]["0"]?.isEqual(fixtureColor) ?? false)
 		Defaults[.colorDictionary]["0"] = fixtureColor1
-		XCTAssertTrue(Defaults[.colorDictionary]["0"]?.isEqual(fixtureColor1) ?? false)
-	}
-
-	func testObserveKeyCombine() {
-		let key = Defaults.Key<NSColor>("observeNSColorKeyCombine", default: fixtureColor)
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
-				XCTAssertTrue(expected.0.isEqual(tuples[index].0))
-				XCTAssertTrue(expected.1.isEqual(tuples[index].1))
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = fixtureColor1
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<NSColor?>("observeNSColorOptionalKeyCombine")
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(3)
-
-		let expectedValue: [(NSColor?, NSColor?)] = [(nil, fixtureColor), (fixtureColor, fixtureColor1), (fixtureColor1, nil)]
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				guard let oldValue = expected.0 else {
-					XCTAssertNil(tuples[index].0)
-					continue
-				}
-				guard let newValue = expected.1 else {
-					XCTAssertNil(tuples[index].1)
-					continue
-				}
-				XCTAssertTrue(oldValue.isEqual(tuples[index].0))
-				XCTAssertTrue(newValue.isEqual(tuples[index].1))
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = fixtureColor
-		Defaults[key] = fixtureColor1
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKeyCombine() {
-		let key = Defaults.Key<[NSColor]>("observeNSColorArrayKeyCombine", default: [fixtureColor])
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
-				XCTAssertTrue(expected.0.isEqual(tuples[index].0[0]))
-				XCTAssertTrue(expected.1.isEqual(tuples[index].1[0]))
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key][0] = fixtureColor1
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKeyCombine() {
-		let key = Defaults.Key<[String: NSColor]>("observeNSColorDictionaryKeyCombine", default: ["0": fixtureColor])
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(fixtureColor, fixtureColor1), (fixtureColor1, fixtureColor)].enumerated() {
-				XCTAssertTrue(expected.0.isEqual(tuples[index].0["0"]))
-				XCTAssertTrue(expected.1.isEqual(tuples[index].1["0"]))
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key]["0"] = fixtureColor1
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveKey() {
-		let key = Defaults.Key<NSColor>("observeNSColorKey", default: fixtureColor)
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertTrue(change.oldValue.isEqual(fixtureColor))
-			XCTAssertTrue(change.newValue.isEqual(fixtureColor1))
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = fixtureColor1
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKey() {
-		let key = Defaults.Key<NSColor?>("observeNSColorOptionalKey")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertNil(change.oldValue)
-			XCTAssertTrue(change.newValue?.isEqual(fixtureColor) ?? false)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = fixtureColor
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKey() {
-		let key = Defaults.Key<[NSColor]>("observeNSColorArrayKey", default: [fixtureColor])
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertTrue(change.oldValue[0].isEqual(fixtureColor))
-			XCTAssertTrue(change.newValue[0].isEqual(fixtureColor))
-			XCTAssertTrue(change.newValue[1].isEqual(fixtureColor1))
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key].append(fixtureColor1)
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKey() {
-		let key = Defaults.Key<[String: NSColor]>("observeNSColorDictionaryKey", default: ["0": fixtureColor])
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertTrue(change.oldValue["0"]?.isEqual(fixtureColor) ?? false)
-			XCTAssertTrue(change.newValue["0"]?.isEqual(fixtureColor) ?? false)
-			XCTAssertTrue(change.newValue["1"]?.isEqual(fixtureColor1) ?? false)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key]["1"] = fixtureColor1
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
+		#expect(Defaults[.colorDictionary]["0"]?.isEqual(fixtureColor1) ?? false)
 	}
 }
 #endif

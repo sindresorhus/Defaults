@@ -1,7 +1,9 @@
 import Foundation
 import CoreData
+import Testing
 import Defaults
-import XCTest
+
+private let suite_ = createSuite()
 
 @objc(ExamplePersistentHistory)
 private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults.Serializable {
@@ -28,445 +30,144 @@ private final class ExamplePersistentHistory: NSPersistentHistoryToken, Defaults
 private let persistentHistoryValue = ExamplePersistentHistory(value: "ExampleToken")
 
 extension Defaults.Keys {
-	fileprivate static let persistentHistory = Key<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue)
-	fileprivate static let persistentHistoryArray = Key<[ExamplePersistentHistory]>("array_persistentHistory", default: [persistentHistoryValue])
-	fileprivate static let persistentHistoryDictionary = Key<[String: ExamplePersistentHistory]>("dictionary_persistentHistory", default: ["0": persistentHistoryValue])
+	fileprivate static let persistentHistory = Key<ExamplePersistentHistory>("persistentHistory", default: persistentHistoryValue, suite: suite_)
+	fileprivate static let persistentHistoryArray = Key<[ExamplePersistentHistory]>("array_persistentHistory", default: [persistentHistoryValue], suite: suite_)
+	fileprivate static let persistentHistoryDictionary = Key<[String: ExamplePersistentHistory]>("dictionary_persistentHistory", default: ["0": persistentHistoryValue], suite: suite_)
 }
 
-final class DefaultsNSSecureCodingTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
-		Defaults.removeAll()
+@Suite(.serialized)
+final class DefaultsNSSecureCodingTests {
+	init() {
+		Defaults.removeAll(suite: suite_)
 	}
 
-	override func tearDown() {
-		super.tearDown()
-		Defaults.removeAll()
+	deinit {
+		Defaults.removeAll(suite: suite_)
 	}
 
+	@Test
 	func testKey() {
-		let key = Defaults.Key<ExamplePersistentHistory>("independentNSSecureCodingKey", default: persistentHistoryValue)
-		XCTAssertEqual(Defaults[key].value, persistentHistoryValue.value)
+		let key = Defaults.Key<ExamplePersistentHistory>("independentNSSecureCodingKey", default: persistentHistoryValue, suite: suite_)
+		#expect(Defaults[key].value == persistentHistoryValue.value)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
 		Defaults[key] = newPersistentHistory
-		XCTAssertEqual(Defaults[key].value, newPersistentHistory.value)
+		#expect(Defaults[key].value == newPersistentHistory.value)
 	}
 
+	@Test
 	func testOptionalKey() {
-		let key = Defaults.Key<ExamplePersistentHistory?>("independentNSSecureCodingOptionalKey")
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<ExamplePersistentHistory?>("independentNSSecureCodingOptionalKey", suite: suite_)
+		#expect(Defaults[key] == nil)
 		Defaults[key] = persistentHistoryValue
-		XCTAssertEqual(Defaults[key]?.value, persistentHistoryValue.value)
+		#expect(Defaults[key]?.value == persistentHistoryValue.value)
 		Defaults[key] = nil
-		XCTAssertNil(Defaults[key])
+		#expect(Defaults[key] == nil)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
 		Defaults[key] = newPersistentHistory
-		XCTAssertEqual(Defaults[key]?.value, newPersistentHistory.value)
+		#expect(Defaults[key]?.value == newPersistentHistory.value)
 	}
 
+	@Test
 	func testArrayKey() {
-		let key = Defaults.Key<[ExamplePersistentHistory]>("independentNSSecureCodingArrayKey", default: [persistentHistoryValue])
-		XCTAssertEqual(Defaults[key][0].value, persistentHistoryValue.value)
+		let key = Defaults.Key<[ExamplePersistentHistory]>("independentNSSecureCodingArrayKey", default: [persistentHistoryValue], suite: suite_)
+		#expect(Defaults[key][0].value == persistentHistoryValue.value)
 		let newPersistentHistory1 = ExamplePersistentHistory(value: "NewValue1")
 		Defaults[key].append(newPersistentHistory1)
-		XCTAssertEqual(Defaults[key][1].value, newPersistentHistory1.value)
+		#expect(Defaults[key][1].value == newPersistentHistory1.value)
 		let newPersistentHistory2 = ExamplePersistentHistory(value: "NewValue2")
 		Defaults[key][1] = newPersistentHistory2
-		XCTAssertEqual(Defaults[key][1].value, newPersistentHistory2.value)
-		XCTAssertEqual(Defaults[key][0].value, persistentHistoryValue.value)
+		#expect(Defaults[key][1].value == newPersistentHistory2.value)
+		#expect(Defaults[key][0].value == persistentHistoryValue.value)
 	}
 
+	@Test
 	func testArrayOptionalKey() {
-		let key = Defaults.Key<[ExamplePersistentHistory]?>("independentNSSecureCodingArrayOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[ExamplePersistentHistory]?>("independentNSSecureCodingArrayOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = [persistentHistoryValue]
-		XCTAssertEqual(Defaults[key]?[0].value, persistentHistoryValue.value)
+		#expect(Defaults[key]?[0].value == persistentHistoryValue.value)
 		Defaults[key] = nil
-		XCTAssertNil(Defaults[key])
+		#expect(Defaults[key] == nil)
 	}
 
+	@Test
 	func testNestedArrayKey() {
-		let key = Defaults.Key<[[ExamplePersistentHistory]]>("independentNSSecureCodingNestedArrayKey", default: [[persistentHistoryValue]])
-		XCTAssertEqual(Defaults[key][0][0].value, persistentHistoryValue.value)
+		let key = Defaults.Key<[[ExamplePersistentHistory]]>("independentNSSecureCodingNestedArrayKey", default: [[persistentHistoryValue]], suite: suite_)
+		#expect(Defaults[key][0][0].value == persistentHistoryValue.value)
 		let newPersistentHistory1 = ExamplePersistentHistory(value: "NewValue1")
 		Defaults[key][0].append(newPersistentHistory1)
 		let newPersistentHistory2 = ExamplePersistentHistory(value: "NewValue2")
 		Defaults[key].append([newPersistentHistory2])
-		XCTAssertEqual(Defaults[key][0][1].value, newPersistentHistory1.value)
-		XCTAssertEqual(Defaults[key][1][0].value, newPersistentHistory2.value)
+		#expect(Defaults[key][0][1].value == newPersistentHistory1.value)
+		#expect(Defaults[key][1][0].value == newPersistentHistory2.value)
 	}
 
+	@Test
 	func testArrayDictionaryKey() {
-		let key = Defaults.Key<[[String: ExamplePersistentHistory]]>("independentNSSecureCodingArrayDictionaryKey", default: [["0": persistentHistoryValue]])
-		XCTAssertEqual(Defaults[key][0]["0"]?.value, persistentHistoryValue.value)
+		let key = Defaults.Key<[[String: ExamplePersistentHistory]]>("independentNSSecureCodingArrayDictionaryKey", default: [["0": persistentHistoryValue]], suite: suite_)
+		#expect(Defaults[key][0]["0"]?.value == persistentHistoryValue.value)
 		let newPersistentHistory1 = ExamplePersistentHistory(value: "NewValue1")
 		Defaults[key][0]["1"] = newPersistentHistory1
 		let newPersistentHistory2 = ExamplePersistentHistory(value: "NewValue2")
 		Defaults[key].append(["0": newPersistentHistory2])
-		XCTAssertEqual(Defaults[key][0]["1"]?.value, newPersistentHistory1.value)
-		XCTAssertEqual(Defaults[key][1]["0"]?.value, newPersistentHistory2.value)
+		#expect(Defaults[key][0]["1"]?.value == newPersistentHistory1.value)
+		#expect(Defaults[key][1]["0"]?.value == newPersistentHistory2.value)
 	}
 
+	@Test
 	func testDictionaryKey() {
-		let key = Defaults.Key<[String: ExamplePersistentHistory]>("independentNSSecureCodingDictionaryKey", default: ["0": persistentHistoryValue])
-		XCTAssertEqual(Defaults[key]["0"]?.value, persistentHistoryValue.value)
+		let key = Defaults.Key<[String: ExamplePersistentHistory]>("independentNSSecureCodingDictionaryKey", default: ["0": persistentHistoryValue], suite: suite_)
+		#expect(Defaults[key]["0"]?.value == persistentHistoryValue.value)
 		let newPersistentHistory1 = ExamplePersistentHistory(value: "NewValue1")
 		Defaults[key]["1"] = newPersistentHistory1
-		XCTAssertEqual(Defaults[key]["1"]?.value, newPersistentHistory1.value)
+		#expect(Defaults[key]["1"]?.value == newPersistentHistory1.value)
 		let newPersistentHistory2 = ExamplePersistentHistory(value: "NewValue2")
 		Defaults[key]["1"] = newPersistentHistory2
-		XCTAssertEqual(Defaults[key]["1"]?.value, newPersistentHistory2.value)
-		XCTAssertEqual(Defaults[key]["0"]?.value, persistentHistoryValue.value)
+		#expect(Defaults[key]["1"]?.value == newPersistentHistory2.value)
+		#expect(Defaults[key]["0"]?.value == persistentHistoryValue.value)
 	}
 
+	@Test
 	func testDictionaryOptionalKey() {
-		let key = Defaults.Key<[String: ExamplePersistentHistory]?>("independentNSSecureCodingDictionaryOptionalKey") // swiftlint:disable:this discouraged_optional_collection
-		XCTAssertNil(Defaults[key])
+		let key = Defaults.Key<[String: ExamplePersistentHistory]?>("independentNSSecureCodingDictionaryOptionalKey", suite: suite_) // swiftlint:disable:this discouraged_optional_collection
+		#expect(Defaults[key] == nil)
 		Defaults[key] = ["0": persistentHistoryValue]
-		XCTAssertEqual(Defaults[key]?["0"]?.value, persistentHistoryValue.value)
+		#expect(Defaults[key]?["0"]?.value == persistentHistoryValue.value)
 	}
 
+	@Test
 	func testDictionaryArrayKey() {
-		let key = Defaults.Key<[String: [ExamplePersistentHistory]]>("independentNSSecureCodingDictionaryArrayKey", default: ["0": [persistentHistoryValue]])
-		XCTAssertEqual(Defaults[key]["0"]?[0].value, persistentHistoryValue.value)
+		let key = Defaults.Key<[String: [ExamplePersistentHistory]]>("independentNSSecureCodingDictionaryArrayKey", default: ["0": [persistentHistoryValue]], suite: suite_)
+		#expect(Defaults[key]["0"]?[0].value == persistentHistoryValue.value)
 		let newPersistentHistory1 = ExamplePersistentHistory(value: "NewValue1")
 		Defaults[key]["0"]?.append(newPersistentHistory1)
 		let newPersistentHistory2 = ExamplePersistentHistory(value: "NewValue2")
 		Defaults[key]["1"] = [newPersistentHistory2]
-		XCTAssertEqual(Defaults[key]["0"]?[1].value, newPersistentHistory1.value)
-		XCTAssertEqual(Defaults[key]["1"]?[0].value, newPersistentHistory2.value)
+		#expect(Defaults[key]["0"]?[1].value == newPersistentHistory1.value)
+		#expect(Defaults[key]["1"]?[0].value == newPersistentHistory2.value)
 	}
 
+	@Test
 	func testType() {
-		XCTAssertEqual(Defaults[.persistentHistory].value, persistentHistoryValue.value)
+		#expect(Defaults[.persistentHistory].value == persistentHistoryValue.value)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
 		Defaults[.persistentHistory] = newPersistentHistory
-		XCTAssertEqual(Defaults[.persistentHistory].value, newPersistentHistory.value)
+		#expect(Defaults[.persistentHistory].value == newPersistentHistory.value)
 	}
 
+	@Test
 	func testArrayType() {
-		XCTAssertEqual(Defaults[.persistentHistoryArray][0].value, persistentHistoryValue.value)
+		#expect(Defaults[.persistentHistoryArray][0].value == persistentHistoryValue.value)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
 		Defaults[.persistentHistoryArray][0] = newPersistentHistory
-		XCTAssertEqual(Defaults[.persistentHistoryArray][0].value, newPersistentHistory.value)
+		#expect(Defaults[.persistentHistoryArray][0].value == newPersistentHistory.value)
 	}
 
+	@Test
 	func testDictionaryType() {
-		XCTAssertEqual(Defaults[.persistentHistoryDictionary]["0"]?.value, persistentHistoryValue.value)
+		#expect(Defaults[.persistentHistoryDictionary]["0"]?.value == persistentHistoryValue.value)
 		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
 		Defaults[.persistentHistoryDictionary]["0"] = newPersistentHistory
-		XCTAssertEqual(Defaults[.persistentHistoryDictionary]["0"]?.value, newPersistentHistory.value)
-	}
-
-	func testObserveKeyCombine() {
-		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKeyCombine", default: persistentHistoryValue)
-		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue.value, $0.newValue.value) }
-			.collect(2)
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in [(persistentHistoryValue.value, newPersistentHistory.value), (newPersistentHistory.value, persistentHistoryValue.value)].enumerated() {
-				XCTAssertEqual(expected.0, tuples[index].0)
-				XCTAssertEqual(expected.1, tuples[index].1)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = newPersistentHistory
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKeyCombine() {
-		let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKeyCombine")
-		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue?.value, $0.newValue?.value) }
-			.collect(3)
-
-		let expectedValue: [(ExamplePersistentHistory?, ExamplePersistentHistory?)] = [(nil, persistentHistoryValue), (persistentHistoryValue, newPersistentHistory), (newPersistentHistory, nil)]
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0?.value, tuples[index].0)
-				XCTAssertEqual(expected.1?.value, tuples[index].1)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key] = persistentHistoryValue
-		Defaults[key] = newPersistentHistory
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKeyCombine() {
-		let key = Defaults.Key<[ExamplePersistentHistory]>("observeNSSecureCodingArrayKeyCombine", default: [persistentHistoryValue])
-		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let expectedValue: [(ExamplePersistentHistory, ExamplePersistentHistory)] = [(persistentHistoryValue, newPersistentHistory), (newPersistentHistory, persistentHistoryValue)]
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0.value, tuples[index].0[0].value)
-				XCTAssertEqual(expected.1.value, tuples[index].1[0].value)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key][0] = newPersistentHistory
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKeyCombine() {
-		let key = Defaults.Key<[String: ExamplePersistentHistory]>("observeNSSecureCodingDictionaryKeyCombine", default: ["0": persistentHistoryValue])
-		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults
-			.publisher(key, options: [])
-			.map { ($0.oldValue, $0.newValue) }
-			.collect(2)
-
-		let expectedValue: [(ExamplePersistentHistory, ExamplePersistentHistory)] = [(persistentHistoryValue, newPersistentHistory), (newPersistentHistory, persistentHistoryValue)]
-
-		let cancellable = publisher.sink { tuples in
-			for (index, expected) in expectedValue.enumerated() {
-				XCTAssertEqual(expected.0.value, tuples[index].0["0"]?.value)
-				XCTAssertEqual(expected.1.value, tuples[index].1["0"]?.value)
-			}
-
-			expect.fulfill()
-		}
-
-		Defaults[key]["0"] = newPersistentHistory
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveMultipleNSSecureKeysCombine() {
-		let key1 = Defaults.Key<ExamplePersistentHistory>("observeMultipleNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
-		let key2 = Defaults.Key<ExamplePersistentHistory>("observeMultipleNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
-
-		let cancellable = publisher.sink { _ in
-			expect.fulfill()
-		}
-
-		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
-		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveMultipleNSSecureOptionalKeysCombine() {
-		let key1 = Defaults.Key<ExamplePersistentHistory?>("observeMultipleNSSecureCodingOptionalKey1")
-		let key2 = Defaults.Key<ExamplePersistentHistory?>("observeMultipleNSSecureCodingOptionalKeyKey2")
-		let expect = expectation(description: "Observation closure being called")
-
-		let publisher = Defaults.publisher(keys: key1, key2, options: []).collect(2)
-
-		let cancellable = publisher.sink { _ in
-			expect.fulfill()
-		}
-
-		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
-		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveMultipleNSSecureKeys() {
-		let key1 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey1", default: ExamplePersistentHistory(value: "TestValue"))
-		let key2 = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey2", default: ExamplePersistentHistory(value: "TestValue"))
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		var counter = 0
-		observation = Defaults.observe(keys: key1, key2, options: []) {
-			counter += 1
-			if counter == 2 {
-				expect.fulfill()
-			} else if counter > 2 {
-				XCTFail() // swiftlint:disable:this xctfail_message
-			}
-		}
-
-		Defaults[key1] = ExamplePersistentHistory(value: "NewTestValue1")
-		Defaults[key2] = ExamplePersistentHistory(value: "NewTestValue2")
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testRemoveDuplicatesObserveNSSecureCodingKeyCombine() {
-		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: ExamplePersistentHistory(value: "TestValue"))
-		let expect = expectation(description: "Observation closure being called")
-
-		let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
-		let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3"]
-
-		let cancellable = Defaults
-			.publisher(key, options: [])
-			.removeDuplicates()
-			.map(\.newValue.value)
-			.collect(expectedArray.count)
-			.sink { result in
-				print("Result array: \(result)")
-
-				if result == expectedArray {
-					expect.fulfill()
-				} else {
-					XCTFail("Expected Array is not matched")
-				}
-			}
-
-		for item in inputArray {
-			Defaults[key] = ExamplePersistentHistory(value: item)
-		}
-
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testRemoveDuplicatesObserveNSSecureCodingOptionalKeyCombine() {
-		let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKey")
-		let expect = expectation(description: "Observation closure being called")
-
-		let inputArray = ["NewTestValue", "NewTestValue", "NewTestValue", "NewTestValue2", "NewTestValue2", "NewTestValue2", "NewTestValue3", "NewTestValue3"]
-		let expectedArray = ["NewTestValue", "NewTestValue2", "NewTestValue3", nil]
-
-		let cancellable = Defaults
-			.publisher(key, options: [])
-			.removeDuplicates()
-			.map(\.newValue)
-			.map { $0?.value }
-			.collect(expectedArray.count)
-			.sink { result in
-				print("Result array: \(result)")
-
-				if result == expectedArray {
-					expect.fulfill()
-				} else {
-					XCTFail("Expected Array is not matched")
-				}
-			}
-
-		for item in inputArray {
-			Defaults[key] = ExamplePersistentHistory(value: item)
-		}
-
-		Defaults.reset(key)
-		cancellable.cancel()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveKey() {
-		let key = Defaults.Key<ExamplePersistentHistory>("observeNSSecureCodingKey", default: persistentHistoryValue)
-		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue.value, persistentHistoryValue.value)
-			XCTAssertEqual(change.newValue.value, newPersistentHistory.value)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = newPersistentHistory
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveOptionalKey() {
-		let key = Defaults.Key<ExamplePersistentHistory?>("observeNSSecureCodingOptionalKey")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertNil(change.oldValue)
-			XCTAssertEqual(change.newValue?.value, persistentHistoryValue.value)
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key] = persistentHistoryValue
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveArrayKey() {
-		let key = Defaults.Key<[ExamplePersistentHistory]>("observeNSSecureCodingArrayKey", default: [persistentHistoryValue])
-		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue[0].value, persistentHistoryValue.value)
-			XCTAssertEqual(change.newValue.map(\.value), [persistentHistoryValue, newPersistentHistory].map(\.value))
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key].append(newPersistentHistory)
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
-	}
-
-	func testObserveDictionaryKey() {
-		let key = Defaults.Key<[String: ExamplePersistentHistory]>("observeNSSecureCodingDictionaryKey", default: ["0": persistentHistoryValue])
-		let newPersistentHistory = ExamplePersistentHistory(value: "NewValue")
-		let expect = expectation(description: "Observation closure being called")
-
-		var observation: Defaults.Observation!
-		observation = Defaults.observe(key, options: []) { change in
-			XCTAssertEqual(change.oldValue["0"]?.value, persistentHistoryValue.value)
-			XCTAssertEqual(change.newValue["0"]?.value, persistentHistoryValue.value)
-			XCTAssertEqual(change.newValue["1"]?.value, newPersistentHistory.value)
-
-			observation.invalidate()
-			expect.fulfill()
-		}
-
-		Defaults[key]["1"] = newPersistentHistory
-		observation.invalidate()
-
-		waitForExpectations(timeout: 10)
+		#expect(Defaults[.persistentHistoryDictionary]["0"]?.value == newPersistentHistory.value)
 	}
 }
