@@ -211,6 +211,11 @@ You cannot use `@Default` in an `ObservableObject`. It's meant to be used in a `
 
 With the `@ObservableDefault` macro, you can use `Defaults` inside `@Observable` classes that use the [Observation](https://developer.apple.com/documentation/observation) framework. Doing so is as simple as importing `DefaultsMacros` and adding two lines to a property (note that adding `@ObservationIgnored` is needed to prevent clashes with `@Observable`):
 
+> [!IMPORTANT] 
+> Build times will increase when using macros.
+> 
+> Swift macros depend on the [`swift-syntax`](https://github.com/swiftlang/swift-syntax) package. This means that when you compile code that includes macros as dependencies, you also have to compile `swift-syntax`. It is widely known that doing so has serious impact in build time and, while it is an issue that is being tracked (see [`swift-syntax`#2421](https://github.com/swiftlang/swift-syntax/issues/2421)), there's currently no solution implemented.
+
 ```swift
 import Defaults
 import DefaultsMacros
