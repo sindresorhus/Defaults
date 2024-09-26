@@ -9,52 +9,52 @@ public struct ObservableDefaultMacro: AccessorMacro {
 		of node: AttributeSyntax,
 		providingAccessorsOf declaration: some DeclSyntaxProtocol,
 		in context: some MacroExpansionContext
-	) throws -> [AccessorDeclSyntax] {
+	) throws(ObservableDefaultMacroError) -> [AccessorDeclSyntax] {
 		// Must be attached to a property declaration.
 		guard let variableDeclaration = declaration.as(VariableDeclSyntax.self) else {
-			throw ObservableDefaultMacroError.notAttachedToProperty
+			throw .notAttachedToProperty
 		}
 
 		// Must be attached to a variable property (i.e. `var` and not `let`).
 		guard variableDeclaration.bindingSpecifier.tokenKind == .keyword(.var) else {
-			throw ObservableDefaultMacroError.notAttachedToVariable
+			throw .notAttachedToVariable
 		}
 
 		// Must be attached to a single property.
 		guard variableDeclaration.bindings.count == 1, let binding = variableDeclaration.bindings.first else {
-			throw ObservableDefaultMacroError.notAttachedToSingleProperty
+			throw .notAttachedToSingleProperty
 		}
 
 		// Must not provide an initializer for the property (i.e. not assign a value).
 		guard binding.initializer == nil else {
-			throw ObservableDefaultMacroError.attachedToPropertyWithInitializer
+			throw .attachedToPropertyWithInitializer
 		}
 
 		// Must not be attached to property with existing accessor block.
 		guard binding.accessorBlock == nil else {
-			throw ObservableDefaultMacroError.attachedToPropertyWithAccessorBlock
+			throw .attachedToPropertyWithAccessorBlock
 		}
 
 		// Must use Identifier Pattern.
 		// See https://swiftinit.org/docs/swift-syntax/swiftsyntax/identifierpatternsyntax
 		guard let pattern = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier else {
-			throw ObservableDefaultMacroError.attachedToPropertyWithoutIdentifierProperty
+			throw .attachedToPropertyWithoutIdentifierProperty
 		}
 
 		// Must receive arguments
 		guard let arguments = node.arguments else {
-			throw ObservableDefaultMacroError.calledWithoutArguments
+			throw .calledWithoutArguments
 		}
 
 		// Must be called with Labeled Expression.
 		// See https://swiftinit.org/docs/swift-syntax/swiftsyntax/labeledexprlistsyntax
 		guard let expressionList = arguments.as(LabeledExprListSyntax.self) else {
-			throw ObservableDefaultMacroError.calledWithoutLabeledExpression
+			throw .calledWithoutLabeledExpression
 		}
 
 		// Must only receive one argument.
 		guard expressionList.count == 1, let expression = expressionList.first?.expression else {
-			throw ObservableDefaultMacroError.calledWithMultipleArguments
+			throw .calledWithMultipleArguments
 		}
 
 		return [
@@ -75,7 +75,7 @@ public struct ObservableDefaultMacro: AccessorMacro {
 	}
 }
 
-enum ObservableDefaultMacroError: Error {
+public enum ObservableDefaultMacroError: Error {
 	case notAttachedToProperty
 	case notAttachedToVariable
 	case notAttachedToSingleProperty
@@ -91,7 +91,7 @@ enum ObservableDefaultMacroError: Error {
 }
 
 extension ObservableDefaultMacroError: CustomStringConvertible {
-	var description: String {
+	public var description: String {
 		switch self {
 		case .notAttachedToProperty:
 			"@ObservableDefault must be attached to a property."
