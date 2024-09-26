@@ -1,4 +1,6 @@
-import XCTest
+import Foundation
+import Observation
+import Testing
 
 import Defaults
 @testable import DefaultsMacros
@@ -49,59 +51,66 @@ final class TestModelWithProperty {
 	var testValue: String
 }
 
-@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
-final class ObservableDefaultTests: XCTestCase {
-	override func setUp() {
-		super.setUp()
+@Suite(.serialized)
+final class ObservableDefaultTests {
+	init() {
+		Defaults.removeAll()
 		Defaults[.test] = defaultValue
 	}
 
-	override func tearDown() {
-		super.tearDown()
+	deinit {
 		Defaults.removeAll()
 	}
 
+	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+	@Test
 	func testMacroWithMemberSyntax() {
 		let model = TestModelWithMemberSyntax()
-		XCTAssertEqual(model.testValue, defaultValue)
+		#expect(model.testValue == defaultValue)
 
 		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		XCTAssertEqual(userDefaultsValue, defaultValue)
+		#expect(userDefaultsValue == defaultValue)
 
 		UserDefaults.standard.set(newValue, forKey: testKey)
-		XCTAssertEqual(model.testValue, newValue)
+		#expect(model.testValue == newValue)
 	}
 
+	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+	@Test
 	func testMacroWithDotSyntax() {
 		let model = TestModelWithDotSyntax()
-		XCTAssertEqual(model.testValue, defaultValue)
+		#expect(model.testValue == defaultValue)
 
 		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		XCTAssertEqual(userDefaultsValue, defaultValue)
+		#expect(userDefaultsValue == defaultValue)
 
 		UserDefaults.standard.set(newValue, forKey: testKey)
-		XCTAssertEqual(model.testValue, newValue)
+		#expect(model.testValue == newValue)
 	}
 
+	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+	@Test
 	func testMacroWithFunctionCall() {
 		let model = TestModelWithFunctionCall()
-		XCTAssertEqual(model.testValue, defaultValue)
+		#expect(model.testValue == defaultValue)
 
 		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		XCTAssertEqual(userDefaultsValue, defaultValue)
+		#expect(userDefaultsValue == defaultValue)
 
 		UserDefaults.standard.set(newValue, forKey: testKey)
-		XCTAssertEqual(model.testValue, newValue)
+		#expect(model.testValue == newValue)
 	}
 
+	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+	@Test
 	func testMacroWithProperty() {
 		let model = TestModelWithProperty()
-		XCTAssertEqual(model.testValue, defaultValue)
+		#expect(model.testValue == defaultValue)
 
 		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		XCTAssertEqual(userDefaultsValue, defaultValue)
+		#expect(userDefaultsValue == defaultValue)
 
 		UserDefaults.standard.set(newValue, forKey: testKey)
-		XCTAssertEqual(model.testValue, newValue)
+		#expect(model.testValue == newValue)
 	}
 }

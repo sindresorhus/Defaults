@@ -1,6 +1,6 @@
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import XCTest
+import Testing
 
 // Macro implementations build for the host, so the corresponding module is not available when cross-compiling.
 // Cross-compiled tests may still make use of the macro itself in end-to-end tests.
@@ -11,11 +11,14 @@ import XCTest
 let testMacros: [String: Macro.Type] = [
 	"ObservableDefault": ObservableDefaultMacro.self
 ]
+#else
+let testMacros: [String: Macro.Type] = [:]
 #endif
 
-final class ObservableDefaultMacroTests: XCTestCase {
+@Suite(.serialized)
+final class ObservableDefaultMacroTests {
+	@Test(.disabled(if: testMacros.isEmpty))
 	func testExpansionWithMemberSyntax() throws {
-		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""
 			@Observable
@@ -46,13 +49,10 @@ final class ObservableDefaultMacroTests: XCTestCase {
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
-		#else
-		throw XCTSkip("Macros are only supported when running tests for the host platform")
-		#endif
 	}
 
+	@Test(.disabled(if: testMacros.isEmpty))
 	func testExpansionWithDotSyntax() throws {
-		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""
 			@Observable
@@ -83,13 +83,10 @@ final class ObservableDefaultMacroTests: XCTestCase {
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
-		#else
-		throw XCTSkip("Macros are only supported when running tests for the host platform")
-		#endif
 	}
 
+	@Test(.disabled(if: testMacros.isEmpty))
 	func testExpansionWithFunctionCall() throws {
-		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""
 			@Observable
@@ -120,13 +117,10 @@ final class ObservableDefaultMacroTests: XCTestCase {
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
-		#else
-		throw XCTSkip("Macros are only supported when running tests for the host platform")
-		#endif
 	}
 
+	@Test(.disabled(if: testMacros.isEmpty))
 	func testExpansionWithProperty() throws {
-		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
 			#"""
 			@Observable
@@ -157,8 +151,5 @@ final class ObservableDefaultMacroTests: XCTestCase {
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
-		#else
-		throw XCTSkip("Macros are only supported when running tests for the host platform")
-		#endif
 	}
 }
