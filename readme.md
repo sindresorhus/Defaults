@@ -207,9 +207,9 @@ Note that it's `@Default`, not `@Defaults`.
 
 You cannot use `@Default` in an `ObservableObject`. It's meant to be used in a `View`.
 
-#### `@Default` in `@Observable`
+#### `@ObservableDefault` in `@Observable`
 
-With the `@Default` macro, you can use `Defaults` inside `@Observable` classes that use the [Observation](https://developer.apple.com/documentation/observation) framework. Doing so is as simple as importing `DefaultsMacros` and adding two lines to a property (note that adding `@ObservationIgnored` is needed to prevent clashes with `@Observable`):
+With the `@ObservableDefault` macro, you can use `Defaults` inside `@Observable` classes that use the [Observation](https://developer.apple.com/documentation/observation) framework. Doing so is as simple as importing `DefaultsMacros` and adding two lines to a property (note that adding `@ObservationIgnored` is needed to prevent clashes with `@Observable`):
 
 ```swift
 import Defaults
@@ -217,7 +217,7 @@ import DefaultsMacros
 
 @Observable
 final class UnicornManager {
-	@Default(.hasUnicorn)
+	@ObservableDefault(.hasUnicorn)
 	@ObservationIgnored
 	var hasUnicorn: Bool
 }

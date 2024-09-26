@@ -13,7 +13,7 @@ For example, given the following source:
 ```swift
 @Observable
 final class CatModel {
-	@Default(.cat)
+	@ObservableDefault(.cat)
 	@ObservationIgnored
 	var catName: String
 }
@@ -40,8 +40,8 @@ final class CatModel {
 ```
 */
 @attached(accessor, names: named(get), named(set))
-public macro Default<Value>(_ key: Defaults.Key<Value>) =
+public macro ObservableDefault<Value>(_ key: Defaults.Key<Value>) =
 	#externalMacro(
 		module: "DefaultsMacrosDeclarations",
-		type: "DefaultMacro"
+		type: "ObservableDefaultMacro"
 	)

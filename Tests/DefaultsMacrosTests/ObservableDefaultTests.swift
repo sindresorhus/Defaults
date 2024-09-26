@@ -20,7 +20,7 @@ let keyProperty = Defaults.Keys.test
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 @Observable
 private final class TestModelWithMemberSyntax {
-	@Default(Defaults.Keys.test)
+	@ObservableDefault(Defaults.Keys.test)
 	@ObservationIgnored
 	var testValue: String
 }
@@ -28,7 +28,7 @@ private final class TestModelWithMemberSyntax {
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 @Observable
 private final class TestModelWithDotSyntax {
-	@Default(.test)
+	@ObservableDefault(.test)
 	@ObservationIgnored
 	var testValue: String
 }
@@ -36,7 +36,7 @@ private final class TestModelWithDotSyntax {
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 @Observable
 private final class TestModelWithFunctionCall {
-	@Default(getKey())
+	@ObservableDefault(getKey())
 	@ObservationIgnored
 	var testValue: String
 }
@@ -44,13 +44,13 @@ private final class TestModelWithFunctionCall {
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 @Observable
 final class TestModelWithProperty {
-	@Default(keyProperty)
+	@ObservableDefault(keyProperty)
 	@ObservationIgnored
 	var testValue: String
 }
 
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
-final class DefaultTests: XCTestCase {
+final class ObservableDefaultTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
 		Defaults[.test] = defaultValue

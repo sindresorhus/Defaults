@@ -4,7 +4,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct DefaultMacro: AccessorMacro {
+public struct ObservableDefaultMacro: AccessorMacro {
 	public static func expansion(
 		of node: AttributeSyntax,
 		providingAccessorsOf declaration: some DeclSyntaxProtocol,
@@ -12,49 +12,49 @@ public struct DefaultMacro: AccessorMacro {
 	) throws -> [AccessorDeclSyntax] {
 		// Must be attached to a property declaration.
 		guard let variableDeclaration = declaration.as(VariableDeclSyntax.self) else {
-			throw DefaultMacroError.notAttachedToProperty
+			throw ObservableDefaultMacroError.notAttachedToProperty
 		}
 
 		// Must be attached to a variable property (i.e. `var` and not `let`).
 		guard variableDeclaration.bindingSpecifier.tokenKind == .keyword(.var) else {
-			throw DefaultMacroError.notAttachedToVariable
+			throw ObservableDefaultMacroError.notAttachedToVariable
 		}
 
 		// Must be attached to a single property.
 		guard variableDeclaration.bindings.count == 1, let binding = variableDeclaration.bindings.first else {
-			throw DefaultMacroError.notAttachedToSingleProperty
+			throw ObservableDefaultMacroError.notAttachedToSingleProperty
 		}
 
 		// Must not provide an initializer for the property (i.e. not assign a value).
 		guard binding.initializer == nil else {
-			throw DefaultMacroError.attachedToPropertyWithInitializer
+			throw ObservableDefaultMacroError.attachedToPropertyWithInitializer
 		}
 
 		// Must not be attached to property with existing accessor block.
 		guard binding.accessorBlock == nil else {
-			throw DefaultMacroError.attachedToPropertyWithAccessorBlock
+			throw ObservableDefaultMacroError.attachedToPropertyWithAccessorBlock
 		}
 
 		// Must use Identifier Pattern.
 		// See https://swiftinit.org/docs/swift-syntax/swiftsyntax/identifierpatternsyntax
 		guard let pattern = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier else {
-			throw DefaultMacroError.attachedToPropertyWithoutIdentifierProperty
+			throw ObservableDefaultMacroError.attachedToPropertyWithoutIdentifierProperty
 		}
 
 		// Must receive arguments
 		guard let arguments = node.arguments else {
-			throw DefaultMacroError.calledWithoutArguments
+			throw ObservableDefaultMacroError.calledWithoutArguments
 		}
 
 		// Must be called with Labeled Expression.
 		// See https://swiftinit.org/docs/swift-syntax/swiftsyntax/labeledexprlistsyntax
 		guard let expressionList = arguments.as(LabeledExprListSyntax.self) else {
-			throw DefaultMacroError.calledWithoutLabeledExpression
+			throw ObservableDefaultMacroError.calledWithoutLabeledExpression
 		}
 
 		// Must only receive one argument.
 		guard expressionList.count == 1, let expression = expressionList.first?.expression else {
-			throw DefaultMacroError.calledWithMultipleArguments
+			throw ObservableDefaultMacroError.calledWithMultipleArguments
 		}
 
 		return [
@@ -75,7 +75,7 @@ public struct DefaultMacro: AccessorMacro {
 	}
 }
 
-enum DefaultMacroError: Error {
+enum ObservableDefaultMacroError: Error {
 	case notAttachedToProperty
 	case notAttachedToVariable
 	case notAttachedToSingleProperty
@@ -90,28 +90,28 @@ enum DefaultMacroError: Error {
 	case calledWithUnsupportedExpression
 }
 
-extension DefaultMacroError: CustomStringConvertible {
+extension ObservableDefaultMacroError: CustomStringConvertible {
 	var description: String {
 		switch self {
 		case .notAttachedToProperty:
-			"@Default must be attached to a property."
+			"@ObservableDefault must be attached to a property."
 		case .notAttachedToVariable:
-			"@Default must be attached to a `var` property."
+			"@ObservableDefault must be attached to a `var` property."
 		case .notAttachedToSingleProperty:
-			"@Default can only be attached to a single property."
+			"@ObservableDefault can only be attached to a single property."
 		case .attachedToPropertyWithInitializer:
-			"@Default must not be attached with a property with a value assigned. To create set default value, provide it in the `Defaults.Key` definition."
+			"@ObservableDefault must not be attached with a property with a value assigned. To create set default value, provide it in the `Defaults.Key` definition."
 		case .attachedToPropertyWithAccessorBlock:
-			"@Default must not be attached to a property with accessor block."
+			"@ObservableDefault must not be attached to a property with accessor block."
 		case .attachedToPropertyWithoutIdentifierProperty:
-			"@Default could not identify the attached property."
+			"@ObservableDefault could not identify the attached property."
 		case .calledWithoutArguments,
 			 .calledWithoutLabeledExpression,
 			 .calledWithMultipleArguments,
 			 .calledWithoutFunctionSyntax,
 			 .calledWithoutKeyArgument,
 			 .calledWithUnsupportedExpression:
-			"@Default must be called with (1) argument of type `Defaults.Key`"
+			"@ObservableDefault must be called with (1) argument of type `Defaults.Key`"
 		}
 	}
 }
