@@ -581,6 +581,34 @@ final class DefaultsTests {
 		let count = await counter.count
 		#expect(count == 2)
 	}
+
+	@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, visionOS 1.0, *)
+	@Test
+	func testUpdatesMultipleKeysVariadic() async {
+		let key1 = Defaults.Key<Bool>("updatesMultipleKeyVariadic1", default: false, suite: suite_)
+		let key2 = Defaults.Key<Bool>("updatesMultipleKeyVariadic2", default: false, suite: suite_)
+		let counter = Counter()
+
+		async let waiter: Void = {
+			for await (_, _) in Defaults.updates(key1, key2, initial: false) {
+				await counter.increment()
+
+				if await counter.count == 2 {
+					break
+				}
+			}
+		}()
+
+		try? await Task.sleep(for: .seconds(0.1))
+
+		Defaults[key1] = true
+		Defaults[key2] = true
+
+		await waiter
+
+		let count = await counter.count
+		#expect(count == 2)
+	}
 }
 
 actor Counter {
