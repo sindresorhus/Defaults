@@ -59,6 +59,7 @@ extension Defaults {
 }
 
 extension Defaults {
+	// TODO: Add this to the main docs page.
 	/**
 	Reset the given keys back to their default values.
 
@@ -76,10 +77,39 @@ extension Defaults {
 	//=> false
 	```
 	*/
+	public static func reset<each Value>(
+		_ keys: repeat Key<each Value>,
+		suite: UserDefaults = .standard
+	) {
+		for key in repeat (each keys) {
+			key.reset()
+		}
+	}
+
+	// TODO: Remove this when the variadic generics version works with DocC.
+	/**
+	Reset the given keys back to their default values.
+
+	```swift
+	extension Defaults.Keys {
+		static let isUnicornMode = Key<Bool>("isUnicornMode", default: false)
+	}
+
+	Defaults[.isUnicornMode] = true
+	//=> true
+
+	Defaults.reset(.isUnicornMode)
+
+	Defaults[.isUnicornMode]
+	//=> false
+	```
+	*/
+	@_disfavoredOverload
 	public static func reset(_ keys: _AnyKey...) {
 		reset(keys)
 	}
 
+	// We still keep this as it can be useful to pass a dynamic array of keys.
 	/**
 	Reset the given keys back to their default values.
 

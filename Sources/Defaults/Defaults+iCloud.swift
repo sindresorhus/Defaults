@@ -39,7 +39,7 @@ extension Defaults {
 
 	## Dynamically Toggle Syncing
 
-	You can also toggle the syncing behavior dynamically using the ``Defaults/iCloud/add(_:)`` and ``Defaults/iCloud/remove(_:)-1b8w5`` methods.
+	You can also toggle the syncing behavior dynamically using the ``Defaults/iCloud/add(_:)`` and ``Defaults/iCloud/remove(_:)-3074m`` methods.
 
 	```swift
 	import Defaults
@@ -91,14 +91,14 @@ extension Defaults {
 		/**
 		Remove the keys that are set to be automatically synced.
 		*/
-		public static func remove(_ keys: Defaults.Keys...) {
-			synchronizer.remove(keys)
+		public static func remove<each Value>(_ keys: repeat Defaults.Key<each Value>) {
+			repeat synchronizer.remove(each keys)
 		}
 
 		/**
 		Remove the keys that are set to be automatically synced.
 		*/
-		public static func remove(_ keys: [Defaults.Keys]) {
+		public static func remove(_ keys: [Defaults._AnyKey]) {
 			synchronizer.remove(keys)
 		}
 
@@ -179,7 +179,7 @@ extension Defaults.iCloud {
 	/**
 	Represent different data sources available for synchronization.
 	*/
-	public enum DataSource {
+	enum DataSource {
 		/**
 		Using `key.suite` as data source.
 		*/
@@ -285,10 +285,21 @@ final class iCloudSynchronizer {
 	}
 
 	/**
-	Remove key and stop the observation.
+	Remove the keys and stop the observation.
 	*/
-	func remove(_ keys: [Defaults.Keys]) {
+	func remove<each Value>(_ keys: repeat Defaults.Key<each Value>) {
+		for key in repeat (each keys) {
+			self.keys.remove(key)
+			localKeysMonitor.remove(key: key)
+		}
+	}
+
+	/**
+	Remove the keys and stop the observation.
+	*/
+	func remove(_ keys: [Defaults._AnyKey]) {
 		self.keys.subtract(keys)
+
 		for key in keys {
 			localKeysMonitor.remove(key: key)
 		}
@@ -543,10 +554,11 @@ extension iCloudSynchronizer {
 			guard let remoteTimestamp = self.timestamp(forKey: key, source: .remote) else {
 				continue
 			}
+
 			if
 				let localTimestamp = self.timestamp(forKey: key, source: .local),
 				localTimestamp >= remoteTimestamp
-			{
+			{ // swiftlint:disable:this opening_brace
 				continue
 			}
 

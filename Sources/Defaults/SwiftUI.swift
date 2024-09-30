@@ -77,6 +77,7 @@ This is similar to `@AppStorage` but it accepts a ``Defaults/Key`` and many more
 */
 @propertyWrapper
 public struct Default<Value: Defaults.Serializable>: DynamicProperty {
+	@_documentation(visibility: private)
 	public typealias Publisher = AnyPublisher<Defaults.KeyChange<Value>, Never>
 
 	private let key: Defaults.Key<Value>
@@ -130,6 +131,7 @@ public struct Default<Value: Defaults.Serializable>: DynamicProperty {
 	*/
 	public var publisher: Publisher { Defaults.publisher(key) }
 
+	@_documentation(visibility: private)
 	public mutating func update() {
 		observable.key = key
 		_observable.update()
@@ -211,6 +213,7 @@ extension Defaults {
 			self.observable = .init(key)
 		}
 
+		@_documentation(visibility: private)
 		public var body: some View {
 			SwiftUI.Toggle(isOn: $observable.value, label: label)
 				.onChange(of: observable.value) {

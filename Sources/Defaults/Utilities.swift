@@ -204,7 +204,7 @@ extension Defaults.Serializable {
 		if
 			T.isNativelySupportedType,
 			let anyObject = anyObject as? T
-		{
+		{ // swiftlint:disable:this opening_brace
 			return anyObject
 		}
 

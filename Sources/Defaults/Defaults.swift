@@ -105,6 +105,8 @@ extension Defaults {
 		Create a key.
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		- Parameter defaultValue: The default value.
+		- Parameter suite: The `UserDefaults` suite to store the value in.
 		- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
 
 		The `default` parameter should not be used if the `Value` type is an optional.
@@ -150,7 +152,9 @@ extension Defaults {
 		```
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+		- Parameter suite: The `UserDefaults` suite to store the value in.
 		- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
+		- Parameter defaultValueGetter: The dynamic default value.
 
 		- Note: This initializer will not set the default value in the actual `UserDefaults`. This should not matter much though. It's only really useful if you use legacy KVO bindings.
 		*/
@@ -158,8 +162,8 @@ extension Defaults {
 		public init(
 			_ name: String,
 			suite: UserDefaults = .standard,
-			default defaultValueGetter: @escaping () -> Value,
-			iCloud: Bool = false
+			iCloud: Bool = false,
+			default defaultValueGetter: @escaping () -> Value
 		) {
 			self.defaultValueGetter = defaultValueGetter
 
@@ -178,6 +182,7 @@ extension Defaults.Key {
 	Create a key with an optional value.
 
 	- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
+	- Parameter suite: The `UserDefaults` suite to store the value in.
 	- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
 	*/
 	public convenience init<T>(
@@ -185,7 +190,12 @@ extension Defaults.Key {
 		suite: UserDefaults = .standard,
 		iCloud: Bool = false
 	) where Value == T? {
-		self.init(name, default: nil, suite: suite, iCloud: iCloud)
+		self.init(
+			name,
+			default: nil,
+			suite: suite,
+			iCloud: iCloud
+		)
 	}
 
 	/**
@@ -243,6 +253,7 @@ extension Defaults {
 	/**
 	Observe updates to a stored value.
 
+	- Parameter key: The key to observe updates from.
 	- Parameter initial: Trigger an initial event on creation. This can be useful for setting default values on controls.
 
 	```swift
@@ -262,7 +273,7 @@ extension Defaults {
 	public static func updates<Value: Serializable>(
 		_ key: Key<Value>,
 		initial: Bool = true
-	) -> AsyncStream<Value> { // TODO: Make this `some AsyncSequence<Value>` when Swift 6 is out.
+	) -> AsyncStream<Value> { // TODO: Make this `some AsyncSequence<Value>` when targeting macOS 15.
 		.init { continuation in
 			let observation = DefaultsObservation(object: key.suite, key: key.name) { _, change in
 				// TODO: Use the `.deserialize` method directly.
@@ -273,15 +284,19 @@ extension Defaults {
 			observation.start(options: initial ? [.initial] : [])
 
 			continuation.onTermination = { _ in
-				observation.invalidate()
+				// `invalidate()` should be thread-safe, but it is not in practice.
+				DispatchQueue.main.async {
+					observation.invalidate()
+				}
 			}
 		}
 	}
 
-	// TODO: Make this include a tuple with the values when Swift supports variadic generics. I can then simply use `merge()` with the first `updates()` method.
+	// We still keep this as it can be useful to pass a dynamic array of keys.
 	/**
 	Observe updates to multiple stored values.
 
+	- Parameter keys: The keys to observe updates from.
 	- Parameter initial: Trigger an initial event on creation. This can be useful for setting default values on controls.
 
 	```swift
@@ -297,7 +312,7 @@ extension Defaults {
 	public static func updates(
 		_ keys: [_AnyKey],
 		initial: Bool = true
-	) -> AsyncStream<Void> { // TODO: Make this `some AsyncSequence<Value>` when Swift 6 is out.
+	) -> AsyncStream<Void> { // TODO: Make this `some AsyncSequence<Void>` when targeting macOS 15.
 		.init { continuation in
 			let observations = keys.indexed().map { index, key in
 				let observation = DefaultsObservation(object: key.suite, key: key.name) { _, _ in
@@ -311,8 +326,11 @@ extension Defaults {
 			}
 
 			continuation.onTermination = { _ in
-				for observation in observations {
-					observation.invalidate()
+				// `invalidate()` should be thread-safe, but it is not in practice.
+				DispatchQueue.main.async {
+					for observation in observations {
+						observation.invalidate()
+					}
 				}
 			}
 		}

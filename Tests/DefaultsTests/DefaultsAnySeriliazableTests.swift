@@ -308,7 +308,7 @@ final class DefaultsAnySerializableTests {
 	@Test
 	func testDictionaryKey() {
 		let key = Defaults.Key<[String: Defaults.AnySerializable]>("independentDictionaryAnyKey", default: ["unicorn": ""], suite: suite_)
-		#expect(Defaults[key]["unicorn"] == "")
+		#expect(Defaults[key]["unicorn"] == "") // swiftlint:disable:this empty_string
 		Defaults[key]["unicorn"] = "🦄"
 		#expect(Defaults[key]["unicorn"] == "🦄")
 		Defaults[key]["number"] = 3

@@ -21,13 +21,21 @@ let package = Package(
 	targets: [
 		.target(
 			name: "Defaults",
-			resources: [.copy("PrivacyInfo.xcprivacy")]
+			resources: [
+				.copy("PrivacyInfo.xcprivacy")
+			]
+//			swiftSettings: [
+//				.swiftLanguageMode(.v5)
+//			]
 		),
 		.testTarget(
 			name: "DefaultsTests",
 			dependencies: [
 				"Defaults"
 			]
+//			swiftSettings: [
+//				.swiftLanguageMode(.v5)
+//			]
 		)
 	]
 )

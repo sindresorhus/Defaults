@@ -390,7 +390,7 @@ final class DefaultsTests {
 	func testObservePreventPropagationCombine() async throws {
 		let key1 = Defaults.Key<Bool?>("preventPropagation6", default: nil, suite: suite_)
 
-		await confirmation() { confirmation in
+		await confirmation { confirmation in
 			var wasInside = false
 			let cancellable = Defaults.publisher(key1, options: []).sink { _ in
 				#expect(!wasInside)
@@ -411,7 +411,7 @@ final class DefaultsTests {
 		let key1 = Defaults.Key<Bool?>("preventPropagation7", default: nil, suite: suite_)
 		let key2 = Defaults.Key<Bool?>("preventPropagation8", default: nil, suite: suite_)
 
-		await confirmation() { confirmation in
+		await confirmation { confirmation in
 			var wasInside = false
 			let cancellable = Defaults.publisher(keys: key1, key2, options: []).sink { _ in
 				#expect(!wasInside)
@@ -526,6 +526,7 @@ final class DefaultsTests {
 
 	@Test
 	func testKeyEquatable() {
+		// swiftlint:disable:next identical_operands
 		#expect(Defaults.Key<Bool>("equatableKeyTest", default: false, suite: suite_) == Defaults.Key<Bool>("equatableKeyTest", default: false, suite: suite_))
 	}
 
