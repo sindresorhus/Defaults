@@ -292,9 +292,60 @@ extension Defaults {
 		}
 	}
 
-	// We still keep this as it can be useful to pass a dynamic array of keys.
 	/**
 	Observe updates to multiple stored values.
+
+	- Parameter keys: The keys to observe updates from.
+	- Parameter initial: Trigger an initial event on creation. This can be useful for setting default values on controls.
+
+	```swift
+	Task {
+		for await (foo, bar) in Defaults.updates([.foo, .bar]) {
+			print("Values changed:", foo, bar)
+		}
+	}
+	```
+	*/
+	public static func updates<each Value: Serializable>(
+		_ keys: repeat Key<each Value>,
+		initial: Bool = true
+	) -> AsyncStream<(repeat each Value)> {
+		.init { continuation in
+			func getCurrentValues() -> (repeat each Value) {
+				(repeat self[each keys])
+			}
+
+			var observations = [DefaultsObservation]()
+
+			if initial {
+				continuation.yield(getCurrentValues())
+			}
+
+			for key in repeat (each keys) {
+				let observation = DefaultsObservation(object: key.suite, key: key.name) { _, _  in
+					continuation.yield(getCurrentValues())
+				}
+
+				observation.start(options: [])
+				observations.append(observation)
+			}
+
+			let immutableObservations = observations
+
+			continuation.onTermination = { _ in
+				// `invalidate()` should be thread-safe, but it is not in practice.
+				DispatchQueue.main.async {
+					for observation in immutableObservations {
+						observation.invalidate()
+					}
+				}
+			}
+		}
+	}
+
+	// We still keep this as it can be useful to pass a dynamic array of keys.
+	/**
+	Observe updates to multiple stored values without receiving the values.
 
 	- Parameter keys: The keys to observe updates from.
 	- Parameter initial: Trigger an initial event on creation. This can be useful for setting default values on controls.
@@ -307,7 +358,7 @@ extension Defaults {
 	}
 	```
 
-	- Note: This does not include which of the values changed. Use ``Defaults/updates(_:initial:)-88orv`` if you need that. You could use [`merge`](https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncAlgorithms.docc/Guides/Merge.md) to merge them into a single sequence.
+	- Note: This does not include which of the values changed. Use ``Defaults/updates(_:initial:)-l03o`` if you need that.
 	*/
 	public static func updates(
 		_ keys: [_AnyKey],

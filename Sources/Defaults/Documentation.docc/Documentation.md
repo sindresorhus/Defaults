@@ -52,6 +52,7 @@ typealias Default = _Default
 ### Methods
 
 - ``Defaults/updates(_:initial:)-88orv``
+- ``Defaults/updates(_:initial:)-l03o``
 - ``Defaults/updates(_:initial:)-1mqkb``
 - ``Defaults/reset(_:)-7jv5v``
 - ``Defaults/reset(_:)-7es1e``
