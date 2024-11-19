@@ -4,12 +4,81 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct ObservableDefaultMacro: AccessorMacro {
+/**
+ Macro declaration for the ``ObservableDefault`` macro.
+*/
+public struct ObservableDefaultMacro {}
+
+/**
+Conforming to ``AccessorMacro`` allows us to add the property accessors (get/set) that integrate with ``Observable``.
+*/
+extension ObservableDefaultMacro: AccessorMacro {
 	public static func expansion(
 		of node: AttributeSyntax,
 		providingAccessorsOf declaration: some DeclSyntaxProtocol,
 		in context: some MacroExpansionContext
 	) throws(ObservableDefaultMacroError) -> [AccessorDeclSyntax] {
+		let property = try propertyPattern(of: declaration)
+		let expression = try keyExpression(of: node)
+		let associatedKey = associatedKeyToken(for: property)
+
+		// The get/set accessors follow the same pattern that @Observable uses to handle the mutations.
+		//
+		// The get accessor also sets up an observation to update the value when the UserDefaults
+		// changes from elsewhere. Doing so requires attaching it as an Objective-C associated
+		// object due to limitations with current macro capabilities and Swift concurrency.
+		return [
+			#"""
+			get {
+				if objc_getAssociatedObject(self, &Self.\#(associatedKey)) == nil {
+					let cancellable = Defaults.publisher(\#(expression))
+						.sink { [weak self] in
+							self?.\#(property) = $0.newValue
+						}
+					objc_setAssociatedObject(self, &Self.\#(associatedKey), cancellable, .OBJC_ASSOCIATION_RETAIN)
+				}
+				access(keyPath: \.\#(property))
+				return Defaults[\#(expression)]
+			}
+			"""#,
+			#"""
+			set {
+				withMutation(keyPath: \.\#(property)) {
+					Defaults[\#(expression)] = newValue
+				}
+			}
+			"""#
+		]
+	}
+}
+
+/**
+Conforming to ``PeerMacro`` we can add a new property of type Defaults.Observation that will update the original property whenever
+the UserDefaults value changes outside the class.
+*/
+extension ObservableDefaultMacro: PeerMacro {
+	public static func expansion(
+		of node: SwiftSyntax.AttributeSyntax,
+		providingPeersOf declaration: some SwiftSyntax.DeclSyntaxProtocol,
+		in context: some SwiftSyntaxMacros.MacroExpansionContext
+	) throws -> [SwiftSyntax.DeclSyntax] {
+		let property = try propertyPattern(of: declaration)
+		let associatedKey = associatedKeyToken(for: property)
+
+		return [
+			"private static var \(associatedKey): Void?"
+		]
+	}
+}
+
+// Logic used by both macro implementations
+extension ObservableDefaultMacro {
+	/**
+	Extracts the pattern (i.e. the name) of the attached property.
+	*/
+	private static func propertyPattern(
+		of declaration: some SwiftSyntax.DeclSyntaxProtocol
+	) throws(ObservableDefaultMacroError) -> TokenSyntax {
 		// Must be attached to a property declaration.
 		guard let variableDeclaration = declaration.as(VariableDeclSyntax.self) else {
 			throw .notAttachedToProperty
@@ -41,6 +110,15 @@ public struct ObservableDefaultMacro: AccessorMacro {
 			throw .attachedToPropertyWithoutIdentifierProperty
 		}
 
+		return pattern
+	}
+
+	/**
+	Extracts the expression used to define the Defaults.Key in the macro call.
+	*/
+	private static func keyExpression(
+		of node: AttributeSyntax
+	) throws(ObservableDefaultMacroError) -> ExprSyntax {
 		// Must receive arguments
 		guard let arguments = node.arguments else {
 			throw .calledWithoutArguments
@@ -57,24 +135,20 @@ public struct ObservableDefaultMacro: AccessorMacro {
 			throw .calledWithMultipleArguments
 		}
 
-		return [
-			#"""
-			get {
-				access(keyPath: \.\#(pattern))
-				return Defaults[\#(expression)]
-			}
-			"""#,
-			#"""
-			set {
-				withMutation(keyPath: \.\#(pattern)) {
-					Defaults[\#(expression)] = newValue
-				}
-			}
-			"""#
-		]
+		return expression
+	}
+
+	/**
+	 Generates the token to use as key for the associated object used to hold the UserDefaults observation.
+	 */
+	private static func associatedKeyToken(for property: TokenSyntax) -> TokenSyntax {
+		return "_objcAssociatedKey_\(property)"
 	}
 }
 
+/**
+Error handling for ``ObservableDefaultMacro``.
+*/
 public enum ObservableDefaultMacroError: Error {
 	case notAttachedToProperty
 	case notAttachedToVariable

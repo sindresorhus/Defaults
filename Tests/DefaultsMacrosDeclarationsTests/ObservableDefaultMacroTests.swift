@@ -86,6 +86,13 @@ final class ObservableDefaultMacroTests: XCTestCase {
 			@ObservationIgnored
 			var name: String {
 				get {
+					if objc_getAssociatedObject(self, &Self._objcAssociatedKey_name) == nil {
+						let cancellable = Defaults.publisher(.test)
+							.sink { [weak self] in
+								self?.testValue = $0.newValue
+							}
+						objc_setAssociatedObject(self, &Self._objcAssociatedKey_name, cancellable, .OBJC_ASSOCIATION_RETAIN)
+					}
 					access(keyPath: \.name)
 					return Defaults[\#(keyExpression)]
 				}
@@ -95,6 +102,8 @@ final class ObservableDefaultMacroTests: XCTestCase {
 					}
 				}
 			}
+
+			private static var _objcAssociatedKey_name: Void?
 		}
 		"""#
 	}

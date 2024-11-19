@@ -1,38 +1,34 @@
+import Defaults
+import DefaultsMacros
 import Foundation
 import Observation
 import Testing
 
-import Defaults
-@testable import DefaultsMacros
+private let animalKey = "animalKey"
+private let defaultAnimal = "cat"
+private let newAnimal = "unicorn"
 
-private let testKey = "testKey"
-private let defaultValue = "defaultValue"
-private let newValue = "newValue"
+private let colorKey = "colorKey"
+private let defaultColor = "blue"
+private let newColor = "purple"
 
 extension Defaults.Keys {
-	static let test = Defaults.Key(testKey, default: defaultValue)
+	static let animal = Defaults.Key(animalKey, default: defaultAnimal)
+	static let color = Defaults.Key(colorKey, default: defaultColor)
 }
 
 func getKey() -> Defaults.Key<String> {
-	.test
+	.animal
 }
 
-let keyProperty = Defaults.Keys.test
+let keyProperty = Defaults.Keys.animal
 
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 @Observable
-private final class TestModelWithMemberSyntax {
-	@ObservableDefault(Defaults.Keys.test)
+private final class TestModelWithDotSyntax: Sendable {
+	@ObservableDefault(.animal)
 	@ObservationIgnored
-	var testValue: String
-}
-
-@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
-@Observable
-private final class TestModelWithDotSyntax {
-	@ObservableDefault(.test)
-	@ObservationIgnored
-	var testValue: String
+	var animal: String
 }
 
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
@@ -40,7 +36,7 @@ private final class TestModelWithDotSyntax {
 private final class TestModelWithFunctionCall {
 	@ObservableDefault(getKey())
 	@ObservationIgnored
-	var testValue: String
+	var animal: String
 }
 
 @available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
@@ -48,14 +44,35 @@ private final class TestModelWithFunctionCall {
 final class TestModelWithProperty {
 	@ObservableDefault(keyProperty)
 	@ObservationIgnored
-	var testValue: String
+	var animal: String
+}
+
+@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+@Observable
+private final class TestModelWithMemberSyntax {
+	@ObservableDefault(Defaults.Keys.animal)
+	@ObservationIgnored
+	var animal: String
+}
+
+@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+@Observable
+private final class TestModelWithMultipleValues {
+	@ObservableDefault(.animal)
+	@ObservationIgnored
+	var animal: String
+
+	@ObservableDefault(.color)
+	@ObservationIgnored
+	var color: String
 }
 
 @Suite(.serialized)
 final class ObservableDefaultTests {
 	init() {
 		Defaults.removeAll()
-		Defaults[.test] = defaultValue
+		Defaults[.animal] = defaultAnimal
+		Defaults[.color] = defaultColor
 	}
 
 	deinit {
@@ -64,53 +81,117 @@ final class ObservableDefaultTests {
 
 	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 	@Test
-	func testMacroWithMemberSyntax() {
+	func testMacroWithMemberSyntax() async {
 		let model = TestModelWithMemberSyntax()
-		#expect(model.testValue == defaultValue)
-
-		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		#expect(userDefaultsValue == defaultValue)
-
-		UserDefaults.standard.set(newValue, forKey: testKey)
-		#expect(model.testValue == newValue)
+		#expect(model.animal == defaultAnimal)
+ 
+		let userDefaultsValue = UserDefaults.standard.string(forKey: animalKey)
+		#expect(userDefaultsValue == defaultAnimal)
+ 
+		await confirmation { confirmation in
+			_ = withObservationTracking {
+				model.animal
+			} onChange: {
+				confirmation()
+			}
+ 
+			UserDefaults.standard.set(newAnimal, forKey: animalKey)
+		}
+ 
+		#expect(model.animal == newAnimal)
 	}
-
+ 
 	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 	@Test
-	func testMacroWithDotSyntax() {
+	func testMacroWithDotSyntax() async {
 		let model = TestModelWithDotSyntax()
-		#expect(model.testValue == defaultValue)
-
-		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		#expect(userDefaultsValue == defaultValue)
-
-		UserDefaults.standard.set(newValue, forKey: testKey)
-		#expect(model.testValue == newValue)
+		#expect(model.animal == defaultAnimal)
+ 
+		let userDefaultsValue = UserDefaults.standard.string(forKey: animalKey)
+		#expect(userDefaultsValue == defaultAnimal)
+ 
+		await confirmation { confirmation in
+			_ = withObservationTracking {
+				model.animal
+			} onChange: {
+				confirmation()
+			}
+ 
+			UserDefaults.standard.set(newAnimal, forKey: animalKey)
+		}
+ 
+		#expect(model.animal == newAnimal)
 	}
-
+ 
 	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 	@Test
-	func testMacroWithFunctionCall() {
+	func testMacroWithFunctionCall() async {
 		let model = TestModelWithFunctionCall()
-		#expect(model.testValue == defaultValue)
-
-		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		#expect(userDefaultsValue == defaultValue)
-
-		UserDefaults.standard.set(newValue, forKey: testKey)
-		#expect(model.testValue == newValue)
+		#expect(model.animal == defaultAnimal)
+ 
+		let userDefaultsValue = UserDefaults.standard.string(forKey: animalKey)
+		#expect(userDefaultsValue == defaultAnimal)
+ 
+		await confirmation { confirmation in
+			_ = withObservationTracking {
+				model.animal
+			} onChange: {
+				confirmation()
+			}
+ 
+			UserDefaults.standard.set(newAnimal, forKey: animalKey)
+		}
+ 
+		#expect(model.animal == newAnimal)
+	}
+ 
+	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+	@Test
+	func testMacroWithProperty() async {
+		let model = TestModelWithProperty()
+		#expect(model.animal == defaultAnimal)
+ 
+		let userDefaultsValue = UserDefaults.standard.string(forKey: animalKey)
+		#expect(userDefaultsValue == defaultAnimal)
+ 
+		await confirmation { confirmation in
+			_ = withObservationTracking {
+				model.animal
+			} onChange: {
+				confirmation()
+			}
+ 
+			UserDefaults.standard.set(newAnimal, forKey: animalKey)
+		}
+ 
+		#expect(model.animal == newAnimal)
 	}
 
 	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
 	@Test
-	func testMacroWithProperty() {
-		let model = TestModelWithProperty()
-		#expect(model.testValue == defaultValue)
+	func testMacroWithMultipleValues() async {
+		let model = TestModelWithMultipleValues()
+		#expect(model.animal == defaultAnimal)
+		#expect(model.color == defaultColor)
 
-		let userDefaultsValue = UserDefaults.standard.string(forKey: testKey)
-		#expect(userDefaultsValue == defaultValue)
+		await confirmation(expectedCount: 2) { confirmation in
+			_ = withObservationTracking {
+				model.animal
+			} onChange: {
+				confirmation()
+			}
 
-		UserDefaults.standard.set(newValue, forKey: testKey)
-		#expect(model.testValue == newValue)
+			_ = withObservationTracking {
+				model.color
+			} onChange: {
+				confirmation()
+			}
+
+			UserDefaults.standard.set(newAnimal, forKey: animalKey)
+			UserDefaults.standard.set(newColor, forKey: colorKey)
+		}
+
+		#expect(model.animal == newAnimal)
+		#expect(model.color == newColor)
 	}
 }
