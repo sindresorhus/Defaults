@@ -142,7 +142,7 @@ extension ObservableDefaultMacro {
 	 Generates the token to use as key for the associated object used to hold the UserDefaults observation.
 	 */
 	private static func associatedKeyToken(for property: TokenSyntax) -> TokenSyntax {
-		return "_objcAssociatedKey_\(property)"
+		"_objcAssociatedKey_\(property)"
 	}
 }
 
