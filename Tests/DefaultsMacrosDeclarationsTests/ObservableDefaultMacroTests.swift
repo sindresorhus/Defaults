@@ -19,32 +19,8 @@ final class ObservableDefaultMacroTests: XCTestCase {
 	func testExpansionWithMemberSyntax() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservableDefault(Defaults.Keys.name)
-				@ObservationIgnored
-				var name: String
-			}
-			"""#,
-			expandedSource:
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservationIgnored
-				var name: String {
-					get {
-						access(keyPath: \.name)
-						return Defaults[Defaults.Keys.name]
-					}
-					set {
-						withMutation(keyPath: \.name) {
-							Defaults[Defaults.Keys.name] = newValue
-						}
-					}
-				}
-			}
-			"""#,
+			declaration(for: "Defaults.Keys.name"),
+			expandedSource: expectedExpansion(for: "Defaults.Keys.name"),
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
@@ -56,32 +32,8 @@ final class ObservableDefaultMacroTests: XCTestCase {
 	func testExpansionWithDotSyntax() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservableDefault(.name)
-				@ObservationIgnored
-				var name: String
-			}
-			"""#,
-			expandedSource:
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservationIgnored
-				var name: String {
-					get {
-						access(keyPath: \.name)
-						return Defaults[.name]
-					}
-					set {
-						withMutation(keyPath: \.name) {
-							Defaults[.name] = newValue
-						}
-					}
-				}
-			}
-			"""#,
+			declaration(for: ".name"),
+			expandedSource: expectedExpansion(for: ".name"),
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
@@ -93,32 +45,8 @@ final class ObservableDefaultMacroTests: XCTestCase {
 	func testExpansionWithFunctionCall() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservableDefault(getName())
-				@ObservationIgnored
-				var name: String
-			}
-			"""#,
-			expandedSource:
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservationIgnored
-				var name: String {
-					get {
-						access(keyPath: \.name)
-						return Defaults[getName()]
-					}
-					set {
-						withMutation(keyPath: \.name) {
-							Defaults[getName()] = newValue
-						}
-					}
-				}
-			}
-			"""#,
+			declaration(for: "getName()"),
+			expandedSource: expectedExpansion(for: "getName()"),
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
@@ -130,37 +58,44 @@ final class ObservableDefaultMacroTests: XCTestCase {
 	func testExpansionWithProperty() throws {
 		#if canImport(DefaultsMacrosDeclarations)
 		assertMacroExpansion(
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservableDefault(propertyName)
-				@ObservationIgnored
-				var name: String
-			}
-			"""#,
-			expandedSource:
-			#"""
-			@Observable
-			class ObservableClass {
-				@ObservationIgnored
-				var name: String {
-					get {
-						access(keyPath: \.name)
-						return Defaults[propertyName]
-					}
-					set {
-						withMutation(keyPath: \.name) {
-							Defaults[propertyName] = newValue
-						}
-					}
-				}
-			}
-			"""#,
+			declaration(for: "propertyName"),
+			expandedSource: expectedExpansion(for: "propertyName"),
 			macros: testMacros,
 			indentationWidth: .tabs(1)
 		)
 		#else
 		throw XCTSkip("Macros are only supported when running tests for the host platform")
 		#endif
+	}
+
+	private func declaration(for keyExpression: String) -> String {
+		#"""
+		@Observable
+		class ObservableClass {
+			@ObservableDefault(\#(keyExpression))
+			@ObservationIgnored
+			var name: String
+		}
+		"""#
+	}
+
+	private func expectedExpansion(for keyExpression: String) -> String {
+		#"""
+		@Observable
+		class ObservableClass {
+			@ObservationIgnored
+			var name: String {
+				get {
+					access(keyPath: \.name)
+					return Defaults[\#(keyExpression)]
+				}
+				set {
+					withMutation(keyPath: \.name) {
+						Defaults[\#(keyExpression)] = newValue
+					}
+				}
+			}
+		}
+		"""#
 	}
 }
