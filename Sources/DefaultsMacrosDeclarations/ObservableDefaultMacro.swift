@@ -66,7 +66,7 @@ extension ObservableDefaultMacro: PeerMacro {
 		let associatedKey = associatedKeyToken(for: property)
 
 		return [
-			"private static var \(associatedKey): Void?"
+			"private nonisolated(unsafe) static var \(associatedKey): Void?"
 		]
 	}
 }
