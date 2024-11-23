@@ -103,7 +103,7 @@ final class ObservableDefaultMacroTests: XCTestCase {
 				}
 			}
 
-			private static var _objcAssociatedKey_name: Void?
+			private nonisolated(unsafe) static var _objcAssociatedKey_name: Void?
 		}
 		"""#
 	}
