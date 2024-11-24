@@ -181,7 +181,7 @@ Defaults[isUnicorn]
 
 ### SwiftUI support
 
-#### `@Default`
+#### `@Default` in `View`
 
 You can use the `@Default` property wrapper to get/set a `Defaults` item and also have the view be updated when the value changes. This is similar to `@State`.
 
@@ -206,6 +206,27 @@ struct ContentView: View {
 Note that it's `@Default`, not `@Defaults`.
 
 You cannot use `@Default` in an `ObservableObject`. It's meant to be used in a `View`.
+
+#### `@ObservableDefault` in `@Observable`
+
+With the `@ObservableDefault` macro, you can use `Defaults` inside `@Observable` classes that use the [Observation](https://developer.apple.com/documentation/observation) framework. Doing so is as simple as importing `DefaultsMacros` and adding two lines to a property (note that adding `@ObservationIgnored` is needed to prevent clashes with `@Observable`):
+
+> [!IMPORTANT] 
+> Build times will increase when using macros.
+> 
+> Swift macros depend on the [`swift-syntax`](https://github.com/swiftlang/swift-syntax) package. This means that when you compile code that includes macros as dependencies, you also have to compile `swift-syntax`. It is widely known that doing so has serious impact in build time and, while it is an issue that is being tracked (see [`swift-syntax`#2421](https://github.com/swiftlang/swift-syntax/issues/2421)), there's currently no solution implemented.
+
+```swift
+import Defaults
+import DefaultsMacros
+
+@Observable
+final class UnicornManager {
+	@ObservableDefault(.hasUnicorn)
+	@ObservationIgnored
+	var hasUnicorn: Bool
+}
+```
 
 #### `Toggle`
 
