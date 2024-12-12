@@ -285,7 +285,7 @@ extension Defaults {
 
 			continuation.onTermination = { _ in
 				// `invalidate()` should be thread-safe, but it is not in practice.
-				DispatchQueue.main.async {
+				Task { @MainActor in
 					observation.invalidate()
 				}
 			}
@@ -334,7 +334,7 @@ extension Defaults {
 
 			continuation.onTermination = { _ in
 				// `invalidate()` should be thread-safe, but it is not in practice.
-				DispatchQueue.main.async {
+				Task { @MainActor in
 					for observation in immutableObservations {
 						observation.invalidate()
 					}
@@ -378,7 +378,7 @@ extension Defaults {
 
 			continuation.onTermination = { _ in
 				// `invalidate()` should be thread-safe, but it is not in practice.
-				DispatchQueue.main.async {
+				Task { @MainActor in
 					for observation in observations {
 						observation.invalidate()
 					}

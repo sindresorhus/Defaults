@@ -75,8 +75,9 @@ Access stored values from SwiftUI.
 
 This is similar to `@AppStorage` but it accepts a ``Defaults/Key`` and many more types.
 */
+@MainActor
 @propertyWrapper
-public struct Default<Value: Defaults.Serializable>: DynamicProperty {
+public struct Default<Value: Defaults.Serializable>: @preconcurrency DynamicProperty {
 	@_documentation(visibility: private)
 	public typealias Publisher = AnyPublisher<Defaults.KeyChange<Value>, Never>
 
@@ -254,8 +255,10 @@ extension Defaults.Toggle {
 	}
 }
 
+@MainActor
 @propertyWrapper
 private struct ViewStorage<Value>: DynamicProperty {
+	@MainActor
 	private final class ValueBox {
 		var value: Value
 

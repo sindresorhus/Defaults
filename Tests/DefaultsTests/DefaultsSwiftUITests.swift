@@ -41,6 +41,7 @@ final class DefaultsSwiftUITests {
 		Defaults.removeAll(suite: suite_)
 	}
 
+	@MainActor
 	@Test
 	func testSwiftUIObserve() {
 		let view = ContentView()
