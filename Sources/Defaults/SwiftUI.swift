@@ -39,7 +39,7 @@ extension Defaults {
 
 				// The `@MainActor` is important as the `.send()` method doesn't inherit the `@MainActor` from the class.
 				task = .detached(priority: .userInitiated) { @MainActor [weak self, key] in
-					for await _ in Defaults.updates(key) {
+					for await _ in Defaults.updates(key, initial: false) {
 						guard let self else {
 							return
 						}
