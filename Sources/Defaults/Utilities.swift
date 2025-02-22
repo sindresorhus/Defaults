@@ -373,6 +373,7 @@ final class TaskQueue {
 				queueContinuation?.yield {
 					continuation.resume()
 				}
+				return
 			}
 		}
 	}
