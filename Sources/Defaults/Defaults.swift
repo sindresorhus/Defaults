@@ -274,7 +274,7 @@ extension Defaults {
 		_ key: Key<Value>,
 		initial: Bool = true
 	) -> AsyncStream<Value> { // TODO: Make this `some AsyncSequence<Value>` when targeting macOS 15.
-		.init { continuation in
+		AsyncStream { continuation in
 			let observation = DefaultsObservation(object: key.suite, key: key.name) { _, change in
 				// TODO: Use the `.deserialize` method directly.
 				let value = KeyChange(change: change, defaultValue: key.defaultValue).newValue
@@ -306,11 +306,12 @@ extension Defaults {
 	}
 	```
 	*/
+	@_disfavoredOverload
 	public static func updates<each Value: Serializable>(
 		_ keys: repeat Key<each Value>,
 		initial: Bool = true
 	) -> AsyncStream<(repeat each Value)> {
-		.init { continuation in
+		AsyncStream { continuation in
 			func getCurrentValues() -> (repeat each Value) {
 				(repeat self[each keys])
 			}
@@ -364,7 +365,7 @@ extension Defaults {
 		_ keys: [_AnyKey],
 		initial: Bool = true
 	) -> AsyncStream<Void> { // TODO: Make this `some AsyncSequence<Void>` when targeting macOS 15.
-		.init { continuation in
+		AsyncStream { continuation in
 			let observations = keys.indexed().map { index, key in
 				let observation = DefaultsObservation(object: key.suite, key: key.name) { _, _ in
 					continuation.yield()

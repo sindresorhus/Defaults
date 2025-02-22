@@ -236,12 +236,12 @@ final class iCloudSynchronizer {
 	/**
 	A thread-safe `keys` that manage the keys to be synced.
 	*/
-	@Atomic(value: []) private(set) var keys: Set<Defaults.Keys>
+	@_DefaultsAtomic(value: []) private(set) var keys: Set<Defaults.Keys>
 
 	/**
 	A thread-safe synchronization status monitor for `keys`.
 	*/
-	@Atomic(value: []) private var remoteSyncingKeys: Set<Defaults.Keys>
+	@_DefaultsAtomic(value: []) private var remoteSyncingKeys: Set<Defaults.Keys>
 
 	// TODO: Replace it with async stream when Swift supports custom executors.
 	private lazy var localKeysMonitor: Defaults.CompositeDefaultsObservation = .init { [weak self] pair, _ in

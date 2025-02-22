@@ -218,7 +218,7 @@ extension Defaults {
 
 			let key = preventPropagationThreadDictionaryKey
 			let updatingValuesFlag = (Thread.current.threadDictionary[key] as? Bool) ?? false
-			if updatingValuesFlag {
+			guard !updatingValuesFlag else {
 				return
 			}
 
