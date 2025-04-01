@@ -370,10 +370,9 @@ final class TaskQueue {
 	func flush() async {
 		await withCheckedContinuation { continuation in
 			lock.with {
-				queueContinuation?.yield {
+				_ = queueContinuation?.yield {
 					continuation.resume()
 				}
-				return
 			}
 		}
 	}

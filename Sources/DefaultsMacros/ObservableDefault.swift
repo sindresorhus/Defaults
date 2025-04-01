@@ -2,9 +2,9 @@ import Defaults
 import Foundation
 
 /**
-Attached macro that adds support for using ``Defaults`` in ``@Observable`` classes.
+Attached macro that adds support for using `Defaults` in `@Observable` classes.
 
-- Important: To prevent issues with ``@Observable``, you need to also add ``@ObservationIgnored`` to the attached property.
+- Important: To prevent issues with `@Observable`, you need to also add `@ObservationIgnored` to the attached property.
 
 This macro adds accessor blocks to the attached property similar to those added by `@Observable`.
 
