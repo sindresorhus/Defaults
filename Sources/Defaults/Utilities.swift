@@ -166,7 +166,7 @@ extension Collection {
 }
 
 extension Equatable {
-	func isEqual(_ rhs: any Equatable) -> Bool {
+	func isEqual(_ rhs: some Equatable) -> Bool {
 		guard
 			let rhs = rhs as? Self,
 			rhs == self

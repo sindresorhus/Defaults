@@ -300,7 +300,7 @@ extension Defaults {
 
 	```swift
 	Task {
-		for await (foo, bar) in Defaults.updates([.foo, .bar]) {
+		for await (foo, bar) in Defaults.updates(.foo, .bar) {
 			print("Values changed:", foo, bar)
 		}
 	}
