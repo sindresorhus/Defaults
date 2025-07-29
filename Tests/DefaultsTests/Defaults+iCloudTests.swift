@@ -246,11 +246,47 @@ final class DefaultsICloudTests {
 	}
 
 	@Test
+	func testAbortion() async {
+		let name = Defaults.Key<String>("testAbortSignleKey_name", default: "0", iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		let quantity = Defaults.Key<Int>("testAbortSignleKey_quantity", default: 0, iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		Defaults[quantity] = 1
+		await Defaults.iCloud.waitForSyncCompletion()
+		#expect(mockStorage.data(forKey: quantity.name) == 1)
+		updateMockStorage(key: quantity.name, value: 2)
+		Defaults.iCloud.syncWithoutWaiting()
+		await Defaults.iCloud.waitForSyncCompletion()
+		#expect(Defaults[name] == "0")
+		#expect(Defaults[quantity] == 2)
+	}
+
+
+	@Test
+	func testSyncLatestSource() async {
+		let name = Defaults.Key<String>("testSyncLatestSource_name", default: "0", iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		let quantity = Defaults.Key<Int>("testSyncLatestSource_quantity", default: 0, iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		// Create a timestamp in both the local and remote data sources
+		Defaults[name] = "1"
+		Defaults[quantity] = 1
+		await Defaults.iCloud.waitForSyncCompletion()
+		#expect(mockStorage.data(forKey: name.name) == "1")
+		#expect(mockStorage.data(forKey: quantity.name) == 1)
+		// Update remote storage
+		updateMockStorage(key: name.name, value: "2")
+		updateMockStorage(key: quantity.name, value: 2)
+		Defaults.iCloud.syncWithoutWaiting()
+		await Defaults.iCloud.waitForSyncCompletion()
+		#expect(Defaults[name] == "2")
+		#expect(Defaults[quantity] == 2)
+	}
+
+	@Test
 	func testAddFromDetached() async {
-		let name = Defaults.Key<String>("testInitAddFromDetached_name", default: "0", suite: suite)
-		let quantity = Defaults.Key<Bool>("testInitAddFromDetached_quantity", default: false, suite: suite)
+		let name = Defaults.Key<String?>("testInitAddFromDetached_name", suite: suite)
+		let quantity = Defaults.Key<Bool?>("testInitAddFromDetached_quantity", suite: suite)
 		await Task.detached {
 			Defaults.iCloud.add(name, quantity)
+			Defaults[name] = "0"
+			Defaults[quantity] = true
 			Defaults.iCloud.syncWithoutWaiting()
 			await Defaults.iCloud.waitForSyncCompletion()
 		}.value
