@@ -281,8 +281,8 @@ final class DefaultsICloudTests {
 
 	@Test
 	func testAddFromDetached() async {
-		let name = Defaults.Key<String?>("testInitAddFromDetached_name", suite: suite)
-		let quantity = Defaults.Key<Bool?>("testInitAddFromDetached_quantity", suite: suite)
+		let name = Defaults.Key<String?>("testInitAddFromDetached_name", suite: suite) // swiftlint:disable:this discouraged_optional_boolean
+		let quantity = Defaults.Key<Bool?>("testInitAddFromDetached_quantity", suite: suite) // swiftlint:disable:this discouraged_optional_boolean
 		await Task.detached {
 			Defaults.iCloud.add(name, quantity)
 			Defaults[name] = "0"
