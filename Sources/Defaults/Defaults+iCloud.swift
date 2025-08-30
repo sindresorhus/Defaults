@@ -196,6 +196,7 @@ private enum SyncStatus {
 	case idle
 	case syncing
 	case completed
+	case aborted
 }
 
 /**
@@ -326,12 +327,18 @@ final class iCloudSynchronizer {
 
 	- Parameter keys: If the keys parameter is an empty array, the method will use the keys that were added to `Defaults.iCloud`.
 	- Parameter source: Sync keys from which data source (remote or local).
+
+	- Note: The synchronization task might be aborted if both the remote and local data sources do not exist.
 	*/
 	func syncWithoutWaiting(_ keys: [Defaults.Keys] = [], _ source: Defaults.iCloud.DataSource? = nil) {
 		let keys = keys.isEmpty ? Array(self.keys) : keys
 
 		for key in keys {
-			let latest = source ?? latestDataSource(forKey: key)
+			// If no data source is specified, we should abort this synchronization task.
+			guard let latest = source ?? latestDataSource(forKey: key) else {
+				Self.logKeySyncStatus(key, source: nil, syncStatus: .aborted, value: nil)
+				continue
+			}
 			enqueue {
 				await self.syncKey(key, source: latest)
 			}
@@ -483,16 +490,22 @@ final class iCloudSynchronizer {
 	/**
 	Determine which data source has the latest data available by comparing the timestamps of the local and remote sources.
 	*/
-	private func latestDataSource(forKey key: Defaults.Keys) -> Defaults.iCloud.DataSource {
+	private func latestDataSource(forKey key: Defaults.Keys) -> Defaults.iCloud.DataSource? {
+		let remoteTimestamp = timestamp(forKey: key, source: .remote)
+		let localTimestamp = timestamp(forKey: key, source: .local)
+		return switch (remoteTimestamp, localTimestamp) {
+		// If the local timestamp does not exist, use the remote timestamp as the latest data source.
+		case (.some(_), nil):
+			.remote
 		// If the remote timestamp does not exist, use the local timestamp as the latest data source.
-		guard let remoteTimestamp = timestamp(forKey: key, source: .remote) else {
-			return .local
+		case (nil, .some(_)):
+			.local
+		case let (.some(remoteTimestamp), .some(localTimestamp)):
+			localTimestamp > remoteTimestamp ? .local : .remote
+		// If both remote and local timestamp does not exist, return nil
+		case (nil, nil):
+			nil
 		}
-		guard let localTimestamp = timestamp(forKey: key, source: .local) else {
-			return .remote
-		}
-
-		return localTimestamp > remoteTimestamp ? .local : .remote
 	}
 }
 
@@ -575,7 +588,7 @@ extension iCloudSynchronizer {
 
 	private static func logKeySyncStatus(
 		_ key: Defaults.Keys,
-		source: Defaults.iCloud.DataSource,
+		source: Defaults.iCloud.DataSource?,
 		syncStatus: SyncStatus,
 		value: Any? = nil
 	) {
@@ -588,6 +601,8 @@ extension iCloudSynchronizer {
 			"from local"
 		case .remote:
 			"from remote"
+		case .none:
+			""
 		}
 
 		let status: String
@@ -600,6 +615,8 @@ extension iCloudSynchronizer {
 			valueDescription = " with value \(value ?? "nil") "
 		case .completed:
 			status = "Complete synchronization"
+		case .aborted:
+			status = "Aborting"
 		}
 
 		let message = "\(status) key '\(key.name)'\(valueDescription)\(destination)"
