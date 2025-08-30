@@ -113,7 +113,7 @@ You can also declare optional keys for when you don't want to declare a default 
 
 ```swift
 extension Defaults.Keys {
-	static let name = Key<Double?>("name")
+	static let name = Key<String?>("name")
 }
 
 if let name = Defaults[.name] {

@@ -247,8 +247,8 @@ final class DefaultsICloudTests {
 
 	@Test
 	func testAbortion() async {
-		let name = Defaults.Key<String>("testAbortSignleKey_name", default: "0", iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
-		let quantity = Defaults.Key<Int>("testAbortSignleKey_quantity", default: 0, iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		let name = Defaults.Key<String>("testAbortSingleKey_name", default: "0", iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		let quantity = Defaults.Key<Int>("testAbortSingleKey_quantity", default: 0, iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
 		Defaults[quantity] = 1
 		await Defaults.iCloud.waitForSyncCompletion()
 		#expect(mockStorage.data(forKey: quantity.name) == 1)

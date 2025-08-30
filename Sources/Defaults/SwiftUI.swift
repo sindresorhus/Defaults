@@ -205,21 +205,30 @@ extension Defaults {
 		@ViewStorage private var onChange: ((Bool) -> Void)?
 
 		private let label: () -> Label
+		private let inverted: Bool
 
-		// Intentionally using `@ObservedObjected` over `@StateObject` so that the key can be dynamically changed.
+		// Intentionally using `@ObservedObject` over `@StateObject` so that the key can be dynamically changed.
 		@ObservedObject private var observable: Defaults.Observable<Bool>
 
-		public init(key: Defaults.Key<Bool>, @ViewBuilder label: @escaping () -> Label) {
+		public init(
+			key: Defaults.Key<Bool>,
+			inverted: Bool = false,
+			@ViewBuilder label: @escaping () -> Label
+		) {
+			self.inverted = inverted
 			self.label = label
 			self.observable = .init(key)
 		}
 
 		@_documentation(visibility: private)
 		public var body: some View {
-			SwiftUI.Toggle(isOn: $observable.value, label: label)
-				.onChange(of: observable.value) {
-					onChange?($0)
-				}
+			SwiftUI.Toggle(
+				isOn: inverted ? $observable.value.toggled() : $observable.value,
+				label: label
+			)
+			.onChange(of: observable.value) {
+				onChange?(inverted ? !$0 : $0)
+			}
 		}
 	}
 }
@@ -227,10 +236,12 @@ extension Defaults {
 extension Defaults.Toggle<Text> {
 	public init(
 		_ title: some StringProtocol,
-		key: Defaults.Key<Bool>
+		key: Defaults.Key<Bool>,
+		inverted: Bool = false
 	) {
-		self.label = { Text(title) }
-		self.observable = .init(key)
+		self.init(key: key, inverted: inverted) {
+			Text(title)
+		}
 	}
 }
 
@@ -238,10 +249,12 @@ extension Defaults.Toggle<Label<Text, Image>> {
 	public init(
 		_ title: some StringProtocol,
 		systemImage: String,
-		key: Defaults.Key<Bool>
+		key: Defaults.Key<Bool>,
+		inverted: Bool = false
 	) {
-		self.label = { Label(title, systemImage: systemImage) }
-		self.observable = .init(key)
+		self.init(key: key, inverted: inverted) {
+			Label(title, systemImage: systemImage)
+		}
 	}
 }
 
@@ -278,5 +291,14 @@ private struct ViewStorage<Value>: DynamicProperty {
 
 	init(wrappedValue value: @autoclosure @escaping () -> Value) {
 		self._valueBox = .init(wrappedValue: ValueBox(value()))
+	}
+}
+
+extension Binding<Bool> {
+	func toggled() -> Self {
+		.init(
+			get: { !wrappedValue },
+			set: { wrappedValue = !$0 }
+		)
 	}
 }
