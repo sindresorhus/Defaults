@@ -229,8 +229,8 @@ final class DefaultsTests {
 		}
 
 		let expectedValues = [(false, true), (true, false)]
-//		#expect(results == expectedValues)
 
+		// Manual comparison needed as tuple arrays don't conform to Equatable
 		#expect(results.count == expectedValues.count)
 		for (index, expected) in expectedValues.enumerated() {
 			#expect(results[index].0 == expected.0)
@@ -263,8 +263,8 @@ final class DefaultsTests {
 		}
 
 		let expectedValues: [(Bool?, Bool?)] = [(nil, true), (true, false), (false, nil)]
-//		#expect(results == expectedValues)
 
+		// Manual comparison needed as tuple arrays don't conform to Equatable
 		#expect(results.count == expectedValues.count)
 		for (index, expected) in expectedValues.enumerated() {
 			#expect(results[index].0 == expected.0)
@@ -300,8 +300,8 @@ final class DefaultsTests {
 		}
 
 		let expectedValues: [(Date?, Date?)] = [(first, second), (second, third), (third, first)]
-//		#expect(results == expectedValues)
 
+		// Manual comparison needed as tuple arrays don't conform to Equatable
 		#expect(results.count == expectedValues.count)
 		for (index, expected) in expectedValues.enumerated() {
 			#expect(results[index].0 == expected.0)
@@ -368,9 +368,8 @@ final class DefaultsTests {
 			let publisher = Defaults
 				.publisher(key)
 				.map(\.newValue)
-				.sink { value in
+				.sink { _ in
 					confirmation()
-					print("Received value: \(value)")
 				}
 
 			// Ensure we're subscribed before changing the value

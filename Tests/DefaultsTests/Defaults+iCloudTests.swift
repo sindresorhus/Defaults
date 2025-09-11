@@ -247,8 +247,8 @@ final class DefaultsICloudTests {
 
 	@Test
 	func testAbortion() async {
-		let name = Defaults.Key<String>("testAbortSingleKey_name", default: "0", iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
-		let quantity = Defaults.Key<Int>("testAbortSingleKey_quantity", default: 0, iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		let name = Defaults.Key<String>("testAbortSingleKey_name", default: "0", iCloud: true)
+		let quantity = Defaults.Key<Int>("testAbortSingleKey_quantity", default: 0, iCloud: true)
 		Defaults[quantity] = 1
 		await Defaults.iCloud.waitForSyncCompletion()
 		#expect(mockStorage.data(forKey: quantity.name) == 1)
@@ -262,8 +262,8 @@ final class DefaultsICloudTests {
 
 	@Test
 	func testSyncLatestSource() async {
-		let name = Defaults.Key<String>("testSyncLatestSource_name", default: "0", iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
-		let quantity = Defaults.Key<Int>("testSyncLatestSource_quantity", default: 0, iCloud: true) // swiftlint:disable:this discouraged_optional_boolean
+		let name = Defaults.Key<String>("testSyncLatestSource_name", default: "0", iCloud: true)
+		let quantity = Defaults.Key<Int>("testSyncLatestSource_quantity", default: 0, iCloud: true)
 		// Create a timestamp in both the local and remote data sources
 		Defaults[name] = "1"
 		Defaults[quantity] = 1
