@@ -60,7 +60,6 @@ extension Defaults {
 
 extension Defaults {
 	public struct RawRepresentableBridge<Value: RawRepresentable>: Bridge {
-		public typealias Value = Value
 		public typealias Serializable = Value.RawValue
 
 		public func serialize(_ value: Value?) -> Serializable? {
@@ -79,7 +78,6 @@ extension Defaults {
 
 extension Defaults {
 	public struct NSSecureCodingBridge<Value: NSSecureCoding & NSObject>: Bridge {
-		public typealias Value = Value
 		public typealias Serializable = Data
 
 		public func serialize(_ value: Value?) -> Serializable? {
@@ -219,7 +217,6 @@ extension Defaults {
 
 extension Defaults {
 	public struct SetAlgebraBridge<Value: SetAlgebraSerializable>: Bridge where Value.Element: Serializable {
-		public typealias Value = Value
 		public typealias Element = Value.Element
 		public typealias Serializable = Any
 
@@ -258,7 +255,6 @@ extension Defaults {
 
 extension Defaults {
 	public struct CollectionBridge<Value: CollectionSerializable>: Bridge where Value.Element: Serializable {
-		public typealias Value = Value
 		public typealias Element = Value.Element
 		public typealias Serializable = Any
 
