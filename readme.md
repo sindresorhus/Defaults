@@ -31,9 +31,9 @@ It's used in production by [all my apps](https://sindresorhus.com/apps) (4 milli
 
 ## Compatibility
 
-- macOS 11+
-- iOS 14+
-- tvOS 14+
+- macOS 13+
+- iOS 16+
+- tvOS 16+
 - watchOS 9+
 - visionOS 1+
 
@@ -66,6 +66,8 @@ Add `https://github.com/sindresorhus/Defaults` in the [â€œSwift Package Managerâ
 - `UIFontDescriptor`
 
 Defaults also support the above types wrapped in `Array`, `Set`, `Dictionary`, `Range`, `ClosedRange`, and even wrapped in nested types. For example, `[[String: Set<[String: Int]>]]`.
+
+Dictionary keys: Any type conforming to `CodingKeyRepresentable` can be used as dictionary keys. This includes `String`, `Int`, enums with `String` or `Int` raw values, and custom types that conform to `CodingKeyRepresentable`.
 
 For more types, see the [enum example](#enum-example), [`Codable` example](#codable-example), or [advanced Usage](#advanced-usage). For more examples, see [Tests/DefaultsTests](./Tests/DefaultsTests).
 

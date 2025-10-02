@@ -5,9 +5,9 @@ import CompilerPluginSupport
 let package = Package(
 	name: "Defaults",
 	platforms: [
-		.macOS(.v11),
-		.iOS(.v14),
-		.tvOS(.v14),
+		.macOS(.v13),
+		.iOS(.v16),
+		.tvOS(.v16),
 		.watchOS(.v9),
 		.visionOS(.v1)
 	],

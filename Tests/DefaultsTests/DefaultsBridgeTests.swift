@@ -43,6 +43,40 @@ private enum TestEnumCodable: String, Codable, Defaults.Serializable {
 	case beta = "beta_value"
 }
 
+private enum Category: String, Codable, Hashable, CodingKeyRepresentable {
+	case electronics
+	case books
+	case clothing
+}
+
+private enum Priority: Int, Codable, Hashable, CodingKeyRepresentable {
+	case low = 1
+	case medium = 5
+	case high = 10
+}
+
+// RawRepresentable types automatically get CodingKeyRepresentable conformance
+// via stdlib's default implementation when RawValue is String or Int
+private struct BundleIdentifier: RawRepresentable, Hashable, Codable, CodingKeyRepresentable {
+	let rawValue: String
+
+	init(rawValue: String) {
+		self.rawValue = rawValue
+	}
+
+	init(_ value: String) {
+		self.init(rawValue: value)
+	}
+}
+
+private struct UserID: RawRepresentable, Hashable, Codable, CodingKeyRepresentable {
+	let rawValue: Int
+
+	init(rawValue: Int) {
+		self.rawValue = rawValue
+	}
+}
+
 @Suite(.serialized)
 final class DefaultsBridgeTests {
 	init() {
@@ -360,4 +394,65 @@ final class DefaultsBridgeTests {
 		#expect(result.name == "fallback")
 		#expect(result.value == -1)
 	}
+
+	@Test
+	func testEnumStringKeys() {
+		let key = Defaults.Key<[Category: String]>("categoryDict", default: [:], suite: suite_)
+		Defaults[key] = [.electronics: "Laptop", .books: "Guide"]
+		#expect(Defaults[key][.electronics] == "Laptop")
+		#expect(Defaults[key][.books] == "Guide")
+	}
+
+	@Test
+	func testEnumIntKeys() {
+		enum Temperature: Int, Codable, Hashable, CodingKeyRepresentable {
+			case freezing = -10
+			case zero = 0
+			case boiling = 100
+		}
+
+		let key = Defaults.Key<[Temperature: String]>("tempDict", default: [:], suite: suite_)
+		Defaults[key] = [.freezing: "Cold", .zero: "Freezing", .boiling: "Hot"]
+		#expect(Defaults[key][.freezing] == "Cold")
+		#expect(Defaults[key][.zero] == "Freezing")
+		#expect(Defaults[key][.boiling] == "Hot")
+	}
+
+	@Test
+	func testRawRepresentableKeys() {
+		let key = Defaults.Key<[BundleIdentifier: String]>("bundleDict", default: [:], suite: suite_)
+		Defaults[key] = [BundleIdentifier("com.app"): "App"]
+		#expect(Defaults[key][BundleIdentifier("com.app")] == "App")
+	}
+
+	@Test
+	func testNestedDictionaries() {
+		let key = Defaults.Key<[Category: [Priority: String]]>("nestedDict", default: [:], suite: suite_)
+		Defaults[key] = [.electronics: [.high: "Urgent", .low: "Later"]]
+		#expect(Defaults[key][.electronics]?[.high] == "Urgent")
+		#expect(Defaults[key][.electronics]?[.low] == "Later")
+	}
+
+	@Test
+	func testDictionaryPersistence() {
+		let key1 = Defaults.Key<[Category: String]>("persistDict", default: [:], suite: suite_)
+		Defaults[key1] = [.books: "Novel"]
+
+		let key2 = Defaults.Key<[Category: String]>("persistDict", default: [:], suite: suite_)
+		#expect(Defaults[key2][.books] == "Novel")
+	}
+
+	@Test
+	func testDictionaryRemoval() {
+		let key = Defaults.Key<[Priority: String]>("removeDict", default: [:], suite: suite_)
+		Defaults[key] = [.low: "A", .high: "B"]
+
+		var updated = Defaults[key]
+		updated[.low] = nil
+		Defaults[key] = updated
+
+		#expect(Defaults[key][.low] == nil)
+		#expect(Defaults[key][.high] == "B")
+	}
+
 }
