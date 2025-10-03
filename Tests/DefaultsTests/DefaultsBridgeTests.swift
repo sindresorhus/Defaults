@@ -43,13 +43,13 @@ private enum TestEnumCodable: String, Codable, Defaults.Serializable {
 	case beta = "beta_value"
 }
 
-private enum Category: String, Codable, Hashable, CodingKeyRepresentable {
+private enum Category: String, CodingKeyRepresentable {
 	case electronics
 	case books
 	case clothing
 }
 
-private enum Priority: Int, Codable, Hashable, CodingKeyRepresentable {
+private enum Priority: Int, CodingKeyRepresentable {
 	case low = 1
 	case medium = 5
 	case high = 10

@@ -152,9 +152,7 @@ extension Defaults {
 			}
 
 			return dictionary.reduce(into: Serializable()) { memo, tuple in
-				if let serialized = Element.bridge.serialize(tuple.value) {
-					memo[tuple.key.codingKey.stringValue] = serialized
-				}
+				memo[tuple.key.codingKey.stringValue] = Element.bridge.serialize(tuple.value)
 			}
 		}
 
@@ -164,14 +162,11 @@ extension Defaults {
 			}
 
 			return dictionary.reduce(into: Value()) { memo, tuple in
-				guard
-					let key = Key(codingKey: tuple.key.codingKey),
-					let value = Element.bridge.deserialize(tuple.value)
-				else {
+				guard let key = Key(codingKey: tuple.key.codingKey) else {
 					return
 				}
 
-				memo[key] = value
+				memo[key] = Element.bridge.deserialize(tuple.value)
 			}
 		}
 	}
