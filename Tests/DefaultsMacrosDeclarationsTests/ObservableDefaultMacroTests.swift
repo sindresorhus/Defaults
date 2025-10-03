@@ -88,8 +88,10 @@ final class ObservableDefaultMacroTests: XCTestCase {
 				get {
 					if objc_getAssociatedObject(self, &Self._objcAssociatedKey_name) == nil {
 						let cancellable = Defaults.publisher(\#(keyExpression))
-							.sink { [weak self] in
-								self?.name = $0.newValue
+							.sink { [weak self] change in
+								Defaults.withoutPropagation {
+									self?.name = change.newValue
+								}
 							}
 						objc_setAssociatedObject(self, &Self._objcAssociatedKey_name, cancellable, .OBJC_ASSOCIATION_RETAIN)
 					}
