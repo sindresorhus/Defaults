@@ -132,7 +132,7 @@ extension Array: Defaults.Serializable where Element: Defaults.Serializable {
 	public static var bridge: Defaults.ArrayBridge<Element> { Defaults.ArrayBridge() }
 }
 
-extension Dictionary: Defaults.Serializable where Key: LosslessStringConvertible & Hashable, Value: Defaults.Serializable {
+extension Dictionary: Defaults.Serializable where Key: CodingKeyRepresentable & Hashable, Value: Defaults.Serializable {
 	public static var isNativelySupportedType: Bool { (Key.self is String.Type) && Value.isNativelySupportedType }
 	public static var bridge: Defaults.DictionaryBridge<Key, Value> { Defaults.DictionaryBridge() }
 }
