@@ -12,9 +12,12 @@ private let colorKey = "colorKey"
 private let defaultColor = "blue"
 private let newColor = "purple"
 
+private let testSetKey = "testSetKey"
+
 extension Defaults.Keys {
 	static let animal = Defaults.Key(animalKey, default: defaultAnimal)
 	static let color = Defaults.Key(colorKey, default: defaultColor)
+	static let testSet = Defaults.Key(testSetKey, default: Set<Int>())
 }
 
 func getKey() -> Defaults.Key<String> {
@@ -67,12 +70,21 @@ private final class TestModelWithMultipleValues {
 	var color: String
 }
 
+@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+@Observable
+private final class TestModelWithSet {
+	@ObservableDefault(.testSet)
+	@ObservationIgnored
+	var testSet: Set<Int>
+}
+
 @Suite(.serialized)
 final class ObservableDefaultTests {
 	init() {
 		Defaults.removeAll()
 		Defaults[.animal] = defaultAnimal
 		Defaults[.color] = defaultColor
+		Defaults[.testSet] = []
 	}
 
 	deinit {
@@ -193,5 +205,42 @@ final class ObservableDefaultTests {
 
 		#expect(model.animal == newAnimal)
 		#expect(model.color == newColor)
+	}
+
+	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+	@Test
+	func testMacroWithSetNoInfiniteRecursion() async {
+		let model = TestModelWithSet()
+		#expect(model.testSet.isEmpty)
+
+		// This should not cause infinite recursion
+		model.testSet.formUnion(1...10)
+
+		#expect(model.testSet == Set(1...10))
+		#expect(Defaults[.testSet] == Set(1...10))
+	}
+
+	@available(macOS 14, iOS 17, tvOS 17, watchOS 10, visionOS 1, *)
+	@Test
+	func testMacroObserversPropagateAcrossModels() async {
+		let model1 = TestModelWithSet()
+		let model2 = TestModelWithSet()
+
+		#expect(model1.testSet.isEmpty)
+		#expect(model2.testSet.isEmpty)
+
+		await confirmation { confirmation in
+			_ = withObservationTracking {
+				model2.testSet
+			} onChange: {
+				confirmation()
+			}
+
+			// Write through model1
+			model1.testSet = [1, 2, 3]
+		}
+
+		// model2 should have observed the change
+		#expect(model2.testSet == [1, 2, 3])
 	}
 }

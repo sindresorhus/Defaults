@@ -27,13 +27,19 @@ extension ObservableDefaultMacro: AccessorMacro {
 		// The get accessor also sets up an observation to update the value when the UserDefaults
 		// changes from elsewhere. Doing so requires attaching it as an Objective-C associated
 		// object due to limitations with current macro capabilities and Swift concurrency.
+		//
+		// To prevent infinite recursion, we use Defaults.withoutPropagation in the observation
+		// callback. This ensures that when the callback updates the property, it doesn't trigger
+		// observers again, while still allowing normal writes to propagate to other observers.
 		return [
 			#"""
 			get {
 				if objc_getAssociatedObject(self, &Self.\#(associatedKey)) == nil {
 					let cancellable = Defaults.publisher(\#(expression))
-						.sink { [weak self] in
-							self?.\#(property) = $0.newValue
+						.sink { [weak self] change in
+							Defaults.withoutPropagation {
+								self?.\#(property) = change.newValue
+							}
 						}
 					objc_setAssociatedObject(self, &Self.\#(associatedKey), cancellable, .OBJC_ASSOCIATION_RETAIN)
 				}
