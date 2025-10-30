@@ -17,7 +17,7 @@ extension Defaults {
 	}
 	```
 	*/
-	public protocol Serializable {
+	public protocol Serializable<Bridge> {
 		typealias Value = Bridge.Value
 		typealias Serializable = Bridge.Serializable
 		associatedtype Bridge: Defaults.Bridge
@@ -35,7 +35,7 @@ extension Defaults {
 }
 
 extension Defaults {
-	public protocol Bridge {
+	public protocol Bridge<Value, Serializable> {
 		associatedtype Value
 		associatedtype Serializable
 
@@ -67,14 +67,14 @@ extension Defaults {
 }
 
 extension Defaults {
-	public protocol CollectionSerializable: Collection, Serializable {
+	public protocol CollectionSerializable<Element>: Collection, Serializable {
 		/**
 		`Collection` does not have a initializer, but we need a initializer to convert an array into the `Value`.
 		*/
 		init(_ elements: [Element])
 	}
 
-	public protocol SetAlgebraSerializable: SetAlgebra, Serializable {
+	public protocol SetAlgebraSerializable<Element>: SetAlgebra, Serializable {
 		/**
 		Since `SetAlgebra` protocol does not conform to `Sequence`, we cannot convert a `SetAlgebra` to an `Array` directly.
 		*/
@@ -84,7 +84,7 @@ extension Defaults {
 	public protocol CodableBridge: Bridge where Serializable == String, Value: Codable {}
 
 	// Essential properties for serializing and deserializing `ClosedRange` and `Range`.
-	public protocol Range {
+	public protocol Range<Bound> {
 		associatedtype Bound: Comparable, Defaults.Serializable
 
 		var lowerBound: Bound { get }

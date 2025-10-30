@@ -230,7 +230,7 @@ extension Defaults.Serializable {
 	*/
 	@usableFromInline
 	static func toSerializable<T: Defaults.Serializable>(_ value: T) -> Any? {
-		if T.isNativelySupportedType {
+		guard !T.isNativelySupportedType else {
 			return value
 		}
 
