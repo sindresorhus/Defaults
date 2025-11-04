@@ -49,6 +49,13 @@ extension Defaults {
 		public let name: String
 		public let suite: UserDefaults
 
+		/**
+		Whether this key uses external storage.
+
+		This property exists on the base class to allow reset() to access it without knowing the generic type.
+		*/
+		var usesExternalStorage: Bool { false }
+
 		@_alwaysEmitIntoClient
 		fileprivate init(name: String, suite: UserDefaults) {
 			runtimeWarn(
@@ -64,7 +71,17 @@ extension Defaults {
 		Reset the item back to its default value.
 		*/
 		public func reset() {
-			suite.removeObject(forKey: name)
+			// Clean up external storage if applicable
+			if usesExternalStorage {
+				ExternalStorage.lock(for: name).with {
+					if let fileID = suite.string(forKey: name) {
+						ExternalStorage.delete(fileID: fileID, forKey: name)
+					}
+					suite.removeObject(forKey: name)
+				}
+			} else {
+				suite.removeObject(forKey: name)
+			}
 		}
 	}
 
@@ -102,12 +119,23 @@ extension Defaults {
 		public var defaultValue: Value { defaultValueGetter() }
 
 		/**
+		Whether this key stores its value externally on disk instead of in UserDefaults.
+
+		When enabled, only a reference UUID is stored in UserDefaults, while the actual data is written to disk.
+		*/
+		@usableFromInline
+		let _usesExternalStorage: Bool
+
+		override var usesExternalStorage: Bool { _usesExternalStorage }
+
+		/**
 		Create a key.
 
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 		- Parameter defaultValue: The default value.
 		- Parameter suite: The `UserDefaults` suite to store the value in.
 		- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
+		- Parameter externalStorage: Store the value externally on disk instead of in UserDefaults. Only works with the `.standard` suite.
 
 		The `default` parameter should not be used if the `Value` type is an optional.
 		*/
@@ -116,17 +144,26 @@ extension Defaults {
 			_ name: String,
 			default defaultValue: Value,
 			suite: UserDefaults = .standard,
-			iCloud: Bool = false
+			iCloud: Bool = false,
+			externalStorage: Bool = false
 		) {
-			defer {
-				if iCloud {
-					Defaults.iCloud.add(self)
-				}
-			}
+			runtimeWarn(
+				!externalStorage || suite == .standard,
+				"External storage only works with UserDefaults.standard suite"
+			)
 
+			self._usesExternalStorage = externalStorage && suite == .standard
 			self.defaultValueGetter = { defaultValue }
 
 			super.init(name: name, suite: suite)
+
+			if iCloud {
+				if _usesExternalStorage {
+					runtimeWarn(false, "iCloud is not supported with externalStorage for key '\(name)'.")
+				} else {
+					Defaults.iCloud.add(self)
+				}
+			}
 
 			if (defaultValue as? (any _DefaultsOptionalProtocol))?._defaults_isNil == true {
 				return
@@ -154,6 +191,7 @@ extension Defaults {
 		- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 		- Parameter suite: The `UserDefaults` suite to store the value in.
 		- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
+		- Parameter externalStorage: Store the value externally on disk instead of in UserDefaults. Only works with the `.standard` suite.
 		- Parameter defaultValueGetter: The dynamic default value.
 
 		- Note: This initializer will not set the default value in the actual `UserDefaults`. This should not matter much though. It's only really useful if you use legacy KVO bindings.
@@ -163,14 +201,25 @@ extension Defaults {
 			_ name: String,
 			suite: UserDefaults = .standard,
 			iCloud: Bool = false,
+			externalStorage: Bool = false,
 			default defaultValueGetter: @escaping () -> Value
 		) {
+			runtimeWarn(
+				!externalStorage || suite == .standard,
+				"External storage only works with UserDefaults.standard suite"
+			)
+
+			self._usesExternalStorage = externalStorage && suite == .standard
 			self.defaultValueGetter = defaultValueGetter
 
 			super.init(name: name, suite: suite)
 
 			if iCloud {
-				Defaults.iCloud.add(self)
+				if _usesExternalStorage {
+					runtimeWarn(false, "iCloud is not supported with externalStorage for key '\(name)'.")
+				} else {
+					Defaults.iCloud.add(self)
+				}
 			}
 		}
 	}
@@ -184,17 +233,20 @@ extension Defaults.Key {
 	- Parameter name: The name must be ASCII, not start with `@`, and cannot contain a dot (`.`).
 	- Parameter suite: The `UserDefaults` suite to store the value in.
 	- Parameter iCloud: Automatically synchronize the value with ``Defaults/iCloud``.
+	- Parameter externalStorage: Store the value externally on disk instead of in UserDefaults. Only works with the `.standard` suite.
 	*/
 	public convenience init<T>(
 		_ name: String,
 		suite: UserDefaults = .standard,
-		iCloud: Bool = false
+		iCloud: Bool = false,
+		externalStorage: Bool = false
 	) where Value == T? {
 		self.init(
 			name,
 			default: nil,
 			suite: suite,
-			iCloud: iCloud
+			iCloud: iCloud,
+			externalStorage: externalStorage
 		)
 	}
 
