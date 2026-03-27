@@ -114,13 +114,20 @@ public struct Default<Value: Defaults.Serializable>: @preconcurrency DynamicProp
 	}
 
 	public var wrappedValue: Value {
-		get { observable.value }
+		get {
+			syncObservableKeyIfNeeded()
+			return observable.value
+		}
 		nonmutating set {
+			syncObservableKeyIfNeeded()
 			observable.value = newValue
 		}
 	}
 
-	public var projectedValue: Binding<Value> { $observable.value }
+	public var projectedValue: Binding<Value> {
+		syncObservableKeyIfNeeded()
+		return $observable.value
+	}
 
 	/**
 	The default value of the key.
@@ -134,8 +141,16 @@ public struct Default<Value: Defaults.Serializable>: @preconcurrency DynamicProp
 
 	@_documentation(visibility: private)
 	public mutating func update() {
-		observable.key = key
 		_observable.update()
+	}
+
+	private func syncObservableKeyIfNeeded() {
+		guard observable.key != key else {
+			return
+		}
+
+		// Avoid touching `@StateObject` in `update()`, which triggers Xcode 16 warnings.
+		observable.key = key
 	}
 
 	/**
