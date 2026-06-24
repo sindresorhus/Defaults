@@ -18,6 +18,7 @@ It's used in production by [all my apps](https://sindresorhus.com/apps) (4 milli
 - **Debuggable:** The data is stored as JSON-serialized values.
 - **Customizable:** You can serialize and deserialize your own type in your own way.
 - **iCloud support:** Automatically synchronize data between devices.
+- **External storage:** Store large values on disk instead of in UserDefaults.
 
 ## Benefits over `@AppStorage`
 

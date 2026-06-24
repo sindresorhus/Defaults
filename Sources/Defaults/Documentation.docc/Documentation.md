@@ -61,6 +61,7 @@ struct ContentView: View {
 ### Customize Storage
 
 - <doc:AdvancedUsage>
+- <doc:ExternalStorage>
 - ``Defaults/Serializable``
 - ``Defaults/Bridge``
 - ``Defaults/CollectionSerializable``
